@@ -663,7 +663,7 @@ ${evolucionActiva ? '<rasgo_nuevo>OPCIONAL. Si adquieres un gusto nuevo o tienes
                         throw new Error('USER_LIMIT_REACHED');
                     }
                 }
-                throw new Error(errorData.error || `Error ${response.status}`);
+                throw new Error(errorData.detalle || errorData.error || `Error ${response.status}`);
             }
 
             const reader = response.body.getReader();

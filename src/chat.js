@@ -294,7 +294,7 @@ export function initChat() {
             } else if (e.message === 'USER_LIMIT_REACHED') {
                 await addMsg('[Sistema: Has agotado tus mensajes diarios. Actualiza tu plan para seguir chateando.]', 'assistant');
             } else {
-                await addMsg('[Error del sistema: La conexión con el cerebro de la IA falló. Intenta de nuevo.]', 'assistant');
+                await addMsg(`[Error del sistema: ${e.message}]`, 'assistant');
             }
         }
     }
