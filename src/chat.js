@@ -574,13 +574,16 @@ Actualiza el campo 'conocimiento' con CUALQUIER dato real que aprendas del usuar
             const decoder = new TextDecoder("utf-8");
             let fullResponse = "";
             let extractedLength = 0;
+            let buffer = "";
 
             while (true) {
                 const { done, value } = await reader.read();
                 if (done) break;
 
-                const chunkStr = decoder.decode(value, { stream: true });
-                const lines = chunkStr.split('\n');
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split('\n');
+                
+                buffer = lines.pop() || "";
 
                 for (const line of lines) {
                     if (line.trim() === '' || line.trim() === 'data: [DONE]') continue;
@@ -1368,6 +1371,8 @@ export function initChat() {
             console.error(e);
             window.isThinking = false;
             removeAllTyping();
+            if (liveThought) liveThought.textContent = '';
+            addMessage(`[Error del sistema: La conexión con el cerebro de la IA falló. Intenta de nuevo.]`, 'assistant');
         }
     }
 
