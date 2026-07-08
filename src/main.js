@@ -4,8 +4,11 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import './style.css';
 import { getSession, initAuthUI, onAuthStateChange, signOut } from './auth.js';
 import { initBillingUI, getBillingStatus, updateTierBadge } from './billing.js';
-import { setTier, applyTierGating } from './tierGate.js';
+import { setTier, applyTierGating, canUseArchetype } from './tierGate.js';
 import { initChat } from './chat.js';
+
+// Expose tier gate helpers globally for cross-module access without circular imports
+window.__tierGate = { canUseArchetype };
 
 // ── Auth Flow ─────────────────────────────────────────────
 async function initApp() {
@@ -50,6 +53,36 @@ async function startApp() {
 
     // Init 3D scene
     init3D();
+
+    // ── Auto Night Mode ────────────────────────────────────
+    function applyAutoNightMode() {
+        const hour = new Date().getHours();
+        const root = document.documentElement;
+        
+        if (hour >= 22 || hour < 6) {
+            // Deep night — warm dark
+            root.style.setProperty('--luma-bg-overlay', 'rgba(10, 5, 20, 0.85)');
+            root.style.setProperty('--luma-accent-glow', '#6d28d9');
+            root.style.setProperty('--luma-text-dim', '0.7');
+            document.body.classList.add('luma-night');
+            document.body.classList.remove('luma-evening');
+        } else if (hour >= 18 && hour < 22) {
+            // Evening — slightly warm
+            root.style.setProperty('--luma-bg-overlay', 'rgba(15, 10, 30, 0.6)');
+            root.style.setProperty('--luma-accent-glow', '#8b5cf6');
+            root.style.setProperty('--luma-text-dim', '0.85');
+            document.body.classList.add('luma-evening');
+            document.body.classList.remove('luma-night');
+        } else {
+            // Daytime — defaults
+            root.style.removeProperty('--luma-bg-overlay');
+            root.style.removeProperty('--luma-accent-glow');
+            root.style.removeProperty('--luma-text-dim');
+            document.body.classList.remove('luma-night', 'luma-evening');
+        }
+    }
+    applyAutoNightMode();
+    setInterval(applyAutoNightMode, 600000); // Re-check every 10 min
 }
 
 // Listen for auth changes
@@ -200,11 +233,13 @@ function init3D() {
         });
     }
 
+    let modelBaseY = null;
     function animate() {
         requestAnimationFrame(animate);
         controls.update();
         if (currentModel) {
-            currentModel.position.y += Math.sin(Date.now() * 0.001) * 0.0005;
+            if (modelBaseY === null) modelBaseY = currentModel.position.y;
+            currentModel.position.y = modelBaseY + Math.sin(Date.now() * 0.001) * 0.02;
         }
         renderer.render(scene, camera);
     }

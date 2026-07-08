@@ -1307,3 +1307,34 @@ html, body {
     margin-top: 6px;
 }
 .btn-logout:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+
+/* ============================================================
+   AUTO NIGHT MODE
+============================================================ */
+body.luma-night {
+    --bg: #050208;
+    --glass: rgba(8, 5, 18, 0.9);
+    --glass-border: rgba(100, 60, 180, 0.12);
+    --text: #e2d9f3;
+    --text-muted: #7c6f9b;
+    --msg-user: rgba(100, 50, 200, 0.15);
+    --msg-ai: rgba(15, 10, 30, 0.85);
+}
+
+body.luma-night #canvas-container {
+    filter: brightness(0.5) saturate(0.7);
+    transition: filter 2s ease;
+}
+
+body.luma-evening {
+    --bg: #080510;
+    --glass: rgba(12, 8, 25, 0.82);
+    --glass-border: rgba(139, 92, 246, 0.1);
+    --text: #ede8f5;
+    --text-muted: #8b7fb0;
+}
+
+body.luma-evening #canvas-container {
+    filter: brightness(0.75) saturate(0.85);
+    transition: filter 2s ease;
+}
