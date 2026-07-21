@@ -50,38 +50,10 @@ export function initTimers(brain, addMessageFn, handleSendFn, input) {
     function startAutonomousLoop(customWait = null) {
         if (autonomousTimer) clearTimeout(autonomousTimer);
         if (brain.ignoredCount >= 2) return;
-        if (window.isOcupada) return;
 
-        const waitTime = customWait || 300000; // 5 min
+        const waitTime = customWait || 300000; // 5 min de inactividad
 
         autonomousTimer = setTimeout(async () => {
-            // Ausencias aleatorias (15% probabilidad)
-            if (Math.random() < 0.15 && brain.ignoredCount === 0) {
-                window.isOcupada = true;
-                window.mensajesBuzon = [];
-                input.placeholder = 'Ella está ocupada, pero le puedes dejar mensajes...';
-                const randMins = Math.floor(Math.random() * 21 + 5);
-                const resAusencia = await brain.sendMessageToAI(
-                    `[INSTRUCCIÓN INTERNA: Has decidido ausentarte por ${randMins} minutos. Despídete rápido diciendo adónde vas.]`,
-                    () => {}, () => {}, true
-                ).catch(() => null);
-                if (resAusencia) await addMessageFn(resAusencia, 'assistant');
-
-                setTimeout(async () => {
-                    window.isOcupada = false;
-                    input.placeholder = 'Escribe un mensaje...';
-                    let promptRegreso = `[INSTRUCCIÓN INTERNA: Acabas de volver de tu ausencia de ${randMins} minutos. Regresa de forma natural.]`;
-                    if (window.mensajesBuzon.length > 0) {
-                        promptRegreso = `[INSTRUCCIÓN INTERNA: Acabas de volver. El usuario te dejó estos mensajes mientras no estabas: "${window.mensajesBuzon.join(' | ')}". Responde a ellos y cuéntale qué estabas haciendo.]`;
-                        window.mensajesBuzon = [];
-                    }
-                    const resRegreso = await brain.sendMessageToAI(promptRegreso, () => {}, () => {}, true).catch(() => null);
-                    if (resRegreso) await addMessageFn(resRegreso, 'assistant');
-                    startAutonomousLoop();
-                }, randMins * 60000);
-                return;
-            }
-
             brain.ignoredCount++;
             window.lastInteraction = Date.now();
 
@@ -106,8 +78,7 @@ export function initTimers(brain, addMessageFn, handleSendFn, input) {
                 autonomousTimer = null;
             }
         } else {
-            if (!autonomousTimer && !window.isOcupada) {
-                // Restart with standard wait time when returning
+            if (!autonomousTimer) {
                 startAutonomousLoop();
             }
         }
@@ -120,13 +91,13 @@ export function initTimers(brain, addMessageFn, handleSendFn, input) {
         if (vistoTimer) clearTimeout(vistoTimer);
         
         vistoTimer = setTimeout(async () => {
-            if (brain.ignoredCount === 0 && !window.isOcupada && !window.isThinking) {
+            if (brain.ignoredCount === 0 && !window.isThinking) {
                 brain.ignoredCount++;
                 const textInt = '[Nota interna: El usuario te ha dejado en visto. Ha interactuado con la pantalla pero no te ha respondido. Reacciona a esto de forma acorde a tu personalidad.]';
-                const res = await brain.sendMessageToAI(textInt, () => {}, () => {}, true).catch(() => null);
-                if (res) await addMessageFn(res, 'assistant');
+                const res = await brain.sendMessageToAI(textInt, () => {}, () => {}, true, 0, true).catch(() => null);
+                if (res && res.trim()) await addMessageFn(res, 'assistant');
             }
-        }, 120000); // 2 minutos para ofenderse por visto
+        }, 180000); // 3 minutos para ofenderse por visto
     };
 
     window.addEventListener('mousemove', handleVistoEvent);
