@@ -11,7 +11,7 @@
 export function initTimers(brain, addMessageFn, handleSendFn, input) {
 
     // ── Homeostasis emocional ───────────────────────────────
-    setInterval(() => {
+    const homeostasisInterval = setInterval(() => {
         if (!brain) return;
         if (brain.enojo > 0) brain.enojo = Math.max(0, brain.enojo - 5);
         if (brain.cansancio > 0) brain.cansancio = Math.max(0, brain.cansancio - 2);
@@ -222,5 +222,5 @@ export function initTimers(brain, addMessageFn, handleSendFn, input) {
         });
     }
 
-    return { startAutonomousLoop, resetTyping, setMessageJustArrived: (v) => { messageJustArrived = v; }, getVistoTimer: () => vistoTimer, clearVistoTimer: () => { if (vistoTimer) clearTimeout(vistoTimer); } };
+    return { startAutonomousLoop, resetTyping, setMessageJustArrived: (v) => { messageJustArrived = v; }, getVistoTimer: () => vistoTimer, clearVistoTimer: () => { if (vistoTimer) clearTimeout(vistoTimer); }, clearHomeostasis: () => clearInterval(homeostasisInterval) };
 }

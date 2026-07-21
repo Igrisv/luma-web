@@ -337,10 +337,6 @@ export class ChatBrain {
         const arquetipo = this.getArquetipo();
         const nivelInfo = this.getNivelInfo();
 
-        const conocimientoUsuario = Object.keys(this.memoryState.conocimiento || {}).length > 0
-            ? `Lo que sabes del usuario: ${JSON.stringify(this.memoryState.conocimiento)}. `
-            : '';
-
         const evolucionEl = document.getElementById('evolucion-checkbox');
         const evolucionActiva = evolucionEl && evolucionEl.checked;
 
@@ -374,7 +370,6 @@ export class ChatBrain {
             ignoredCount: this.ignoredCount,
             arquetipo,
             nivelInfo,
-            evolucionActiva,
             rasgos_identidad: this.rasgos_identidad
         }, isFullPrompt);
 
@@ -430,11 +425,13 @@ export class ChatBrain {
             { role: 'system', content: postHistoryDirective }
         ];
 
-        // Fusionar roles consecutivos (algunos modelos fallan si hay varios 'user' seguidos)
+        // Merge consecutive user messages only (system messages must NOT be merged,
+        // because postHistoryDirective MUST remain at the end for max attention weight)
         const mergedPayload = [];
         for (const msg of rawPayload) {
-            if (mergedPayload.length > 0 && mergedPayload[mergedPayload.length - 1].role === msg.role) {
-                mergedPayload[mergedPayload.length - 1].content += '\n\n' + msg.content;
+            const last = mergedPayload[mergedPayload.length - 1];
+            if (last && last.role === msg.role && msg.role === 'user') {
+                last.content += '\n\n' + msg.content;
             } else {
                 mergedPayload.push({ ...msg });
             }
