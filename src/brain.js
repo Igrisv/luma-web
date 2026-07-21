@@ -337,8 +337,6 @@ export class ChatBrain {
         const arquetipo = this.getArquetipo();
         const nivelInfo = this.getNivelInfo();
 
-        const evolucionEl = document.getElementById('evolucion-checkbox');
-        const evolucionActiva = evolucionEl && evolucionEl.checked;
 
         this.messagesSinceFullPrompt = (this.messagesSinceFullPrompt || 0) + 1;
         const isFullPrompt = (this.messagesSinceFullPrompt >= 5) || (this.history.length === 0);
