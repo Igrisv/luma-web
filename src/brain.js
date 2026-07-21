@@ -361,7 +361,7 @@ export class ChatBrain {
         const effectiveHistory = (features.maxMessagesPerDay !== Infinity) ? this.history.slice(-4) : this.history;
 
         const rawPayload = [
-            { role: 'system', content: this.systemPrompt + '\n' + contextStr },
+            { role: 'system', content: contextStr },
             ...effectiveHistory
         ];
 
@@ -546,7 +546,10 @@ export class ChatBrain {
         if (diarioStr) {
             const cleanDiario = diarioStr.trim();
             const isTrivial = ['holis', 'saludar', 'ignorado', 'ignorada', 'dejado en visto', 'visto'].some(w => cleanDiario.toLowerCase().includes(w));
-            if (cleanDiario.length > 12 && !isTrivial) {
+            const lastEntry = this.memoryState.diario_entries?.[0];
+            const timeSinceLast = lastEntry ? (Date.now() - Number(lastEntry.id)) : Infinity;
+
+            if (cleanDiario.length > 12 && !isTrivial && timeSinceLast > 180000) {
                 if (!this.memoryState.diario_entries) this.memoryState.diario_entries = [];
                 const exists = this.memoryState.diario_entries.some(e => e.text === cleanDiario);
                 if (!exists) {
