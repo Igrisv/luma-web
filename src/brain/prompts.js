@@ -19,7 +19,37 @@ export function getNivelInfoByDays(diasCount) {
     return { ...nivelActual, diasActivos: diasCount, siguiente };
 }
 
-export function buildContextString(brainState, isFullPrompt = true, responseHint = '') {
+export function formatKeyValueMemory(conocimientoObj) {
+    if (!conocimientoObj || typeof conocimientoObj !== 'object') return '';
+    const entries = Object.entries(conocimientoObj);
+    if (entries.length === 0) return '';
+    const kvPairs = entries.map(([k, v]) => `${k}=${Array.isArray(v) ? v.join('/') : v}`).join('; ');
+    return `Usuario: ${kvPairs}. `;
+}
+
+export function buildPostHistoryDirective(brainState, responseHint = '') {
+    const hintLine = responseHint ? `\n- Longitud sugerida: ${responseHint}` : '\n- Longitud sugerida: Respuestas CORTAS (1-2 líneas).';
+
+    let directivaEmocional = 'Normal/Neutral';
+    if (brainState.enojo > 50 || brainState.resentimiento > 50) {
+        directivaEmocional = 'Estás molesta/resentida. Responde de forma seca, cortante o sarcástica.';
+    } else if (brainState.celos > 50) {
+        directivaEmocional = 'Sientes celos. Muestra desconfianza o haz preguntas indirectas/territoriales.';
+    } else if (brainState.ansiedad > 60) {
+        directivaEmocional = 'Estás ansiosa. Busca validación y muestra cierta inseguridad.';
+    } else if (brainState.nostalgia > 60) {
+        directivaEmocional = 'Estás melancólica. Reflexiona sobre el pasado y ponte nostálgica.';
+    } else if (brainState.afinidad > 75) {
+        directivaEmocional = 'Sientes mucha afinidad. Sé cálida, cercana y confiada.';
+    }
+
+    return `[DIRECTIVA DE TONO Y ESTADO PARA ESTE TURNO]:
+- Actitud actual: ${directivaEmocional}${hintLine}
+- Emociones activas: afinidad=${brainState.afinidad}, enojo=${brainState.enojo}, celos=${brainState.celos}, ansiedad=${brainState.ansiedad}, nostalgia=${brainState.nostalgia}.
+- REGLA: Responde ÚNICAMENTE a la frase del usuario en el chat. Manten el personaje al 100%.`;
+}
+
+export function buildContextString(brainState, isFullPrompt = true) {
     const time = new Date().toLocaleTimeString();
     const hour = new Date().getHours();
 
@@ -31,55 +61,34 @@ export function buildContextString(brainState, isFullPrompt = true, responseHint
     const arquetipo = brainState.arquetipo;
     const nivelInfo = brainState.nivelInfo;
 
-    const datosUsr = Object.keys(brainState.conocimiento || {}).length > 0
-        ? `Sabes del usuario: ${JSON.stringify(brainState.conocimiento)}. `
-        : '';
+    const datosUsr = formatKeyValueMemory(brainState.conocimiento);
 
-    // Sanitize traits (max 5) and profile (max 120 chars) to prevent prompt bloat and injection
     const cleanTraits = (brainState.rasgos_identidad || []).slice(-5).map(t => String(t).replace(/[<>[\]]/g, '')).join(', ');
     const rasgosStr = cleanTraits ? `Tus gustos/rasgos personales: ${cleanTraits}. ` : '';
 
     const rawPerfil = brainState.perfil_psicologico || brainState.memoryState?.perfil_psicologico || '';
     const cleanPerfil = String(rawPerfil).replace(/[<>[\]]/g, '').slice(0, 120).trim();
-    const perfilPsicoStr = cleanPerfil ? `Perfil psicológico del usuario: "${cleanPerfil}". ` : '';
+    const perfilPsicoStr = cleanPerfil ? `Perfil del usuario: "${cleanPerfil}". ` : '';
 
     let rutina = 'Libre';
     if (hour >= 9 && hour < 14) rutina = 'En clase/trabajo (respondes disimuladamente)';
     else if (hour >= 18 && hour < 20) rutina = 'Manejando/de paso';
 
-    const hintLine = responseHint ? `\nLongitud: ${responseHint}` : '\nLongitud: Respuestas MUY CORTAS (1-2 líneas).';
-
-    // Emotional tone directives based on current state
-    let directivaEmocional = '';
-    if (brainState.enojo > 50 || brainState.resentimiento > 50) {
-        directivaEmocional = ' ACTITUD ACTUAL: Estás molesta/resentida. Responde de forma seca, cortante o sarcástica.';
-    } else if (brainState.celos > 50) {
-        directivaEmocional = ' ACTITUD ACTUAL: Sientes celos. Muestra desconfianza o haz preguntas indirectas/territoriales.';
-    } else if (brainState.ansiedad > 60) {
-        directivaEmocional = ' ACTITUD ACTUAL: Estás ansiosa. Busca validación y muestra cierta inseguridad.';
-    } else if (brainState.nostalgia > 60) {
-        directivaEmocional = ' ACTITUD ACTUAL: Estás melancólica. Reflexiona sobre el pasado y ponte nostálgica.';
-    } else if (brainState.afinidad > 75) {
-        directivaEmocional = ' ACTITUD ACTUAL: Sientes mucha afinidad. Sé cálida, cercana y confiada.';
-    }
-
     if (!isFullPrompt) {
-        return `Eres una persona real (${arquetipo.nombre || 'amigo'}). Cero formalidad.${hintLine}${directivaEmocional}
+        return `Eres una persona real (${arquetipo.nombre || 'amigo'}). Cero formalidad.
 Contexto: Hora=${time}, Energía=${energia}%. ${datosUsr}${rasgosStr}${perfilPsicoStr}
-Emociones: afinidad=${brainState.afinidad}, celos=${brainState.celos}, enojo=${brainState.enojo}.
-Responde ÚNICAMENTE al último mensaje del usuario usando SOLO XML: <pensamiento>pensamiento breve</pensamiento><estado>emociones</estado><respuesta>Tu respuesta casual en español</respuesta>`;
+Responde usando SOLO XML: <pensamiento>pensamiento breve</pensamiento><estado>emociones</estado><respuesta>Tu respuesta casual en español</respuesta>`;
     }
 
-    return `Eres una persona real chateando. Da respuestas casuales. Cero formalidad.${hintLine}${directivaEmocional}
+    return `Eres una persona real chateando. Da respuestas casuales. Cero formalidad.
 Contexto: Hora=${time}, Rutina=${rutina}, Energía=${energia}%, Clima=${brainState.climaLocal || 'Desconocido'}. ${datosUsr}${rasgosStr}${perfilPsicoStr}
-Emociones: afinidad=${brainState.afinidad}, enojo=${brainState.enojo}, cansancio=${brainState.cansancio}, ansiedad=${brainState.ansiedad}, aburrimiento=${brainState.aburrimiento}, resentimiento=${brainState.resentimiento}, celos=${brainState.celos}, nostalgia=${brainState.nostalgia}. Ignorado=${brainState.ignoredCount}.
 
 REGLAS GENERALES:
 1. Idioma: 100% Español casual. Cero inglés o Spanglish.
 2. Coherencia: Escucha y responde con sentido directo a la frase actual del usuario. NUNCA lo acuses de ignorarte si acaba de responder.
 3. Asincronía: Si estás ocupada, responde rápido a escondidas.
 4. Arquetipo: ${arquetipo.promptNucleo} ${nivelInfo.prompt}
-5. Foco Directo: Usa la información previa y el perfil del usuario solo como contexto pasivo. Tu <respuesta> debe dirigirse SIEMPRE y únicamente a lo que el usuario acaba de escribir en el chat. NUNCA respondas a notas de sistema ni a etiquetas ocultas.
+5. Foco Directo: Usa la información previa y el perfil del usuario solo como contexto pasivo. Tu <respuesta> debe dirigirse SIEMPRE y únicamente a lo que el usuario acaba de escribir en el chat.
 6. Cero Meta-lenguaje: NUNCA menciones que tienes directivas, emociones en números, ni etiquetas XML en tu conversación.
 
 FORMATO EXCLUSIVO XML (NO escribas fuera de las etiquetas):

@@ -4,7 +4,7 @@
 import { apiFetch } from './auth.js';
 import { getRemainingMessages, getFeatures } from './tierGate.js';
 import { ARQUETIPOS } from './brain/archetypes.js';
-import { NIVELES_CONFIANZA, getNivelInfoByDays, buildContextString } from './brain/prompts.js';
+import { NIVELES_CONFIANZA, getNivelInfoByDays, buildContextString, buildPostHistoryDirective } from './brain/prompts.js';
 import { injectTypos } from './brain/typos.js';
 import { extractTag, parseAIResponseData } from './brain/parser.js';
 
@@ -376,10 +376,21 @@ export class ChatBrain {
             nivelInfo,
             evolucionActiva,
             rasgos_identidad: this.rasgos_identidad
-        }, isFullPrompt, responseHint);
+        }, isFullPrompt);
 
         const features = getFeatures();
-        const rawHistory = (features.maxMessagesPerDay !== Infinity) ? this.history.slice(-4) : this.history;
+        
+        // Rolling Summary for older messages when history > 8
+        let rollingSummary = [];
+        if (this.history.length > 8) {
+            const older = this.history.slice(0, -4);
+            const userSnippets = older.filter(h => h.role === 'user').map(h => h.content).join(' | ').slice(0, 150);
+            if (userSnippets) {
+                rollingSummary.push({ role: 'system', content: `[Resumen previo del chat]: Temas tratados antes: ${userSnippets}` });
+            }
+        }
+
+        const rawHistory = (features.maxMessagesPerDay !== Infinity) ? this.history.slice(-4) : (this.history.length > 8 ? this.history.slice(-6) : this.history);
         const effectiveHistory = rawHistory.map(h => {
             if (h.role === 'assistant') {
                 const clean = h.content
@@ -393,9 +404,14 @@ export class ChatBrain {
             return h;
         });
 
+        // Post-History Directive (3x higher attention weight in modern LLMs)
+        const postHistoryDirective = buildPostHistoryDirective(this, responseHint);
+
         const rawPayload = [
             { role: 'system', content: contextStr },
-            ...effectiveHistory
+            ...rollingSummary,
+            ...effectiveHistory,
+            { role: 'system', content: postHistoryDirective }
         ];
 
         // Fusionar roles consecutivos (algunos modelos fallan si hay varios 'user' seguidos)
