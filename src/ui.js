@@ -432,24 +432,24 @@ export function initRewardedAdUI(brain) {
                         }
                         window.pendingDiaryUnlockId = null;
                     } else {
-                        // Grant +5 messages reward to server database & client state
+                        // Grant fresh message quota reward to server database & client state
                         apiFetch('/api/user/reward', {
                             method: 'POST',
-                            body: JSON.stringify({ amount: 5 })
+                            body: JSON.stringify({ amount: 10 })
                         }).then(r => r.json()).then(data => {
-                            if (data.dailyMessageCount !== undefined) {
-                                brain.dailyMessageCount = data.dailyMessageCount;
-                            } else {
-                                brain.dailyMessageCount = Math.max(0, brain.dailyMessageCount - 5);
-                            }
+                            brain.dailyMessageCount = 0;
                             brain.saveState();
                             brain.updateBrainUI();
-                            showToast('¡Premio otorgado! +5 Mensajes añadidos a tu saldo 🎉', 'success');
+                            const billingModal = document.getElementById('billing-modal');
+                            if (billingModal) billingModal.classList.add('hidden');
+                            showToast('¡Premio otorgado! Tu saldo de mensajes ha sido recargado 🎉', 'success');
                         }).catch(() => {
-                            brain.dailyMessageCount = Math.max(0, brain.dailyMessageCount - 5);
+                            brain.dailyMessageCount = 0;
                             brain.saveState();
                             brain.updateBrainUI();
-                            showToast('¡Premio otorgado! +5 Mensajes añadidos a tu saldo 🎉', 'success');
+                            const billingModal = document.getElementById('billing-modal');
+                            if (billingModal) billingModal.classList.add('hidden');
+                            showToast('¡Premio otorgado! Tu saldo de mensajes ha sido recargado 🎉', 'success');
                         });
                     }
                 }

@@ -542,19 +542,23 @@ export class ChatBrain {
         }
 
         const diarioStr = this.extractTag(fullResponse, 'diario');
-        if (diarioStr && diarioStr.trim().length > 5) {
-            if (!this.memoryState.diario_entries) this.memoryState.diario_entries = [];
-            const exists = this.memoryState.diario_entries.some(e => e.text === diarioStr.trim());
-            if (!exists) {
-                this.memoryState.diario_entries.unshift({
-                    id: Date.now().toString(),
-                    date: new Date().toLocaleDateString(),
-                    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                    text: diarioStr.trim(),
-                    unlocked: false
-                });
-                if (this.memoryState.diario_entries.length > 15) this.memoryState.diario_entries.pop();
-                window.logInspector('DIARIO SECRETO', 'Nueva confesión íntima añadida al diario.');
+        if (diarioStr) {
+            const cleanDiario = diarioStr.trim();
+            const isTrivial = ['holis', 'saludar', 'ignorado', 'ignorada', 'dejado en visto', 'visto'].some(w => cleanDiario.toLowerCase().includes(w));
+            if (cleanDiario.length > 12 && !isTrivial) {
+                if (!this.memoryState.diario_entries) this.memoryState.diario_entries = [];
+                const exists = this.memoryState.diario_entries.some(e => e.text === cleanDiario);
+                if (!exists) {
+                    this.memoryState.diario_entries.unshift({
+                        id: Date.now().toString(),
+                        date: new Date().toLocaleDateString(),
+                        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                        text: cleanDiario,
+                        unlocked: false
+                    });
+                    if (this.memoryState.diario_entries.length > 15) this.memoryState.diario_entries.pop();
+                    window.logInspector('DIARIO SECRETO', 'Nueva confesión íntima añadida al diario.');
+                }
             }
         }
 
