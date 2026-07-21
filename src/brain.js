@@ -545,11 +545,12 @@ export class ChatBrain {
         const diarioStr = this.extractTag(fullResponse, 'diario');
         if (diarioStr) {
             const cleanDiario = diarioStr.trim();
-            const isTrivial = ['holis', 'saludar', 'ignorado', 'ignorada', 'dejado en visto', 'visto'].some(w => cleanDiario.toLowerCase().includes(w));
+            const isTrivial = ['holis', 'saludar', 'ignorado', 'ignorada', 'ignorando', 'dejado en visto', 'visto', 'oye', 'qué tal'].some(w => cleanDiario.toLowerCase().includes(w));
+            const hasQuestion = cleanDiario.includes('?') || cleanDiario.includes('¿');
             const lastEntry = this.memoryState.diario_entries?.[0];
             const timeSinceLast = lastEntry ? (Date.now() - Number(lastEntry.id)) : Infinity;
 
-            if (cleanDiario.length > 12 && !isTrivial && timeSinceLast > 180000) {
+            if (cleanDiario.length > 15 && !isTrivial && !hasQuestion && timeSinceLast > 180000) {
                 if (!this.memoryState.diario_entries) this.memoryState.diario_entries = [];
                 const exists = this.memoryState.diario_entries.some(e => e.text === cleanDiario);
                 if (!exists) {
