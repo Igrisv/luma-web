@@ -311,7 +311,7 @@ export class ChatBrain {
     }
 
     addMessage(role, content) {
-        let cleanContent = role === 'user' ? content.replace(/\s*\[[\s\S]*?\]/g, '').trim() : content;
+        let cleanContent = role === 'user' ? content.replace(/\s*<contexto_oculto>[\s\S]*?<\/contexto_oculto>/g, '').replace(/\s*\[[\s\S]*?\]/g, '').trim() : content;
         
         // Anti-hallucination / Paste filter: strip UI artifacts
         cleanContent = cleanContent.replace(/✔️/g, '').replace(/🔊\s*Escuchar voz/g, '').replace(/\d{2}:\d{2}/g, '').trim();

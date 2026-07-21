@@ -192,11 +192,11 @@ export function initChat() {
                         .filter(m => m.length > 3 && !trivialGreetings.includes(m.toLowerCase()));
                     if (cleanMemories.length > 0) {
                         const joined = cleanMemories.join(' | ');
-                        hiddenContext += `\n[Recuerdos pasados: ${joined}]`;
+                        hiddenContext += `\n<contexto_oculto>Recuerdos: ${joined}</contexto_oculto>`;
                         if (joined.toLowerCase().includes('amig') || joined.toLowerCase().includes('compañer')) {
-                            hiddenContext += `\n[Mencionó personas: sube celos]`;
+                            hiddenContext += `\n<contexto_oculto>Mencionó personas: sube celos</contexto_oculto>`;
                         } else if (Math.random() > 0.5) {
-                            hiddenContext += `\n[Recordaste el pasado: sube nostalgia]`;
+                            hiddenContext += `\n<contexto_oculto>Recordaste el pasado: sube nostalgia</contexto_oculto>`;
                         }
                     }
                 }
@@ -204,7 +204,7 @@ export function initChat() {
 
             const hoursSince = (Date.now() - previousInteraction) / (1000 * 60 * 60);
             if (hoursSince > 4) {
-                hiddenContext += `\n[Pasaron ${Math.floor(hoursSince)}h: di qué hacías]`;
+                hiddenContext += `\n<contexto_oculto>Pasaron ${Math.floor(hoursSince)}h: di qué hacías</contexto_oculto>`;
             }
 
             brain.ignoredCount = 0;
@@ -214,7 +214,7 @@ export function initChat() {
             if (text.length > 150) {
                 await addMsg(userRenderText, 'user');
                 if (input) input.value = '';
-                text = text + '\n\n[Mensaje largo: lee rápido y responde breve]' + hiddenContext;
+                text = text + '\n\n<contexto_oculto>Mensaje largo: lee rápido y responde breve</contexto_oculto>' + hiddenContext;
                 hasHiddenContext = true;
             } else {
                 await addMsg(userRenderText, 'user');
@@ -227,7 +227,7 @@ export function initChat() {
             if (hour >= 5 && hour < 12) timeContext = 'Es de mañana. Menciona el día o desayuno.';
             else if (hour >= 18 && hour < 23) timeContext = 'Es de noche. Pregunta por su día.';
             else if (hour >= 1 && hour < 5) timeContext = 'Es madrugada. Tienes sueño.';
-            text = `[Inicia charla muy corta. Contexto: ${timeContext}]`;
+            text = `<contexto_oculto>Inicia charla muy corta. Contexto: ${timeContext}</contexto_oculto>`;
         }
 
         const liveThought = document.getElementById('live-thought');
