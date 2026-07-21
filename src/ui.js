@@ -2,6 +2,7 @@
 // ui.js — Rendering de mensajes, paneles, animaciones, debug
 // ═══════════════════════════════════════════════════════════
 import { ARQUETIPOS } from './brain.js';
+import { apiFetch } from './auth.js';
 
 window.logInspector = function (type, content) {
     const box = document.getElementById('inspector-log');
@@ -310,7 +311,8 @@ export function createMessageElement(text, sender) {
         }
     });
 
-    if (sender === 'assistant' && 'speechSynthesis' in window) {
+    const isSystemMessage = finalRenderText.startsWith('[Sistema') || finalRenderText.startsWith('[Error') || finalRenderText.startsWith('[Nota');
+    if (sender === 'assistant' && !isSystemMessage && 'speechSynthesis' in window) {
         const voiceBtn = document.createElement('button');
         voiceBtn.className = 'voice-note-btn';
         voiceBtn.innerHTML = '🔊 <span>Escuchar voz</span>';
@@ -430,11 +432,25 @@ export function initRewardedAdUI(brain) {
                         }
                         window.pendingDiaryUnlockId = null;
                     } else {
-                        // Grant +5 messages reward
-                        brain.dailyMessageCount = Math.max(0, brain.dailyMessageCount - 5);
-                        brain.saveState();
-                        brain.updateBrainUI();
-                        showToast('¡Premio otorgado! +5 Mensajes añadidos a tu saldo 🎉', 'success');
+                        // Grant +5 messages reward to server database & client state
+                        apiFetch('/api/user/reward', {
+                            method: 'POST',
+                            body: JSON.stringify({ amount: 5 })
+                        }).then(r => r.json()).then(data => {
+                            if (data.dailyMessageCount !== undefined) {
+                                brain.dailyMessageCount = data.dailyMessageCount;
+                            } else {
+                                brain.dailyMessageCount = Math.max(0, brain.dailyMessageCount - 5);
+                            }
+                            brain.saveState();
+                            brain.updateBrainUI();
+                            showToast('¡Premio otorgado! +5 Mensajes añadidos a tu saldo 🎉', 'success');
+                        }).catch(() => {
+                            brain.dailyMessageCount = Math.max(0, brain.dailyMessageCount - 5);
+                            brain.saveState();
+                            brain.updateBrainUI();
+                            showToast('¡Premio otorgado! +5 Mensajes añadidos a tu saldo 🎉', 'success');
+                        });
                     }
                 }
             }, 1000);
