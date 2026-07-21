@@ -299,7 +299,7 @@ export function initChat() {
                 (t) => {
                     if (liveThought) liveThought.textContent = t;
                 },
-                isPromptHidden,
+                hasHiddenContext,
                 0,
                 isAutonomous
             );
