@@ -65,7 +65,7 @@ export class ChatBrain {
         if (legacyConfig && !localStorage.getItem(configKey)) {
             // First run after multi-character refactor — migrate old data
             const parsed = JSON.parse(legacyConfig);
-            const legacyId = parsed.arquetipoId || 'pareja';
+            const legacyId = parsed.arquetipoId || 'mejorAmigo';
             localStorage.setItem(`chatConfig_${legacyId}`, legacyConfig);
             localStorage.setItem('lumaActiveCharacter', legacyId);
             localStorage.removeItem('chatConfig');
@@ -311,7 +311,11 @@ export class ChatBrain {
     }
 
     addMessage(role, content) {
-        const cleanContent = role === 'user' ? content.replace(/\s*\[[\s\S]*?\]/g, '').trim() : content;
+        let cleanContent = role === 'user' ? content.replace(/\s*\[[\s\S]*?\]/g, '').trim() : content;
+        
+        // Anti-hallucination / Paste filter: strip UI artifacts
+        cleanContent = cleanContent.replace(/✔️/g, '').replace(/🔊\s*Escuchar voz/g, '').replace(/\d{2}:\d{2}/g, '').trim();
+
         if (!cleanContent && role === 'user') return;
         this.history.push({ role, content: cleanContent });
         if (this.history.length > this.maxMemory) {
@@ -504,9 +508,12 @@ export class ChatBrain {
         const aprenderStr = this.extractTag(fullResponse, 'aprender');
         if (aprenderStr) {
             try {
-                const jsonMatch = aprenderStr.match(/\{[\s\S]*\}/);
-                if (jsonMatch) {
-                    const newData = JSON.parse(jsonMatch[0]);
+                // Find first '{' and last '}' to extract only the JSON object
+                const firstBrace = aprenderStr.indexOf('{');
+                const lastBrace = aprenderStr.lastIndexOf('}');
+                if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+                    const jsonStr = aprenderStr.substring(firstBrace, lastBrace + 1);
+                    const newData = JSON.parse(jsonStr);
                     if (typeof newData === 'object') {
                         this.memoryState.conocimiento = { ...this.memoryState.conocimiento, ...newData };
                     }
@@ -706,6 +713,9 @@ export class ChatBrain {
 
             if (finalRespuesta.trim() !== '') {
                 finalRespuesta = injectTypos(finalRespuesta, this.enojo, this.cansancio);
+                // Extra anti-hallucination step to ensure no UI artifacts leak into response
+                finalRespuesta = finalRespuesta.replace(/✔️/g, '').replace(/🔊/g, '').replace(/Escuchar voz/gi, '').replace(/\d{2}:\d{2}/g, '').trim();
+                
                 const estadoTag = this.extractTag(fullResponse, 'estado');
                 const compressedResponse = `<estado>${estadoTag}</estado><respuesta>${finalRespuesta}</respuesta>`;
                 this.addMessage('assistant', compressedResponse);
