@@ -709,8 +709,6 @@ export class ChatBrain {
                             this.updateBrainUI();
                         }
                     }).catch(() => {});
-
-                saveEpisodeToServer(`IA respondió: ${finalRespuesta}`);
             }
             return finalRespuesta;
         } catch (error) {

@@ -174,21 +174,30 @@ export function initChat() {
                 return;
             }
 
-            const cleanUserText = text;
-            saveEpisodeToServer(cleanUserText);
-            const stopWords = ['que', 'del', 'los', 'las', 'por', 'con', 'para', 'una', 'uno'];
+            const cleanUserText = text.trim();
+            const trivialGreetings = ['holis', 'hola', 'buenas', 'que tal', 'hi', 'hey', 'ok', 'vale', 'si', 'no'];
+            if (!trivialGreetings.includes(cleanUserText.toLowerCase())) {
+                saveEpisodeToServer(cleanUserText);
+            }
+
+            const stopWords = ['que', 'del', 'los', 'las', 'por', 'con', 'para', 'una', 'uno', 'holis', 'hola'];
             const keywords = text.toLowerCase().replace(/[^\w\sñáéíóú]/g, '').split(/\s+/)
                 .filter(w => w.length >= 3 && !stopWords.includes(w));
 
             if (keywords.length > 0) {
                 const pastMemories = await searchEpisodesFromServer(keywords);
                 if (pastMemories.length > 0) {
-                    const joined = pastMemories.join(' | ');
-                    hiddenContext += `\n[Recuerdos de conversaciones pasadas sobre este tema: ${joined}]`;
-                    if (joined.toLowerCase().includes('amig') || joined.toLowerCase().includes('compañer')) {
-                        hiddenContext += `\n[ALERTA INTERNA: El usuario mencionó amistades o personas. Incrementa tu variable <estado> de 'celos' y actúa levemente pasivo-agresiva respecto a eso.]`;
-                    } else if (Math.random() > 0.5) {
-                        hiddenContext += `\n[ALERTA INTERNA: Acabas de recordar algo del pasado. Sube tu 'nostalgia' en <estado> y ponte sentimental.]`;
+                    const cleanMemories = pastMemories
+                        .map(m => m.replace(/<[^>]+>/g, '').replace(/IA respondió:/g, '').replace(/Usuario dijo:/g, '').trim())
+                        .filter(m => m.length > 3 && !trivialGreetings.includes(m.toLowerCase()));
+                    if (cleanMemories.length > 0) {
+                        const joined = cleanMemories.join(' | ');
+                        hiddenContext += `\n[Recuerdos de conversaciones pasadas sobre este tema: ${joined}]`;
+                        if (joined.toLowerCase().includes('amig') || joined.toLowerCase().includes('compañer')) {
+                            hiddenContext += `\n[ALERTA INTERNA: El usuario mencionó amistades o personas. Incrementa tu variable <estado> de 'celos' y actúa levemente pasivo-agresiva respecto a eso.]`;
+                        } else if (Math.random() > 0.5) {
+                            hiddenContext += `\n[ALERTA INTERNA: Acabas de recordar algo del pasado. Sube tu 'nostalgia' en <estado> y ponte sentimental.]`;
+                        }
                     }
                 }
             }
@@ -287,13 +296,14 @@ export function initChat() {
                 setTimeout(() => {
                     handleSend(true, `[INSTRUCCIÓN INTERNA: Mientras estabas escribiendo tu último mensaje, el usuario envió lo siguiente rápido: "${queuedTexts}". Responde también a esto de inmediato.]`);
                 }, 500);
-            } else if (brain.ultimaAccion === 'escribir_mas') {
-                window.logInspector('RITMO DINÁMICO', 'La IA decidió escribir más. Esperando 15s para el segundo mensaje...');
+            } else if (brain.ultimaAccion === 'escribir_mas' && !isAutonomous) {
+                brain.ultimaAccion = 'esperar';
+                window.logInspector('RITMO DINÁMICO', 'La IA decidió escribir más. Esperando 18s para el segundo mensaje...');
                 setTimeout(() => {
-                    if (!window.isThinking) {
-                        handleSend(true, '[INSTRUCCIÓN INTERNA: Decidiste escribir más. Continúa con tu idea o añade algo nuevo. No repitas el mensaje anterior.]');
+                    if (!window.isThinking && brain.ignoredCount === 0) {
+                        handleSend(true, '[INSTRUCCIÓN INTERNA: Decidiste escribir más. Continúa con tu idea brevemente. No repitas el mensaje anterior.]');
                     }
-                }, 15000);
+                }, 18000);
             }
 
             if (isAutonomous && document.visibilityState === 'hidden' && 'Notification' in window && Notification.permission === 'granted') {
