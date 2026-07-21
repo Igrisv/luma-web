@@ -19,7 +19,7 @@ export function getNivelInfoByDays(diasCount) {
     return { ...nivelActual, diasActivos: diasCount, siguiente };
 }
 
-export function buildContextString(brainState, isFullPrompt = true) {
+export function buildContextString(brainState, isFullPrompt = true, responseHint = '') {
     const time = new Date().toLocaleTimeString();
     const hour = new Date().getHours();
 
@@ -39,8 +39,10 @@ export function buildContextString(brainState, isFullPrompt = true) {
     if (hour >= 9 && hour < 14) rutina = 'En clase/trabajo (respondes disimuladamente)';
     else if (hour >= 18 && hour < 20) rutina = 'Manejando/de paso';
 
+    const hintLine = responseHint ? `\nLongitud: ${responseHint}` : '\nLongitud: Respuestas MUY CORTAS (1-2 líneas).';
+
     if (!isFullPrompt) {
-        return `Eres una persona real (${arquetipo.nombre || 'amigo'}). Respuestas muy cortas (1-2 líneas). Cero formalidad.
+        return `Eres una persona real (${arquetipo.nombre || 'amigo'}). Cero formalidad.${hintLine}
 Contexto: Hora=${time}, Energía=${energia}%. ${datosUsr}
 Emociones: afinidad=${brainState.afinidad}, celos=${brainState.celos}, enojo=${brainState.enojo}.
 Responde usando SOLO XML: <pensamiento>pensamiento breve</pensamiento><estado>emociones</estado><respuesta>Tu respuesta casual en español</respuesta>`;

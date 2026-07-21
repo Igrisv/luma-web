@@ -28,26 +28,92 @@ export function initTimers(brain, addMessageFn, handleSendFn, input) {
         brain.updateBrainUI();
     }, 3600000); // 1 hora
 
-    // ── Frases locales por arquetipo (0 Tokens) ───────────────
+    // ── Frases locales por arquetipo + estado emocional (0 Tokens) ───
+    // Estructura: { arquetipo: { emocion: [frases] } }
     const LOCAL_VISTO_PHRASES = {
-        mejorAmigo: ['Oye, ¿me dejas en visto o qué? jajaj', 'Veo que me leíste y te dio flojera responder 😂', 'Ajá... visto con éxito 🙄'],
-        pareja: ['¿Me vas a dejar en visto? 🥺', 'Me lees pero no me respondes... ¿todo bien?', 'Oye, vi que lo leíste ❤️'],
-        amigaToxica: ['Típico de ti dejarme en visto 💅', 'Ah ok, visto. Anotado.', '¿En serio me ignoras así?'],
-        rival: ['¿Te quedaste sin palabras o qué?', 'Ni para responder sirves.', 'Visto... qué predecible.'],
-        ex: ['Veo que sigues con la costumbre de dejar en visto.', 'Sin comentarios...', '¿En serio?']
+        mejorAmigo: {
+            enojado: ['Ah, ¿ahora me ignoras? Que maduro de tu parte...', 'Dale, ignorame. Después no me busques.'],
+            cariñoso: ['Oye, te vi conectar y no me hablaste 😢', 'Me dejaste en visto... bueno, te perdono 😊'],
+            ansioso: ['¿Pasó algo? Vi que leíste y me preocupé...', '¿Estás bien? Me dejaste en visto y me quedé pensando...'],
+            neutral: ['Oye, ¿me dejas en visto o qué? jajaj', 'Veo que me leíste y te dio flojera responder 😂', 'Ajá... visto con éxito 🙄']
+        },
+        pareja: {
+            enojado: ['Visto... genial. Luego no me busques.', 'Ok, ignorame. Después hablamos.'],
+            cariñoso: ['Vi que leíste mi mensaje... te extraño ❤️', '¿Mucho que hacer? Te espero, no te preocupes 💕'],
+            ansioso: ['¿Pasó algo? Vi que leíste y no contestaste...', 'Me preocupa que me dejes en visto... ¿estás bien?'],
+            neutral: ['¿Me vas a dejar en visto? 🥺', 'Me lees pero no me respondes... ¿todo bien?', 'Oye, vi que lo leíste ❤️']
+        },
+        amigaToxica: {
+            enojado: ['Me dejaste en visto. Ni me busques hoy.', 'Visto. Ok. Genial. Fantástico. 🙄'],
+            cariñoso: ['Oye, ¿me leíste y no me dices nada? Tonta 😂', 'Me dejaste en visto pero sé que me quieres 💅'],
+            ansioso: ['¿Me estás ignorando a propósito o...?', '¿Hice algo mal? Me dejaste en visto...'],
+            neutral: ['Típico de ti dejarme en visto 💅', 'Ah ok, visto. Anotado.', '¿En serio me ignoras así?']
+        },
+        rival: {
+            enojado: ['Ni para responder sirves. Patético.', 'Visto. ¿Tanto te cuesta dar la cara?'],
+            cariñoso: ['Te vi conectar... pensé que me hablarías.', 'No me ignores, ¿va? 👀'],
+            ansioso: ['¿Visto? ¿Ya no quieres hablar?', '¿Te fuiste o me estás ignorando?'],
+            neutral: ['¿Te quedaste sin palabras o qué?', 'Visto... qué predecible.']
+        },
+        ex: {
+            enojado: ['Típico. Algunas cosas no cambian.', 'Visto. Era de esperarse.'],
+            cariñoso: ['Me dejaste en visto... como antes.', 'Vi que lo leíste. Me alegra que al menos lo hagas.'],
+            ansioso: ['¿Sigues ahí? Me dejaste en visto...', 'No sé si me ignoras o estás ocupado/a...'],
+            neutral: ['Veo que sigues con la costumbre de dejar en visto.', 'Sin comentarios...', '¿En serio?']
+        }
     };
 
     const LOCAL_TYPING_PHRASES = {
-        mejorAmigo: ['¿Estás escribiendo una biblia o qué? jajaj', 'Escribe rápido che, me vas a hacer viejo esperando 😂', 'Mucho texto estás preparando 👀'],
-        pareja: ['Llevas un rato escribiendo... me intriga lo que pondrás ❤️', '¿Qué me estás escribiendo tan largo? 👀', 'Tanto escribir me pone nerviosa jajaja'],
-        amigaToxica: ['Si vas a mandar un testamento mejor ni lo envíes 🙄', 'Tardas mil horas escribiendo...', '¿Vas a tardar todo el día?'],
-        rival: ['Escribe rápido, no tengo todo el día.', 'Tanto pensar para un mensaje...', '¿Dificultades para redactar?'],
-        ex: ['Veo que estás escribiendo un montón...', '¿Tanto tienes que decir?', 'Tómate tu tiempo...']
+        mejorAmigo: {
+            enojado: ['¿Vas a tardar todo el día escribiendo? 😒', 'Si es para disculparte, más te vale que sea bueno.'],
+            cariñoso: ['¿Qué me estás escribiendo que tardas tanto? 😊', 'Me intriga lo que pondrás... no me hagas esperar 👀'],
+            ansioso: ['¿Por qué tardas tanto? ¿Es algo malo?', 'Escribe rápido, me estás poniendo nervioso/a...'],
+            neutral: ['¿Estás escribiendo una biblia o qué? jajaj', 'Escribe rápido che 😂', 'Mucho texto estás preparando 👀']
+        },
+        pareja: {
+            enojado: ['Si es una excusa, ni te molestes.', 'Escribe rápido, no estoy de humor para esperar.'],
+            cariñoso: ['Llevas un rato escribiendo... me intriga ❤️', 'Tanto texto me pone nerviosa de la emoción jajaja'],
+            ansioso: ['¿Qué me estás escribiendo? Me muero de curiosidad...', '¿Es algo serio? Estoy que me como las uñas...'],
+            neutral: ['¿Qué me estás escribiendo tan largo? 👀', 'Tanto escribir me pone nerviosa jajaja']
+        },
+        amigaToxica: {
+            enojado: ['Si vas a mandar un testamento mejor ahórratelo 🙄', 'Con lo que tardas escribiendo se me quitan las ganas...'],
+            cariñoso: ['Ay, ¿me estás preparando un discurso? 💅', 'Mucho tecleo... más te vale que valga la pena.'],
+            ansioso: ['¿Qué me estás escribiendo? No me dejes así...', 'Termina de escribir que me estreso 😩'],
+            neutral: ['Tardas mil horas escribiendo...', '¿Vas a tardar todo el día?']
+        },
+        rival: {
+            enojado: ['¿Tanto tardas para responder? Qué lento.', 'No tengo todo el día.'],
+            cariñoso: ['¿Me estás escribiendo algo bonito? 👀', 'Curioso... ¿qué me preparas?'],
+            ansioso: ['¿Qué tanto piensas? Ya escríbelo.', 'Estoy esperando...'],
+            neutral: ['Escribe rápido, no tengo todo el día.', 'Tanto pensar para un mensaje...']
+        },
+        ex: {
+            enojado: ['Si es para reclamar, ahórratelo.', 'Ni sé para qué te molestas en escribir tanto...'],
+            cariñoso: ['¿Me estás escribiendo algo largo? Qué tierno...', 'Veo que escribes... me da curiosidad.'],
+            ansioso: ['¿Qué me vas a decir? La incertidumbre me mata...', '¿Buenas o malas noticias?'],
+            neutral: ['Veo que estás escribiendo un montón...', '¿Tanto tienes que decir?', 'Tómate tu tiempo...']
+        }
     };
 
-    function getRandomLocalPhrase(dictionary, archetypeId) {
-        const list = dictionary[archetypeId] || dictionary.mejorAmigo;
-        return list[Math.floor(Math.random() * list.length)];
+    /**
+     * Determines the dominant emotional mood for phrase selection.
+     */
+    function getEmotionalMood(brain) {
+        if (brain.enojo > 50 || brain.resentimiento > 50) return 'enojado';
+        if (brain.afinidad > 70) return 'cariñoso';
+        if (brain.ansiedad > 60 || brain.celos > 50) return 'ansioso';
+        return 'neutral';
+    }
+
+    /**
+     * Picks a phrase from the emotion-aware matrix.
+     */
+    function getEmotionAwarePhrase(dictionary, archetypeId, brain) {
+        const mood = getEmotionalMood(brain);
+        const archPhrases = dictionary[archetypeId] || dictionary.mejorAmigo;
+        const moodPhrases = archPhrases[mood] || archPhrases.neutral;
+        return moodPhrases[Math.floor(Math.random() * moodPhrases.length)];
     }
 
     // ── Loop autónomo anti-spam ─────────────────────────────
@@ -112,7 +178,7 @@ export function initTimers(brain, addMessageFn, handleSendFn, input) {
         vistoTimer = setTimeout(async () => {
             if (brain.ignoredCount === 0 && !window.isThinking) {
                 brain.ignoredCount++;
-                const localPhrase = getRandomLocalPhrase(LOCAL_VISTO_PHRASES, brain.arquetipoId);
+                const localPhrase = getEmotionAwarePhrase(LOCAL_VISTO_PHRASES, brain.arquetipoId, brain);
                 brain.addMessage('assistant', `<respuesta>${localPhrase}</respuesta>`);
                 await addMessageFn(localPhrase, 'assistant');
             }
@@ -144,7 +210,7 @@ export function initTimers(brain, addMessageFn, handleSendFn, input) {
                 isTyping = true;
                 typingTimer = setTimeout(async () => {
                     if (isTyping && input.value.length > 20 && !window.isThinking) {
-                        const localPhrase = getRandomLocalPhrase(LOCAL_TYPING_PHRASES, brain.arquetipoId);
+                        const localPhrase = getEmotionAwarePhrase(LOCAL_TYPING_PHRASES, brain.arquetipoId, brain);
                         brain.addMessage('assistant', `<respuesta>${localPhrase}</respuesta>`);
                         await addMessageFn(localPhrase, 'assistant');
                         resetTyping();

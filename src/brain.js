@@ -350,6 +350,15 @@ export class ChatBrain {
             this.messagesSinceFullPrompt = 0;
         }
 
+        // Calculate response length hint based on emotional state
+        const emotionalIntensity = Math.max(this.enojo, this.ansiedad, this.celos, this.nostalgia, this.resentimiento);
+        let responseHint = 'Respuestas MUY CORTAS (1-2 líneas).';
+        if (emotionalIntensity > 70 || this.afinidad > 80) {
+            responseHint = 'Puedes responder con detalle (3-5 líneas) si la situación lo amerita.';
+        } else if (emotionalIntensity > 40) {
+            responseHint = 'Respuestas cortas o medianas (2-3 líneas).';
+        }
+
         const contextStr = buildContextString({
             climaLocal: this.climaLocal,
             afinidad: this.afinidad,
@@ -366,7 +375,7 @@ export class ChatBrain {
             nivelInfo,
             evolucionActiva,
             rasgos_identidad: this.rasgos_identidad
-        }, isFullPrompt);
+        }, isFullPrompt, responseHint);
 
         const features = getFeatures();
         const rawHistory = (features.maxMessagesPerDay !== Infinity) ? this.history.slice(-4) : this.history;
@@ -598,6 +607,32 @@ export class ChatBrain {
         this.updateBrainUI();
     }
 
+    /**
+     * Calculates dynamic max_tokens based on message length, emotional intensity, and context.
+     * Short chatter → 150 tokens. Normal conversation → 300. Deep/long → 500.
+     */
+    calculateMaxTokens(message) {
+        const msgLen = (message || '').length;
+        let tokens = 150; // default: short
+
+        // Long user messages deserve longer responses
+        if (msgLen > 150) tokens = 500;
+        else if (msgLen > 60) tokens = 300;
+
+        // High emotional intensity warrants deeper responses
+        const emotionalIntensity = Math.max(this.enojo, this.ansiedad, this.celos, this.nostalgia, this.resentimiento);
+        if (emotionalIntensity > 70) tokens = Math.max(tokens, 400);
+        else if (emotionalIntensity > 40) tokens = Math.max(tokens, 300);
+
+        // High affinity → more expressive
+        if (this.afinidad > 80) tokens = Math.max(tokens, 300);
+
+        // Question marks suggest the user wants an answer
+        if ((message || '').includes('?') && msgLen > 30) tokens = Math.max(tokens, 300);
+
+        return tokens;
+    }
+
     async sendMessageToAI(message, onChunk, onThoughtChunk, isHidden = false, retryCount = 0, isInternal = false, hiddenSystemContext = '') {
         const payload = this.getPayload();
         
@@ -610,7 +645,9 @@ export class ChatBrain {
             payload.push({ role: 'user', content: message });
         }
 
+        const maxTokens = this.calculateMaxTokens(message);
         if (retryCount === 0) window.logInspector('PAYLOAD ENVIADO', payload);
+        window.logInspector('MAX TOKENS', maxTokens);
 
         let timeout;
         try {
@@ -623,7 +660,8 @@ export class ChatBrain {
                     messages: payload, 
                     isRetry: retryCount > 0, 
                     isInternal: isInternal,
-                    arquetipo_id: this.arquetipoId
+                    arquetipo_id: this.arquetipoId,
+                    max_tokens: maxTokens
                 }),
                 signal: controller.signal
             });
