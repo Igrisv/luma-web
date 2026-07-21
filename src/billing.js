@@ -1,4 +1,5 @@
 import { apiFetch } from './auth.js';
+import { showToast } from './ui.js';
 
 /**
  * Fetches user's current billing status (tier).
@@ -63,7 +64,7 @@ export function initBillingUI() {
       try {
         await checkout(plan);
       } catch (err) {
-        alert(err.message);
+        showToast(err.message, 'error');
         btn.disabled = false;
         btn.textContent = plan === 'premium' ? 'Mejorar a Premium' : 'Mejorar a Obsesión';
       }
@@ -77,7 +78,7 @@ export function initBillingUI() {
       try {
         await openPortal();
       } catch (err) {
-        alert(err.message);
+        showToast(err.message, 'error');
       }
     });
   }

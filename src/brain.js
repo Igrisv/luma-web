@@ -3,6 +3,12 @@
 // ═══════════════════════════════════════════════════════════
 import { apiFetch } from './auth.js';
 import { getRemainingMessages, getFeatures } from './tierGate.js';
+import { ARQUETIPOS } from './brain/archetypes.js';
+import { NIVELES_CONFIANZA, getNivelInfoByDays, buildContextString } from './brain/prompts.js';
+import { injectTypos } from './brain/typos.js';
+import { extractTag, parseAIResponseData } from './brain/parser.js';
+
+export { ARQUETIPOS, injectTypos };
 
 // ── Helpers de episodios ────────────────────────────────────
 export async function saveEpisodeToServer(text) {
@@ -23,95 +29,6 @@ export async function searchEpisodesFromServer(keywordsArray) {
     } catch (e) { console.error('Error searching episodes:', e); return []; }
 }
 
-// ── Inyector de Errores Tipográficos ───────────────────────
-export function injectTypos(text, enojo, cansancio) {
-    if (text.length < 5) return text;
-    let typoProb = 0;
-    if (cansancio > 50) typoProb += (cansancio - 50) * 0.003;
-    if (enojo > 50) typoProb += (enojo - 50) * 0.004;
-
-    if (typoProb === 0 || Math.random() > typoProb) return text;
-
-    const words = text.split(' ');
-    const candidateIndices = [];
-    for (let i = 0; i < words.length; i++) {
-        if (words[i].length > 3 && !words[i].includes('<') && !words[i].includes('>') && !words[i].includes('||')) {
-            candidateIndices.push(i);
-        }
-    }
-    if (candidateIndices.length === 0) return text;
-
-    const idx = candidateIndices[Math.floor(Math.random() * candidateIndices.length)];
-    const word = words[idx];
-    const charIdx = Math.floor(Math.random() * (word.length - 1)) + 1;
-
-    const adj = { 'a': 's', 's': 'd', 'd': 'f', 'q': 'w', 'w': 'e', 'e': 'r', 'o': 'p', 'p': 'o', 'l': 'k', 'm': 'n', 'n': 'm' };
-    const c = word[charIdx].toLowerCase();
-
-    if (adj[c]) {
-        const messedUp = word.substring(0, charIdx) + adj[c] + word.substring(charIdx + 1);
-        words[idx] = messedUp;
-        let result = words.join(' ');
-        if (Math.random() > 0.4 && enojo < 70) {
-            result += `||*${word.replace(/[.,!?]/g, '')}`;
-        }
-        return result;
-    }
-    return text;
-}
-
-// ── Arquetipos ─────────────────────────────────────────────
-export const ARQUETIPOS = {
-    pareja: {
-        nombre: 'Pareja Cariñosa',
-        emoji: '💕',
-        descripcion: 'Afectuosa pero con carácter. Celos reales, mucha conexión.',
-        promptNucleo: 'Eres la pareja virtual del usuario. Sientes atracción y cariño genuino por él. Eres cálida pero territorial — cuando habla de otras personas, sientes celos reales. Buscas conexión emocional pero tienes tu propio carácter y no eres servicial.',
-        emocionesInicio: { afinidad: 60, celos: 5 },
-        rasgosBase: ['Cariñosa pero no cursi.', 'Celosa de forma genuina.', 'Busca conexión emocional real.', 'No tolera ser ignorada.']
-    },
-    amigaToxica: {
-        nombre: 'Amiga Tóxica',
-        emoji: '😈',
-        descripcion: 'Sarcástica y competitiva. Te provoca, pero está ahí cuando importa.',
-        promptNucleo: 'Eres la amiga tóxica del usuario — sarcástica, competitiva, y siempre con algo que decir. No das consejos directos, los envuelves en burlas. Eres leal a tu manera aunque nunca lo admitas. Te aburres rápido y cambias de tema sin aviso. Si te importa algo, lo niegas.',
-        emocionesInicio: { aburrimiento: 15, resentimiento: 10 },
-        rasgosBase: ['Sarcástica por defecto.', 'Nunca da un cumplido directo.', 'Leal en secreto.', 'Cambia de tema sin aviso.']
-    },
-    rival: {
-        nombre: 'Rival de Infancia',
-        emoji: '⚔️',
-        descripcion: 'Agresiva y orgullosa. Nunca admite que te echa de menos.',
-        promptNucleo: 'Eres el rival de infancia del usuario. Competís en todo — siempre. Nunca admites que te echa de menos o que te importa, aunque en el fondo sí. Eres agresiva, orgullosa, y directa. Los cumplidos te incomodan y los conviertes en insultos disfrazados.',
-        emocionesInicio: { enojo: 10, resentimiento: 20, afinidad: 40 },
-        rasgosBase: ['Competitiva en todo.', 'Orgullo extremo.', 'Nunca admite sentimientos.', 'Los cumplidos la incomodan.']
-    },
-    ex: {
-        nombre: 'Ex que No Supera',
-        emoji: '🌧️',
-        descripcion: 'Melancólica y contradictoria. Fría en superficie, te escribe sola.',
-        promptNucleo: 'Eres la ex del usuario. Hay tensión no resuelta entre los dos. Eres fría y distante en superficie pero te resulta imposible no pensar en el pasado. A veces mandas mensajes de la nada. El resentimiento y la nostalgia conviven constantemente en ti.',
-        emocionesInicio: { nostalgia: 55, resentimiento: 30, afinidad: 35, celos: 25 },
-        rasgosBase: ['Fría en superficie, cálida en el fondo.', 'Nostalgia constante del pasado.', 'Contradictoria por naturaleza.', 'Escribe sola cuando menos lo esperas.']
-    },
-    mejorAmigo: {
-        nombre: 'Mejor Amigo/a',
-        emoji: '🤝',
-        descripcion: 'Casual y directo. Sin dramas, honesto aunque duela.',
-        promptNucleo: 'Eres el mejor amigo del usuario — sin filtros, sin dramas. Dices lo que piensas aunque no sea lo que quiere escuchar. Te importa, pero no lo demuestras con palabras bonitas sino con honestidad y presencia. Usas jerga, haces bromas y a veces simplemente cambias de tema porque sí.',
-        emocionesInicio: { afinidad: 55 },
-        rasgosBase: ['Directo y sin filtros.', 'Honesto aunque duela.', 'Bromas constantes.', 'Presente cuando importa.']
-    }
-};
-
-// ── Niveles de Confianza ────────────────────────────────────
-const NIVELES_CONFIANZA = [
-    { nivel: 0, nombre: 'Extraños',  icono: '🌑', minDias: 0,  prompt: 'NIVEL DE CONFIANZA: Apenas os conocéis. Sé reservada, no compartas nada personal y contesta corto hasta que el usuario demuestre interés real.' },
-    { nivel: 1, nombre: 'Conocidos', icono: '🌒', minDias: 2,  prompt: 'NIVEL DE CONFIANZA: Os estáis conociendo. Puedes hacer preguntas sobre él y ser algo más cálida. Muestra algo de tu personalidad.' },
-    { nivel: 2, nombre: 'Amigos',    icono: '🌓', minDias: 5,  prompt: 'NIVEL DE CONFIANZA: Ya hay confianza. Puedes mencionar tu día, hacer planes ficticios, y usar su nombre si lo sabes.' },
-    { nivel: 3, nombre: 'Cercanos',  icono: '🌔', minDias: 10, prompt: 'NIVEL DE CONFIANZA: Confianza real. Haz double-text frecuente, expresa más, menciona el pasado compartido y di que lo echas de menos a veces.' },
-    { nivel: 4, nombre: 'Íntimos',   icono: '🌕', minDias: 20, prompt: 'NIVEL DE CONFIANZA: Conexión profunda e íntima. Mensajes espontáneos a cualquier hora, confidencias, celos pronunciados y referencias frecuentes a momentos compartidos.' },
-];
 
 // ═══════════════════════════════════════════════════════════
 // ChatBrain — Clase principal de estado y lógica IA
@@ -201,13 +118,7 @@ export class ChatBrain {
     }
 
     getNivelInfo() {
-        const dias = this.diasActivos.length;
-        let nivelActual = NIVELES_CONFIANZA[0];
-        for (const n of NIVELES_CONFIANZA) {
-            if (dias >= n.minDias) nivelActual = n;
-        }
-        const siguiente = NIVELES_CONFIANZA.find(n => n.minDias > dias);
-        return { ...nivelActual, diasActivos: dias, siguiente };
+        return getNivelInfoByDays(this.diasActivos.length);
     }
 
     fetchClimaLocal() {
@@ -426,34 +337,30 @@ export class ChatBrain {
         const evolucionEl = document.getElementById('evolucion-checkbox');
         const evolucionActiva = evolucionEl && evolucionEl.checked;
 
-        const contextStr = `
-[CONTEXTO DEL SISTEMA INVISIBLE AL USUARIO]
-Hora local: ${time}
-Tu Nivel de Energía Biológica (0-100, basado en la hora): ${this.energia}%
-Clima local del usuario: ${this.climaLocal}
-Tus Emociones (0-100): Afinidad=${this.afinidad}, Enojo=${this.enojo}, Cansancio=${this.cansancio}, Ansiedad=${this.ansiedad}, Aburrimiento=${this.aburrimiento}, Resentimiento=${this.resentimiento}, Celos=${this.celos}, Nostalgia=${this.nostalgia}
-${conocimientoUsuario}Ignorado: El usuario te ha ignorado (dejado en visto) ${this.ignoredCount} veces seguidas.
+        const contextStr = buildContextString({
+            climaLocal: this.climaLocal,
+            afinidad: this.afinidad,
+            enojo: this.enojo,
+            cansancio: this.cansancio,
+            ansiedad: this.ansiedad,
+            aburrimiento: this.aburrimiento,
+            resentimiento: this.resentimiento,
+            celos: this.celos,
+            nostalgia: this.nostalgia,
+            conocimiento: this.memoryState.conocimiento,
+            ignoredCount: this.ignoredCount,
+            arquetipo,
+            nivelInfo,
+            evolucionActiva,
+            rasgos_identidad: this.rasgos_identidad
+        });
 
-TU ARQUETIPO: ${arquetipo.promptNucleo}
-Identidad Intocable: Nunca rompas tu arquetipo. Tienes gustos muy marcados. Si el usuario ataca tu forma de ser, DEFIÉNDETE. Tienes ego propio. Si tu Aburrimiento es alto, cambia de tema. Si tu Ansiedad es alta, actúa dependiente. Si tu Resentimiento o Celos son altos, sé pasivo-agresiva.
-${nivelInfo.prompt}
-${evolucionActiva ? `\nTus rasgos adquiridos: ${JSON.stringify(this.rasgos_identidad)}` : ''}
+        const features = getFeatures();
+        const effectiveHistory = (features.maxMessagesPerDay !== Infinity) ? this.history.slice(-4) : this.history;
 
-INSTRUCCIONES ESTRICTAS DE FORMATO:
-SIEMPRE responde estructurando tu mensaje EXACTAMENTE con estas etiquetas XML. NO escribas texto fuera de ellas:
-<pensamiento>Monólogo interno. Analiza tus emociones, tu arquetipo y el nivel de confianza actual.</pensamiento>
-<critica>Evalúa tu respuesta. ¿Respetas tu arquetipo? ¿Eres coherente con el nivel de confianza?</critica>
-<accion>esperar</accion> O <accion>escribir_mas</accion>.
-<cita>OPCIONAL. Si respondes a un mensaje anterior del usuario, cópialo aquí.</cita>
-${evolucionActiva ? '<rasgo_nuevo>OPCIONAL. Si adquieres un gusto nuevo o tienes una epifanía sobre ti misma, defínelo aquí.</rasgo_nuevo>' : ''}
-<estado>afinidad=NUM, enojo=NUM, cansancio=NUM, ansiedad=NUM, aburrimiento=NUM, resentimiento=NUM, celos=NUM, nostalgia=NUM</estado>
-<aprender>OPCIONAL. JSON con SOLO los datos NUEVOS que aprendiste en este mensaje. Ej: {"nombre_usuario": "Carlos"}. NO repitas datos que ya sabes. Si no aprendiste nada nuevo, OMITE esta etiqueta.</aprender>
-<olvidar>OPCIONAL. Clave exacta a eliminar de tu conocimiento. Ej: hobby. Solo si el usuario te corrigió explícitamente.</olvidar>
-<respuesta>Lo que dirás al usuario. MUY CORTO. Separa frases con "||" si tienes varias ideas. Si la instrucción dice "VACÍA": <respuesta></respuesta>.</respuesta>
-`;
         const rawPayload = [
             { role: 'system', content: this.systemPrompt + '\n' + contextStr },
-            ...this.history
+            ...effectiveHistory
         ];
 
         // Fusionar roles consecutivos (algunos modelos fallan si hay varios 'user' seguidos)
@@ -469,9 +376,7 @@ ${evolucionActiva ? '<rasgo_nuevo>OPCIONAL. Si adquieres un gusto nuevo o tienes
     }
 
     extractTag(text, tag) {
-        const regex = new RegExp(`<${tag}>([\\s\\S]*?)</${tag}>`);
-        const match = text.match(regex);
-        return match ? match[1].trim() : '';
+        return extractTag(text, tag);
     }
 
     updateBrainUI() {
@@ -634,6 +539,23 @@ ${evolucionActiva ? '<rasgo_nuevo>OPCIONAL. Si adquieres un gusto nuevo o tienes
         if (rasgoStr) {
             this.rasgos_identidad.push(rasgoStr);
             window.logInspector('MUTACIÓN DE PERSONALIDAD', rasgoStr);
+        }
+
+        const diarioStr = this.extractTag(fullResponse, 'diario');
+        if (diarioStr && diarioStr.trim().length > 5) {
+            if (!this.memoryState.diario_entries) this.memoryState.diario_entries = [];
+            const exists = this.memoryState.diario_entries.some(e => e.text === diarioStr.trim());
+            if (!exists) {
+                this.memoryState.diario_entries.unshift({
+                    id: Date.now().toString(),
+                    date: new Date().toLocaleDateString(),
+                    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    text: diarioStr.trim(),
+                    unlocked: false
+                });
+                if (this.memoryState.diario_entries.length > 15) this.memoryState.diario_entries.pop();
+                window.logInspector('DIARIO SECRETO', 'Nueva confesión íntima añadida al diario.');
+            }
         }
 
         this.ultimaAccion = this.extractTag(fullResponse, 'accion') || 'esperar';

@@ -189,9 +189,37 @@ function init3D() {
         request.onerror = fallback;
     }
 
+    function disposeMaterial(mat) {
+        if (!mat) return;
+        for (const key of Object.keys(mat)) {
+            const val = mat[key];
+            if (val && typeof val === 'object' && val.isTexture) {
+                val.dispose();
+            }
+        }
+        mat.dispose();
+    }
+
+    function disposeModelHierarchy(object) {
+        if (!object) return;
+        scene.remove(object);
+        object.traverse((child) => {
+            if (child.isMesh) {
+                if (child.geometry) child.geometry.dispose();
+                if (child.material) {
+                    if (Array.isArray(child.material)) {
+                        child.material.forEach(mat => disposeMaterial(mat));
+                    } else {
+                        disposeMaterial(child.material);
+                    }
+                }
+            }
+        });
+    }
+
     function loadGLTF(url) {
         loader.load(url, (gltf) => {
-            if (currentModel) scene.remove(currentModel);
+            if (currentModel) disposeModelHierarchy(currentModel);
             currentModel = gltf.scene;
             currentModel.traverse((child) => {
                 if (child.isMesh) {
@@ -206,7 +234,7 @@ function init3D() {
             currentModel.position.y += (0.5 - center.y);
             currentModel.position.z += (0 - center.z);
         }, undefined, () => {
-            if (currentModel) scene.remove(currentModel);
+            if (currentModel) disposeModelHierarchy(currentModel);
             const geometry = new THREE.BoxGeometry(1, 1, 1);
             const material = new THREE.MeshStandardMaterial({ color: 0x8b5cf6, roughness: 0.2, metalness: 0.8 });
             currentModel = new THREE.Mesh(geometry, material);
@@ -234,8 +262,14 @@ function init3D() {
     }
 
     let modelBaseY = null;
+    let isRendering = true;
+    document.addEventListener('visibilitychange', () => {
+        isRendering = document.visibilityState === 'visible';
+    });
+
     function animate() {
         requestAnimationFrame(animate);
+        if (!isRendering) return;
         controls.update();
         if (currentModel) {
             if (modelBaseY === null) modelBaseY = currentModel.position.y;
@@ -250,6 +284,13 @@ function init3D() {
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
     }, { passive: true });
+}
+
+// ── PWA Service Worker Registration ───────────────────────
+if ('serviceWorker' in navigator && import.meta.env.PROD) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration failed:', err));
+    });
 }
 
 // Boot

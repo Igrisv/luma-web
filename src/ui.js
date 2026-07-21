@@ -310,6 +310,24 @@ export function createMessageElement(text, sender) {
         }
     });
 
+    if (sender === 'assistant' && 'speechSynthesis' in window) {
+        const voiceBtn = document.createElement('button');
+        voiceBtn.className = 'voice-note-btn';
+        voiceBtn.innerHTML = '🔊 <span>Escuchar voz</span>';
+        voiceBtn.style.cssText = 'display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:var(--text);border-radius:12px;padding:3px 8px;font-size:0.75rem;cursor:pointer;margin-top:6px;';
+        voiceBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            window.speechSynthesis.cancel();
+            const cleanMessage = finalRenderText.replace(/\|\|/g, ' ').replace(/<[^>]+>/g, '');
+            const utter = new SpeechSynthesisUtterance(cleanMessage);
+            utter.lang = 'es-MX';
+            utter.rate = 1.0;
+            utter.pitch = 1.05;
+            window.speechSynthesis.speak(utter);
+        });
+        div.appendChild(voiceBtn);
+    }
+
     const timeSpan = document.createElement('span');
     const now = new Date();
     timeSpan.textContent = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
@@ -317,6 +335,111 @@ export function createMessageElement(text, sender) {
     div.appendChild(timeSpan);
 
     return div;
+}
+
+/**
+ * Secret Diary UI Controller
+ */
+export function initDiaryUI(brain) {
+    const modal = document.getElementById('diary-modal');
+    const closeBtn = document.getElementById('diary-close-btn');
+    const openBtn = document.getElementById('open-diary-btn');
+    const mobBtn = document.getElementById('mob-diary-btn');
+    const listContainer = document.getElementById('diary-entries-list');
+
+    function renderDiary() {
+        if (!listContainer) return;
+        const entries = brain.memoryState.diario_entries || [];
+        if (entries.length === 0) {
+            listContainer.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-muted);font-style:italic;">Luma aún no ha escrito ninguna confesión en su diario hoy. ¡Vuelve más tarde!</div>';
+            return;
+        }
+
+        listContainer.innerHTML = entries.map((entry, idx) => {
+            const isUnlocked = entry.unlocked || idx === 0; // First entry free preview
+            return `
+                <div class="diary-card" style="background:rgba(255,255,255,0.03);border:1px solid var(--glass-border);border-radius:16px;padding:16px;position:relative;">
+                    <div style="font-size:0.75rem;color:var(--primary);margin-bottom:6px;font-weight:600;">📅 ${entry.date} ${entry.time}</div>
+                    <div class="diary-text ${isUnlocked ? '' : 'blurred-entry'}" style="${isUnlocked ? '' : 'filter:blur(6px);user-select:none;'} font-size:0.95rem;line-height:1.5;">
+                        "${entry.text}"
+                    </div>
+                    ${!isUnlocked ? `
+                        <div style="position:absolute;inset:0;margin:auto;height:fit-content;width:fit-content;display:flex;flex-direction:column;align-items:center;gap:6px;">
+                            <button class="auth-btn primary unlock-diary-btn" data-id="${entry.id}" style="padding:6px 14px;font-size:0.8rem;">🔒 Espiar Diario (Ver Anuncio)</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }).join('');
+
+        listContainer.querySelectorAll('.unlock-diary-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                window.pendingDiaryUnlockId = btn.dataset.id;
+                const rewardModal = document.getElementById('reward-modal');
+                if (rewardModal) rewardModal.classList.remove('hidden');
+            });
+        });
+    }
+
+    if (openBtn && modal) openBtn.addEventListener('click', () => { renderDiary(); modal.classList.remove('hidden'); });
+    if (mobBtn && modal) mobBtn.addEventListener('click', () => { renderDiary(); modal.classList.remove('hidden'); });
+    if (closeBtn && modal) closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
+    
+    // Expose renderDiary for re-renders after ad unlock
+    window.renderDiaryModal = renderDiary;
+}
+
+/**
+ * Rewarded Ads Simulator UI Controller
+ */
+export function initRewardedAdUI(brain) {
+    const modal = document.getElementById('reward-modal');
+    const openBtn = document.getElementById('open-ad-btn');
+    const closeBtn = document.getElementById('close-ad-btn');
+    const startBtn = document.getElementById('start-ad-btn');
+    const videoSim = document.getElementById('ad-video-sim');
+    const timerSpan = document.getElementById('ad-timer');
+
+    if (openBtn && modal) openBtn.addEventListener('click', () => modal.classList.remove('hidden'));
+    if (closeBtn && modal) closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
+
+    if (startBtn) {
+        startBtn.addEventListener('click', () => {
+            startBtn.classList.add('hidden');
+            if (videoSim) videoSim.classList.remove('hidden');
+            let timeLeft = 5; // 5s fast demo simulation
+            if (timerSpan) timerSpan.textContent = timeLeft;
+
+            const interval = setInterval(() => {
+                timeLeft--;
+                if (timerSpan) timerSpan.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(interval);
+                    if (videoSim) videoSim.classList.add('hidden');
+                    startBtn.classList.remove('hidden');
+                    if (modal) modal.classList.add('hidden');
+                    
+                    // Check if ad was to unlock a diary entry
+                    if (window.pendingDiaryUnlockId && brain.memoryState.diario_entries) {
+                        const target = brain.memoryState.diario_entries.find(e => e.id === window.pendingDiaryUnlockId);
+                        if (target) {
+                            target.unlocked = true;
+                            brain.saveState();
+                            if (window.renderDiaryModal) window.renderDiaryModal();
+                            showToast('¡Confesión del diario desbloqueada! 📖', 'success');
+                        }
+                        window.pendingDiaryUnlockId = null;
+                    } else {
+                        // Grant +5 messages reward
+                        brain.dailyMessageCount = Math.max(0, brain.dailyMessageCount - 5);
+                        brain.saveState();
+                        brain.updateBrainUI();
+                        showToast('¡Premio otorgado! +5 Mensajes añadidos a tu saldo 🎉', 'success');
+                    }
+                }
+            }, 1000);
+        });
+    }
 }
 
 // ── Visto con delay ─────────────────────────────────────────
@@ -407,3 +530,32 @@ export function renderHistory(brain, messagesBox) {
     });
     messagesBox.scrollTop = messagesBox.scrollHeight;
 }
+
+/**
+ * Toast Notification System
+ */
+export function showToast(message, type = 'info', duration = 4000) {
+    let container = document.getElementById('toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
+
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    const iconMap = { error: '⚠️', success: '✅', warning: '⚡', info: 'ℹ️' };
+    toast.innerHTML = `<span class="toast-icon">${iconMap[type] || 'ℹ️'}</span><span class="toast-message">${message}</span>`;
+    
+    container.appendChild(toast);
+    
+    // Trigger CSS animation
+    requestAnimationFrame(() => toast.classList.add('show'));
+
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, duration);
+}
+

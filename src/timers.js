@@ -141,45 +141,47 @@ export function initTimers(brain, addMessageFn, handleSendFn, input) {
         if (typingTimer) clearTimeout(typingTimer);
     }
 
-    input.addEventListener('input', () => {
-        const len = input.value.length;
-        window.dispatchEvent(new CustomEvent('userTyping', { detail: { length: len } }));
-        window.lastInteraction = Date.now();
-        startAutonomousLoop();
+    if (input) {
+        input.addEventListener('input', () => {
+            const len = input.value.length;
+            window.dispatchEvent(new CustomEvent('userTyping', { detail: { length: len } }));
+            window.lastInteraction = Date.now();
+            startAutonomousLoop();
 
-        if (typingTimer) clearTimeout(typingTimer);
+            if (typingTimer) clearTimeout(typingTimer);
 
-        if (len > 0) {
-            isTyping = true;
-            typingTimer = setTimeout(() => {
-                if (isTyping && input.value.length > 20 && !window.isThinking) {
-                    let actitud = 'Sé sarcástica o apúralo un poco.';
-                    if (brain.afinidad > 70) actitud = 'Sé dulce y dile que te intriga la biblia que te está escribiendo.';
-                    else if (brain.ansiedad > 70) actitud = 'Sé ansiosa, dile que tanto escribir te pone nerviosa y pregúntale qué está pasando.';
-                    else if (brain.enojo > 60) actitud = 'Sé agresiva y dile que si va a mandar un testamento mejor ni lo haga.';
-                    else if (brain.aburrimiento > 70) actitud = 'Dile que ya te estás durmiendo de tanto esperarlo.';
+            if (len > 0) {
+                isTyping = true;
+                typingTimer = setTimeout(() => {
+                    if (isTyping && input.value.length > 20 && !window.isThinking) {
+                        let actitud = 'Sé sarcástica o apúralo un poco.';
+                        if (brain.afinidad > 70) actitud = 'Sé dulce y dile que te intriga la biblia que te está escribiendo.';
+                        else if (brain.ansiedad > 70) actitud = 'Sé ansiosa, dile que tanto escribir te pone nerviosa y pregúntale qué está pasando.';
+                        else if (brain.enojo > 60) actitud = 'Sé agresiva y dile que si va a mandar un testamento mejor ni lo haga.';
+                        else if (brain.aburrimiento > 70) actitud = 'Dile que ya te estás durmiendo de tanto esperarlo.';
 
-                    const textInt = `[Nota interna: El usuario lleva tecleando un rato sin enviar. Interrúmpelo de la nada. Actitud: ${actitud}]`;
-                    window.isThinking = true;
-                    (async () => {
-                        try {
-                            const res = await brain.sendMessageToAI(textInt, () => {}, (t) => {
-                                const liveThought = document.getElementById('live-thought');
-                                if (liveThought) liveThought.textContent = t;
-                            }, true);
-                            window.isThinking = false;
-                            if (res && res.trim()) await addMessageFn(res, 'assistant');
-                        } catch (e) {
-                            window.isThinking = false;
-                            if (e.message !== 'INTERNAL_LIMIT_REACHED') console.error(e);
-                        }
-                    })();
-                }
-            }, 10000);
-        } else {
-            resetTyping();
-        }
-    });
+                        const textInt = `[Nota interna: El usuario lleva tecleando un rato sin enviar. Interrúmpelo de la nada. Actitud: ${actitud}]`;
+                        window.isThinking = true;
+                        (async () => {
+                            try {
+                                const res = await brain.sendMessageToAI(textInt, () => {}, (t) => {
+                                    const liveThought = document.getElementById('live-thought');
+                                    if (liveThought) liveThought.textContent = t;
+                                }, true);
+                                window.isThinking = false;
+                                if (res && res.trim()) await addMessageFn(res, 'assistant');
+                            } catch (e) {
+                                window.isThinking = false;
+                                if (e.message !== 'INTERNAL_LIMIT_REACHED') console.error(e);
+                            }
+                        })();
+                    }
+                }, 10000);
+            } else {
+                resetTyping();
+            }
+        });
+    }
 
     return { startAutonomousLoop, resetTyping, setMessageJustArrived: (v) => { messageJustArrived = v; }, getVistoTimer: () => vistoTimer, clearVistoTimer: () => { if (vistoTimer) clearTimeout(vistoTimer); } };
 }

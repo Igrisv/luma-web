@@ -4,7 +4,8 @@
 import { ChatBrain, saveEpisodeToServer, searchEpisodesFromServer, ARQUETIPOS } from './brain.js';
 import {
     initPanels, initConfigPanel, initChatMinimize, initDebugMode,
-    buildArchetypeUI, renderHistory, addMessage, markAllAsRead, removeAllTyping
+    buildArchetypeUI, renderHistory, addMessage, markAllAsRead, removeAllTyping, showToast,
+    initDiaryUI, initRewardedAdUI
 } from './ui.js';
 import { initTimers } from './timers.js';
 
@@ -34,6 +35,8 @@ export function initChat() {
     // ── UI Subsystems ─────────────────────────────────────────
     const { closeAllPanels } = initPanels(brain);
     initConfigPanel(brain, closeAllPanels, messagesBox);
+    initDiaryUI(brain);
+    initRewardedAdUI(brain);
 
     const chatState = initChatMinimize(messagesBox);
     initDebugMode(closeAllPanels);
@@ -116,7 +119,7 @@ export function initChat() {
                 stepArch.classList.add('hidden');
                 step3.classList.remove('hidden');
             } else {
-                alert('Por favor selecciona una personalidad para continuar.');
+                showToast('Por favor selecciona una personalidad para continuar.', 'warning');
             }
         });
         document.getElementById('step3-back').addEventListener('click', () => {
@@ -165,14 +168,6 @@ export function initChat() {
 
             if (window.isThinking) {
                 window.messageQueue.push(text);
-                await addMsg(userRenderText, 'user');
-                brain.addMessage('user', text);
-                if (input) input.value = '';
-                return;
-            }
-
-            if (window.isOcupada) {
-                window.mensajesBuzon.push(text);
                 await addMsg(userRenderText, 'user');
                 brain.addMessage('user', text);
                 if (input) input.value = '';

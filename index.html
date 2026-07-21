@@ -303,7 +303,9 @@
             <ul id="user-profile-list" class="trait-list">
                 <li>Aún no sabe nada de ti. Habla con ella.</li>
             </ul>
-            <p id="user-profile-psico" style="font-size:0.75rem;color:#64748b;font-style:italic;margin-top:4px;"></p>
+            <!-- Recompensas y Diario Buttons -->
+            <button id="open-diary-btn" class="auth-btn secondary" style="margin-top:10px;">📖 Diario Secreto</button>
+            <button id="open-ad-btn" class="auth-btn secondary" style="margin-top:8px;background:rgba(16,185,129,0.15);border-color:rgba(16,185,129,0.3);">📺 Ganar Mensajes (+5 Gratis)</button>
         </div>
     </div>
 
@@ -329,6 +331,32 @@
         </div>
         <div class="panel-body">
             <div id="inspector-log"></div>
+        </div>
+    </div>
+
+    <!-- ========== DIARY MODAL ========== -->
+    <div id="diary-modal" class="panel hidden" style="position:fixed;inset:10px;margin:auto;max-width:500px;max-height:85vh;z-index:1000;">
+        <div class="panel-header">
+            <h3>📖 Diario Secreto de Luma</h3>
+            <button class="panel-close-btn" id="diary-close-btn">✕</button>
+        </div>
+        <div class="panel-body" id="diary-list-container">
+            <p style="font-size:0.85rem;color:var(--text-muted);">Las confesiones íntimas y pensamientos privados que Luma escribe sobre ti al final del día...</p>
+            <div id="diary-entries-list" style="margin-top:12px;display:flex;flex-direction:column;gap:12px;"></div>
+        </div>
+    </div>
+
+    <!-- ========== REWARDED AD MODAL ========== -->
+    <div id="reward-modal" class="hidden">
+        <div id="reward-content" style="background:rgba(15,23,42,0.95);border:1px solid var(--glass-border);border-radius:20px;padding:30px;max-width:400px;width:90%;text-align:center;position:fixed;inset:0;margin:auto;height:fit-content;z-index:10001;backdrop-filter:blur(16px);">
+            <div style="font-size:3rem;margin-bottom:12px;">📺</div>
+            <h2 style="font-size:1.3rem;margin-bottom:8px;">Obtener +5 Mensajes Gratis</h2>
+            <p style="font-size:0.88rem;color:var(--text-muted);margin-bottom:20px;">Mira una breve demostración patrocinada de 15 segundos para recargar tu saldo de mensajes inmediatamente.</p>
+            <div id="ad-video-sim" class="hidden" style="background:#000;border-radius:12px;padding:30px;margin-bottom:15px;color:#10b981;font-weight:600;">
+                ▶️ Reproduciendo anuncio... (<span id="ad-timer">15</span>s)
+            </div>
+            <button id="start-ad-btn" class="auth-btn primary">Ver Anuncio (15s)</button>
+            <button id="close-ad-btn" class="auth-btn secondary" style="margin-top:8px;">Cancelar</button>
         </div>
     </div>
 
@@ -368,6 +396,7 @@
     <nav id="bottom-nav">
         <button class="bot-nav-btn" id="mob-config-btn">⚙️<span>Ajustes</span></button>
         <button class="bot-nav-btn" id="mob-bond-btn">🩷<span>Vínculo</span></button>
+        <button class="bot-nav-btn" id="mob-diary-btn">📖<span>Diario</span></button>
         <button class="bot-nav-btn debug-only hidden" id="mob-brain-btn">🧠<span>Cerebro</span></button>
         <button class="bot-nav-btn debug-only hidden" id="mob-inspector-btn">🔍<span>Inspector</span></button>
     </nav>

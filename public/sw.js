@@ -1,63 +1,42 @@
-const CACHE_NAME = 'luma-v1';
-const STATIC_ASSETS = [
+const CACHE_NAME = 'luma-pwa-v1';
+const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
-  '/src/style.css',
-  '/src/main.js',
-  '/src/chat.js',
-  '/src/auth.js',
-  '/src/billing.js',
-  '/src/tierGate.js',
-  '/favicon.svg',
-  '/icons.svg'
+  '/manifest.json'
 ];
 
-// Install: precache app shell
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(ASSETS_TO_CACHE);
+    })
   );
   self.skipWaiting();
 });
 
-// Activate: clean old caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
-    )
+    caches.keys().then((keys) => {
+      return Promise.all(
+        keys.map((key) => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
+          }
+        })
+      );
+    })
   );
   self.clients.claim();
 });
 
-// Fetch strategy
 self.addEventListener('fetch', (event) => {
-  const url = new URL(event.request.url);
-
-  // Network-first for API calls
-  if (url.pathname.startsWith('/api/')) {
-    event.respondWith(
-      fetch(event.request).catch(() =>
-        new Response(JSON.stringify({ error: 'Offline' }), {
-          status: 503,
-          headers: { 'Content-Type': 'application/json' }
-        })
-      )
-    );
+  // Pass API calls directly to network
+  if (event.request.url.includes('/api/')) {
     return;
   }
-
-  // Cache-first for static assets
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-      return fetch(event.request).then((response) => {
-        if (response.status === 200) {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-        }
-        return response;
-      });
+    caches.match(event.request).then((cachedResponse) => {
+      return cachedResponse || fetch(event.request);
     })
   );
 });
