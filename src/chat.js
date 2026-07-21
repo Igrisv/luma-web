@@ -204,8 +204,10 @@ export function initChat() {
                 'cerca', 'lejos', 'arriba', 'abajo', 'dentro', 'fuera', 'encima', 'debajo'
             ];
             
-            // Only query vector memory if message is substantial (>= 15 chars)
-            if (cleanUserText.length >= 15) {
+            // Only query vector memory if message explicitly triggers a memory recall intent
+            const memoryTriggers = ['recuerd', 'acuerd', 'mencion', 'dije', 'conté', 'hablamos', 'te dije', 'el otro dia', 'pasado'];
+            const hasMemoryIntent = memoryTriggers.some(t => cleanUserText.toLowerCase().includes(t));
+            if (cleanUserText.length >= 15 && hasMemoryIntent) {
                 const keywords = text.toLowerCase().replace(/[^\w\sñáéíóú]/g, '').split(/\s+/)
                     .filter(w => w.length >= 4 && !stopWords.includes(w));
 

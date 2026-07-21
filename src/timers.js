@@ -28,23 +28,42 @@ export function initTimers(brain, addMessageFn, handleSendFn, input) {
         brain.updateBrainUI();
     }, 3600000); // 1 hora
 
+    // ── Frases locales por arquetipo (0 Tokens) ───────────────
+    const LOCAL_VISTO_PHRASES = {
+        mejorAmigo: ['Oye, ¿me dejas en visto o qué? jajaj', 'Veo que me leíste y te dio flojera responder 😂', 'Ajá... visto con éxito 🙄'],
+        pareja: ['¿Me vas a dejar en visto? 🥺', 'Me lees pero no me respondes... ¿todo bien?', 'Oye, vi que lo leíste ❤️'],
+        amigaToxica: ['Típico de ti dejarme en visto 💅', 'Ah ok, visto. Anotado.', '¿En serio me ignoras así?'],
+        rival: ['¿Te quedaste sin palabras o qué?', 'Ni para responder sirves.', 'Visto... qué predecible.'],
+        ex: ['Veo que sigues con la costumbre de dejar en visto.', 'Sin comentarios...', '¿En serio?']
+    };
+
+    const LOCAL_TYPING_PHRASES = {
+        mejorAmigo: ['¿Estás escribiendo una biblia o qué? jajaj', 'Escribe rápido che, me vas a hacer viejo esperando 😂', 'Mucho texto estás preparando 👀'],
+        pareja: ['Llevas un rato escribiendo... me intriga lo que pondrás ❤️', '¿Qué me estás escribiendo tan largo? 👀', 'Tanto escribir me pone nerviosa jajaja'],
+        amigaToxica: ['Si vas a mandar un testamento mejor ni lo envíes 🙄', 'Tardas mil horas escribiendo...', '¿Vas a tardar todo el día?'],
+        rival: ['Escribe rápido, no tengo todo el día.', 'Tanto pensar para un mensaje...', '¿Dificultades para redactar?'],
+        ex: ['Veo que estás escribiendo un montón...', '¿Tanto tienes que decir?', 'Tómate tu tiempo...']
+    };
+
+    function getRandomLocalPhrase(dictionary, archetypeId) {
+        const list = dictionary[archetypeId] || dictionary.mejorAmigo;
+        return list[Math.floor(Math.random() * list.length)];
+    }
+
     // ── Loop autónomo anti-spam ─────────────────────────────
-    // lastInteraction is initialized early in chat.js; just ensure it exists
     if (!window.lastInteraction) window.lastInteraction = Date.now();
     let autonomousTimer;
     let vistoTimer;
     let messageJustArrived = false;
 
-    async function handleReflection() {
-        const text = '[Reflexión: actualiza emociones. Deja <respuesta> VACÍA.]';
-        const liveThought = document.getElementById('live-thought');
-        if (liveThought) liveThought.textContent = 'Reflexionando en silencio...';
-        try {
-            await brain.sendMessageToAI(text, () => {}, (t) => {
-                if (liveThought) liveThought.textContent = t;
-            }, true);
-            if (liveThought) liveThought.textContent = 'Reflexión terminada.';
-        } catch (e) { console.error(e); }
+    // Homeostasis local de reflexión (Cero llamadas a la API)
+    function handleReflection() {
+        if (!brain) return;
+        brain.aburrimiento = Math.min(100, brain.aburrimiento + 10);
+        brain.ansiedad = Math.min(100, brain.ansiedad + 5);
+        brain.saveState();
+        brain.updateBrainUI();
+        window.logInspector('SISTEMA', 'Reflexión local completada (0 tokens).');
     }
 
     function startAutonomousLoop(customWait = null) {
@@ -58,8 +77,8 @@ export function initTimers(brain, addMessageFn, handleSendFn, input) {
             window.lastInteraction = Date.now();
 
             if (brain.ignoredCount === 1) {
-                window.logInspector('SISTEMA', 'Fase 1: Reflexión asíncrona...');
-                await handleReflection();
+                window.logInspector('SISTEMA', 'Fase 1: Reflexión local asíncrona...');
+                handleReflection();
             } else if (brain.ignoredCount === 2) {
                 window.logInspector('SISTEMA', 'Fase 2: Último mensaje autónomo...');
                 await handleSendFn(true);
@@ -84,7 +103,7 @@ export function initTimers(brain, addMessageFn, handleSendFn, input) {
         }
     });
 
-    // Eventos para detectar "visto" (usuario interactúa pero no responde)
+    // Eventos para detectar "visto" (usuario interactúa pero no responde) - Frase Local
     const handleVistoEvent = () => {
         if (!messageJustArrived) return;
         messageJustArrived = false;
@@ -93,9 +112,9 @@ export function initTimers(brain, addMessageFn, handleSendFn, input) {
         vistoTimer = setTimeout(async () => {
             if (brain.ignoredCount === 0 && !window.isThinking) {
                 brain.ignoredCount++;
-                const textInt = '[Nota interna: El usuario te ha dejado en visto. Ha interactuado con la pantalla pero no te ha respondido. Reacciona a esto de forma acorde a tu personalidad.]';
-                const res = await brain.sendMessageToAI(textInt, () => {}, () => {}, true, 0, true).catch(() => null);
-                if (res && res.trim()) await addMessageFn(res, 'assistant');
+                const localPhrase = getRandomLocalPhrase(LOCAL_VISTO_PHRASES, brain.arquetipoId);
+                brain.addMessage('assistant', `<respuesta>${localPhrase}</respuesta>`);
+                await addMessageFn(localPhrase, 'assistant');
             }
         }, 180000); // 3 minutos para ofenderse por visto
     };
@@ -103,7 +122,7 @@ export function initTimers(brain, addMessageFn, handleSendFn, input) {
     window.addEventListener('mousemove', handleVistoEvent);
     window.addEventListener('touchstart', handleVistoEvent, { passive: true });
 
-    // ── Typing interrupt ────────────────────────────────────
+    // ── Typing interrupt (Cero Tokens) ──────────────────────
     let isTyping = false;
     let typingTimer = null;
 
@@ -123,29 +142,12 @@ export function initTimers(brain, addMessageFn, handleSendFn, input) {
 
             if (len > 0) {
                 isTyping = true;
-                typingTimer = setTimeout(() => {
+                typingTimer = setTimeout(async () => {
                     if (isTyping && input.value.length > 20 && !window.isThinking) {
-                        let actitud = 'Sé sarcástica o apúralo un poco.';
-                        if (brain.afinidad > 70) actitud = 'Sé dulce y dile que te intriga la biblia que te está escribiendo.';
-                        else if (brain.ansiedad > 70) actitud = 'Sé ansiosa, dile que tanto escribir te pone nerviosa y pregúntale qué está pasando.';
-                        else if (brain.enojo > 60) actitud = 'Sé agresiva y dile que si va a mandar un testamento mejor ni lo haga.';
-                        else if (brain.aburrimiento > 70) actitud = 'Dile que ya te estás durmiendo de tanto esperarlo.';
-
-                        const textInt = `[Nota interna: El usuario lleva tecleando un rato sin enviar. Interrúmpelo de la nada. Actitud: ${actitud}]`;
-                        window.isThinking = true;
-                        (async () => {
-                            try {
-                                const res = await brain.sendMessageToAI(textInt, () => {}, (t) => {
-                                    const liveThought = document.getElementById('live-thought');
-                                    if (liveThought) liveThought.textContent = t;
-                                }, true);
-                                window.isThinking = false;
-                                if (res && res.trim()) await addMessageFn(res, 'assistant');
-                            } catch (e) {
-                                window.isThinking = false;
-                                if (e.message !== 'INTERNAL_LIMIT_REACHED') console.error(e);
-                            }
-                        })();
+                        const localPhrase = getRandomLocalPhrase(LOCAL_TYPING_PHRASES, brain.arquetipoId);
+                        brain.addMessage('assistant', `<respuesta>${localPhrase}</respuesta>`);
+                        await addMessageFn(localPhrase, 'assistant');
+                        resetTyping();
                     }
                 }, 10000);
             } else {
