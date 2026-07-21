@@ -175,28 +175,54 @@ export function initChat() {
             }
 
             const cleanUserText = text.trim();
-            const trivialGreetings = ['holis', 'hola', 'buenas', 'que tal', 'hi', 'hey', 'ok', 'vale', 'si', 'no'];
-            if (!trivialGreetings.includes(cleanUserText.toLowerCase())) {
+            const trivialGreetings = ['holis', 'hola', 'buenas', 'que tal', 'hi', 'hey', 'ok', 'vale', 'si', 'no', 'jaja', 'jajaja', 'xd', 'bye', 'chao'];
+            
+            // Only save meaningful personal statements or stories (not short chatter)
+            const personalKeywords = ['me gusta', 'mi ', ' mis ', 'tengo', 'trabajo', 'vivo', 'fui', 'compré', 'amo', 'odio', 'prefiero', 'estudio', 'soy ', 'familia', 'novia', 'novio', 'amigo', 'hermano', 'padre', 'madre', 'pasó', 'recuerdo'];
+            const isPersonalFact = personalKeywords.some(k => cleanUserText.toLowerCase().includes(k));
+            if (cleanUserText.length >= 30 && isPersonalFact && !trivialGreetings.includes(cleanUserText.toLowerCase())) {
                 saveEpisodeToServer(cleanUserText);
             }
 
-            const stopWords = ['que', 'del', 'los', 'las', 'por', 'con', 'para', 'una', 'uno', 'holis', 'hola'];
-            const keywords = text.toLowerCase().replace(/[^\w\sñáéíóú]/g, '').split(/\s+/)
-                .filter(w => w.length >= 3 && !stopWords.includes(w));
+            const stopWords = [
+                'que', 'del', 'los', 'las', 'por', 'con', 'para', 'una', 'uno', 'unas', 'unos', 'holis', 'hola',
+                'buenas', 'tarde', 'noche', 'dias', 'verdad', 'bueno', 'estoy', 'tengo', 'hacer', 'decir', 'nada',
+                'algo', 'pensar', 'saber', 'creo', 'parece', 'donde', 'cuando', 'quien', 'porque', 'mientras',
+                'estaba', 'tienes', 'tiene', 'tienen', 'hace', 'hacen', 'decía', 'dijo', 'dije', 'dicen', 'sabiendo',
+                'sabes', 'sabe', 'sabemos', 'saben', 'crees', 'cree', 'creemos', 'parece', 'parecen', 'tambien',
+                'entonces', 'todavia', 'siempre', 'nunca', 'ahora', 'mismo', 'este', 'esta', 'esto', 'estos', 'estas',
+                'ese', 'esa', 'eso', 'esos', 'esas', 'aquel', 'aquella', 'aquello', 'aquellos', 'aquellas', 'como',
+                'pero', 'mas', 'menos', 'muy', 'mucho', 'mucha', 'muchos', 'muchas', 'poco', 'poca', 'pocos', 'pocas',
+                'todo', 'toda', 'todos', 'todas', 'otro', 'otra', 'otros', 'otras', 'mismo', 'misma', 'mismos',
+                'mismas', 'tanto', 'tanta', 'tantos', 'tantas', 'cual', 'cuales', 'quien', 'quienes', 'cuyo', 'cuya',
+                'cuyos', 'cuyas', 'donde', 'cuando', 'como', 'cuanto', 'cuanta', 'cuantos', 'cuantas', 'algun',
+                'alguna', 'algunos', 'algunas', 'ningun', 'ninguna', 'ningunos', 'ningunas', 'sobre', 'entre', 'hasta',
+                'desde', 'hacia', 'segun', 'sin', 'tras', 'durante', 'mediante', 'ante', 'bajo', 'cabe', 'contra',
+                'bueno', 'mira', 'oye', 'sabes', 'obvio', 'claro', 'cierto', 'falso', 'bien', 'mal', 'igual', 'solo',
+                'solamente', 'quizas', 'talvez', 'acaso', 'seguro', 'tal', 'cual', 'tan', 'asi', 'luego', 'antes',
+                'despues', 'pronto', 'temprano', 'ayer', 'hoy', 'mañana', 'jamas', 'aqui', 'alli', 'alla', 'aca',
+                'cerca', 'lejos', 'arriba', 'abajo', 'dentro', 'fuera', 'encima', 'debajo'
+            ];
+            
+            // Only query vector memory if message is substantial (>= 15 chars)
+            if (cleanUserText.length >= 15) {
+                const keywords = text.toLowerCase().replace(/[^\w\sñáéíóú]/g, '').split(/\s+/)
+                    .filter(w => w.length >= 4 && !stopWords.includes(w));
 
-            if (keywords.length > 0) {
-                const pastMemories = await searchEpisodesFromServer(keywords);
-                if (pastMemories.length > 0) {
-                    const cleanMemories = pastMemories
-                        .map(m => m.replace(/<[^>]+>/g, '').replace(/IA respondió:/g, '').replace(/Usuario dijo:/g, '').trim())
-                        .filter(m => m.length > 3 && !trivialGreetings.includes(m.toLowerCase()));
-                    if (cleanMemories.length > 0) {
-                        const joined = cleanMemories.join(' | ');
-                        hiddenContext += `\n<contexto_oculto>Recuerdos: ${joined}</contexto_oculto>`;
-                        if (joined.toLowerCase().includes('amig') || joined.toLowerCase().includes('compañer')) {
-                            hiddenContext += `\n<contexto_oculto>Mencionó personas: sube celos</contexto_oculto>`;
-                        } else if (Math.random() > 0.5) {
-                            hiddenContext += `\n<contexto_oculto>Recordaste el pasado: sube nostalgia</contexto_oculto>`;
+                if (keywords.length > 0) {
+                    const pastMemories = await searchEpisodesFromServer(keywords);
+                    if (pastMemories.length > 0) {
+                        const cleanMemories = pastMemories
+                            .map(m => m.replace(/<[^>]+>/g, '').replace(/IA respondió:/g, '').replace(/Usuario dijo:/g, '').trim())
+                            .filter(m => m.length > 3 && !trivialGreetings.includes(m.toLowerCase()));
+                        if (cleanMemories.length > 0) {
+                            const joined = cleanMemories.join(' | ');
+                            hiddenContext += `\n<contexto_oculto>Recuerdos: ${joined}</contexto_oculto>`;
+                            if (joined.toLowerCase().includes('amig') || joined.toLowerCase().includes('compañer')) {
+                                hiddenContext += `\n<contexto_oculto>Mencionó personas: sube celos</contexto_oculto>`;
+                            } else if (Math.random() > 0.5) {
+                                hiddenContext += `\n<contexto_oculto>Recordaste el pasado: sube nostalgia</contexto_oculto>`;
+                            }
                         }
                     }
                 }

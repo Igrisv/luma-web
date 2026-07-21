@@ -12,8 +12,8 @@ export function extractTag(text, tag) {
     const match = text.match(regex);
     if (match) return match[1].trim();
 
-    // 2. Fallback para etiqueta abierta no cerrada al final del stream
-    const openMatch = text.match(new RegExp(`<${tag}>([\\s\\S]*)$`, 'i'));
+    // 2. Fallback para etiqueta abierta no cerrada al final del stream o antes de otra etiqueta
+    const openMatch = text.match(new RegExp(`<${tag}>([\\s\\S]*?)(?:<[a-z_]+>|$)`, 'i'));
     if (openMatch) return openMatch[1].trim();
 
     return '';

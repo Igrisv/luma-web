@@ -369,7 +369,19 @@ export class ChatBrain {
         }, isFullPrompt);
 
         const features = getFeatures();
-        const effectiveHistory = (features.maxMessagesPerDay !== Infinity) ? this.history.slice(-4) : this.history;
+        const rawHistory = (features.maxMessagesPerDay !== Infinity) ? this.history.slice(-4) : this.history;
+        const effectiveHistory = rawHistory.map(h => {
+            if (h.role === 'assistant') {
+                const clean = h.content
+                    .replace(/<pensamiento>[\s\S]*?<\/pensamiento>/gi, '')
+                    .replace(/<diario>[\s\S]*?<\/diario>/gi, '')
+                    .replace(/<aprender>[\s\S]*?<\/aprender>/gi, '')
+                    .replace(/<perfil_psicologico>[\s\S]*?<\/perfil_psicologico>/gi, '')
+                    .trim();
+                return { role: 'assistant', content: clean };
+            }
+            return h;
+        });
 
         const rawPayload = [
             { role: 'system', content: contextStr },
@@ -731,7 +743,8 @@ export class ChatBrain {
                 finalRespuesta = finalRespuesta.replace(/✔️/g, '').replace(/🔊/g, '').replace(/Escuchar voz/gi, '').replace(/\d{2}:\d{2}/g, '').trim();
                 
                 const estadoTag = this.extractTag(fullResponse, 'estado');
-                const compressedResponse = `<estado>${estadoTag}</estado><respuesta>${finalRespuesta}</respuesta>`;
+                const estadoChunk = (estadoTag && estadoTag !== 'null') ? `<estado>${estadoTag}</estado>` : '';
+                const compressedResponse = `${estadoChunk}<respuesta>${finalRespuesta}</respuesta>`;
                 this.addMessage('assistant', compressedResponse);
 
                 apiFetch('/api/user/me')
