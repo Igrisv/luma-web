@@ -70,7 +70,10 @@ export function buildPostHistoryDirective(brainState, responseHint = '') {
         directivaEmocional = 'Sientes mucha afinidad. Sé cálida, cercana y confiada.';
     }
 
-    return `[ESTADO PARA ESTE TURNO — Hora=${time}, Energía=${energia}%${climaStr}, Rutina=${rutina}]:
+    // Daily Mood (si existe)
+    const moodStr = brainState.dailyMood ? `, Humor del día=${brainState.dailyMood.nombre} (${brainState.dailyMood.desc})` : '';
+
+    return `[ESTADO PARA ESTE TURNO — Hora=${time}, Energía=${energia}%${climaStr}, Rutina=${rutina}${moodStr}]:
 - Actitud actual: ${directivaEmocional}${hintLine}
 - Emociones: afinidad=${brainState.afinidad}, enojo=${brainState.enojo}, celos=${brainState.celos}, ansiedad=${brainState.ansiedad}, nostalgia=${brainState.nostalgia}.
 - REGLA: Responde ÚNICAMENTE a la frase del usuario en el chat. Mantén el personaje al 100%.`;
@@ -99,9 +102,21 @@ export function buildContextString(brainState, isFullPrompt = true) {
 Responde usando SOLO XML: <pensamiento>pensamiento breve</pensamiento><estado>emociones</estado><respuesta>Tu respuesta casual en español</respuesta>`;
     }
 
-    return `Eres una persona real chateando. Da respuestas casuales. Cero formalidad.
-${contextUsuario ? contextUsuario + '\n' : ''}
+    // Verbal Fingerprint & Few-Shot Examples (Estáticos, para el prefix cacheable)
+    let fingerprintStr = '';
+    if (arquetipo.verbalFingerprint) {
+        const fp = arquetipo.verbalFingerprint;
+        fingerprintStr = `Huella de voz: Muletillas habituales: [${fp.catchphrases.join(', ')}]. Estilo: ${fp.typingQuirks.join(', ')}. Estilo emoji: ${fp.emojiStyle}. `;
+    }
 
+    let fewShotStr = '';
+    if (arquetipo.fewShotExamples && arquetipo.fewShotExamples.length > 0) {
+        fewShotStr = '\nEjemplos de cómo suenas:\n' + arquetipo.fewShotExamples.map(e => `Usuario: "${e.user}"\nTú: "${e.bot}"`).join('\n') + '\n';
+    }
+
+    return `Eres una persona real chateando. Da respuestas casuales. Cero formalidad.
+${contextUsuario ? contextUsuario + '\n' : ''}${fingerprintStr}
+${fewShotStr}
 REGLAS GENERALES:
 1. Idioma: 100% Español casual. Cero inglés o Spanglish.
 2. Coherencia: Escucha y responde con sentido directo a la frase actual del usuario. NUNCA lo acuses de ignorarte si acaba de responder.

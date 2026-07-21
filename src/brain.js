@@ -96,11 +96,13 @@ export class ChatBrain {
             this.memoryState = savedConfig.memoryState || { episodios: [], conocimiento: {}, perfil_psicologico: '', characters_vault: {} };
             this.ignoredCount = savedConfig.ignoredCount || 0;
             this.diasActivos = savedConfig.diasActivos || [];
+            this.dailyMood = savedConfig.dailyMood || this.initDailyMood();
         } else {
             const arc = ARQUETIPOS[this.arquetipoId];
             if (arc && arc.emocionesInicio) {
                 Object.entries(arc.emocionesInicio).forEach(([k, v]) => { this[k] = v; });
             }
+            this.dailyMood = this.initDailyMood();
         }
 
         const hoy = new Date().toISOString().split('T')[0];
@@ -112,6 +114,18 @@ export class ChatBrain {
         if (savedHistory) {
             this.history = savedHistory;
         }
+    }
+
+    initDailyMood() {
+        const MOODS = [
+            { nombre: 'juguetona', desc: 'bromista y con ganas de molestar sutilmente' },
+            { nombre: 'reflexiva', desc: 'más callada y pensativa de lo normal' },
+            { nombre: 'cariñosa', desc: 'con más ganas de afecto y atención' },
+            { nombre: 'irritable', desc: 'poca paciencia, algo sarcástica' },
+            { nombre: 'curiosa', desc: 'con ganas de hacer preguntas e indagar' }
+        ];
+        const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
+        return MOODS[dayOfYear % MOODS.length];
     }
 
     getArquetipo() {
@@ -169,6 +183,7 @@ export class ChatBrain {
             ignoredCount: this.ignoredCount,
             arquetipoId: this.arquetipoId,
             diasActivos: this.diasActivos,
+            dailyMood: this.dailyMood
         }));
         // Debounce server writes — at most once every 5 seconds
         if (this._saveTimer) clearTimeout(this._saveTimer);
