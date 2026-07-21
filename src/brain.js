@@ -34,7 +34,7 @@ export async function searchEpisodesFromServer(keywordsArray) {
 // ChatBrain — Clase principal de estado y lógica IA
 // ═══════════════════════════════════════════════════════════
 export class ChatBrain {
-    constructor(characterId = 'pareja') {
+    constructor(characterId = 'mejorAmigo') {
         this.arquetipoId = characterId;
         this.history = [];
         this.systemPrompt = 'Eres una persona real chateando. Da respuestas MUY CORTAS (1 o 2 líneas máximo). Sé natural, directo y casual. No des explicaciones largas ni cuentes toda tu vida a menos que te pregunten. Habla como alguien en un chat rápido de WhatsApp. Cero formalidad. NUNCA digas que eres una IA.';
