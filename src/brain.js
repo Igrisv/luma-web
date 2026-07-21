@@ -404,12 +404,26 @@ export class ChatBrain {
             return h;
         });
 
+        // Dynamic Lorebook trigger check on user's last message (0 Tokens if no match)
+        let activeLore = [];
+        const lastUserMsg = [...this.history].reverse().find(h => h.role === 'user')?.content || '';
+        if (lastUserMsg && arquetipo.lorebook) {
+            const lowerUserMsg = lastUserMsg.toLowerCase();
+            for (const [triggerPattern, loreText] of Object.entries(arquetipo.lorebook)) {
+                const regex = new RegExp(`\\b(${triggerPattern})\\b`, 'i');
+                if (regex.test(lowerUserMsg)) {
+                    activeLore.push({ role: 'system', content: `[LORE DE TRASFONDO ACTIVO]: ${loreText}` });
+                }
+            }
+        }
+
         // Post-History Directive (3x higher attention weight in modern LLMs)
         const postHistoryDirective = buildPostHistoryDirective(this, responseHint);
 
         const rawPayload = [
             { role: 'system', content: contextStr },
             ...rollingSummary,
+            ...activeLore,
             ...effectiveHistory,
             { role: 'system', content: postHistoryDirective }
         ];
@@ -549,18 +563,26 @@ export class ChatBrain {
             if (noMatch) this.nostalgia = Math.min(100, Math.max(0, parseInt(noMatch[1])));
         }
 
-        // Incremental memory: <aprender> merges, <olvidar> removes keys
+        // Incremental memory: <aprender> merges, <olvidar> removes keys, with auto-pruning
         const aprenderStr = this.extractTag(fullResponse, 'aprender');
         if (aprenderStr) {
             try {
-                // Find first '{' and last '}' to extract only the JSON object
                 const firstBrace = aprenderStr.indexOf('{');
                 const lastBrace = aprenderStr.lastIndexOf('}');
                 if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
                     const jsonStr = aprenderStr.substring(firstBrace, lastBrace + 1);
                     const newData = JSON.parse(jsonStr);
                     if (typeof newData === 'object') {
-                        this.memoryState.conocimiento = { ...this.memoryState.conocimiento, ...newData };
+                        // Merge and auto-prune empty/outdated values
+                        const current = this.memoryState.conocimiento || {};
+                        for (const [k, v] of Object.entries(newData)) {
+                            if (v === null || v === '' || v === 'desconocido') {
+                                delete current[k];
+                            } else {
+                                current[k] = v;
+                            }
+                        }
+                        this.memoryState.conocimiento = { ...current };
                     }
                 }
             } catch (e) { console.error('Error parseando aprender', e); }
@@ -650,6 +672,24 @@ export class ChatBrain {
         return tokens;
     }
 
+    /**
+     * Calculates dynamic sampling parameters (temperature, presence_penalty) based on emotional mood.
+     */
+    calculateSamplingParameters() {
+        let temperature = 0.8;
+        let presencePenalty = 0.3;
+
+        if (this.enojo > 60 || this.resentimiento > 60) {
+            temperature = 0.5; // dry, direct, cortante
+        } else if (this.nostalgia > 60 || this.afinidad > 80) {
+            temperature = 0.9; // expressive, creative
+        } else if (this.ansiedad > 60) {
+            temperature = 0.85;
+        }
+
+        return { temperature, presencePenalty };
+    }
+
     async sendMessageToAI(message, onChunk, onThoughtChunk, isHidden = false, retryCount = 0, isInternal = false, hiddenSystemContext = '') {
         const payload = this.getPayload();
         
@@ -663,8 +703,10 @@ export class ChatBrain {
         }
 
         const maxTokens = this.calculateMaxTokens(message);
+        const { temperature, presencePenalty } = this.calculateSamplingParameters();
+
         if (retryCount === 0) window.logInspector('PAYLOAD ENVIADO', payload);
-        window.logInspector('MAX TOKENS', maxTokens);
+        window.logInspector('SAMPLING', `Temp: ${temperature}, Presence: ${presencePenalty}, MaxTokens: ${maxTokens}`);
 
         let timeout;
         try {
@@ -678,7 +720,9 @@ export class ChatBrain {
                     isRetry: retryCount > 0, 
                     isInternal: isInternal,
                     arquetipo_id: this.arquetipoId,
-                    max_tokens: maxTokens
+                    max_tokens: maxTokens,
+                    temperature,
+                    presence_penalty: presencePenalty
                 }),
                 signal: controller.signal
             });
