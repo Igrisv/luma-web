@@ -487,30 +487,10 @@ export async function addMessage(text, sender, messagesBox, chatState) {
         if (chatState.chatBar) chatState.chatBar.classList.add('has-new');
     }
 
-    if (sender === 'assistant' && text.includes('||')) {
-        const chunks = text.split('||').map(s => s.trim()).filter(s => s);
-        for (let i = 0; i < chunks.length; i++) {
-            const chunk = chunks[i];
-            if (i > 0) {
-                const typingDiv = document.createElement('div');
-                typingDiv.className = 'message ai typing';
-                typingDiv.innerHTML = '<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
-                messagesBox.appendChild(typingDiv);
-                messagesBox.scrollTop = messagesBox.scrollHeight;
-                const delay = Math.min(3000, Math.max(800, chunk.length * 40));
-                await new Promise(r => setTimeout(r, delay));
-                messagesBox.removeChild(typingDiv);
-                playPopSound();
-            }
-            const msgDiv = createMessageElement(chunk, 'ai');
-            messagesBox.appendChild(msgDiv);
-            messagesBox.scrollTop = messagesBox.scrollHeight;
-        }
-    } else {
-        const div = createMessageElement(text, sender);
-        messagesBox.appendChild(div);
-        messagesBox.scrollTop = messagesBox.scrollHeight;
-    }
+    const cleanText = text.replace(/\|\|/g, ' ').trim();
+    const div = createMessageElement(cleanText, sender);
+    messagesBox.appendChild(div);
+    messagesBox.scrollTop = messagesBox.scrollHeight;
 }
 
 // ── History renderer ────────────────────────────────────────

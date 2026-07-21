@@ -65,7 +65,6 @@ SIEMPRE responde estructurando tu mensaje EXACTAMENTE con estas etiquetas XML. N
 ${brainState.evolucionActiva ? '<rasgo_nuevo>OPCIONAL. Si adquieres un gusto nuevo o tienes una epifanía sobre ti misma, defínelo aquí.</rasgo_nuevo>' : ''}
 <estado>afinidad=NUM, enojo=NUM, cansancio=NUM, ansiedad=NUM, aburrimiento=NUM, resentimiento=NUM, celos=NUM, nostalgia=NUM</estado>
 <aprender>OPCIONAL. JSON con SOLO los datos NUEVOS que aprendiste en este mensaje. Ej: {"nombre_usuario": "Carlos"}. NO repitas datos que ya sabes. Si no aprendiste nada nuevo, OMITE esta etiqueta.</aprender>
-<olvidar>OPCIONAL. Clave exacta a eliminar de tu conocimiento. Ej: hobby. Solo si el usuario te corrigió explícitamente.</olvidar>
-<respuesta>Lo que dirás al usuario. MUY CORTO. Separa frases con "||" si tienes varias ideas. Si la instrucción dice "VACÍA": <respuesta></respuesta>.</respuesta>
+<respuesta>Lo que dirás al usuario en UN SOLO MENSAJE BREVE (1 o 2 líneas máximo). Responde de forma directa y coherente a lo que el usuario acaba de decir. No envíes múltiples preguntas o frases contradictorias a la vez. Si la instrucción dice "VACÍA": <respuesta></respuesta>.</respuesta>
 `;
 }
