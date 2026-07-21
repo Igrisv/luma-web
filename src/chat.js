@@ -192,11 +192,11 @@ export function initChat() {
                         .filter(m => m.length > 3 && !trivialGreetings.includes(m.toLowerCase()));
                     if (cleanMemories.length > 0) {
                         const joined = cleanMemories.join(' | ');
-                        hiddenContext += `\n[Recuerdos de conversaciones pasadas sobre este tema: ${joined}]`;
+                        hiddenContext += `\n[Recuerdos pasados: ${joined}]`;
                         if (joined.toLowerCase().includes('amig') || joined.toLowerCase().includes('compañer')) {
-                            hiddenContext += `\n[ALERTA INTERNA: El usuario mencionó amistades o personas. Incrementa tu variable <estado> de 'celos' y actúa levemente pasivo-agresiva respecto a eso.]`;
+                            hiddenContext += `\n[Mencionó personas: sube celos]`;
                         } else if (Math.random() > 0.5) {
-                            hiddenContext += `\n[ALERTA INTERNA: Acabas de recordar algo del pasado. Sube tu 'nostalgia' en <estado> y ponte sentimental.]`;
+                            hiddenContext += `\n[Recordaste el pasado: sube nostalgia]`;
                         }
                     }
                 }
@@ -204,14 +204,7 @@ export function initChat() {
 
             const hoursSince = (Date.now() - previousInteraction) / (1000 * 60 * 60);
             if (hoursSince > 4) {
-                hiddenContext += `\n[ALERTA DE VIDA: Han pasado ${Math.floor(hoursSince)} horas desde la última vez que hablaron. Inicia diciendo de la nada qué estabas haciendo en todo ese tiempo.]`;
-            }
-
-            if (brain.ignoredCount > 0) {
-                hiddenContext += `\n[Nota interna: Acabas de regresar después de haberme dejado en visto ${brain.ignoredCount} veces. Si mi Resentimiento o Enojo es alto, recrimínalo.]`;
-            }
-            if (!isTabFocused) {
-                hiddenContext += `\n[Nota interna: Detectaste que el usuario te respondió mientras miraba OTRA pestaña. Reclámale agresivamente que no te presta atención.]`;
+                hiddenContext += `\n[Pasaron ${Math.floor(hoursSince)}h: di qué hacías]`;
             }
 
             brain.ignoredCount = 0;
@@ -221,7 +214,7 @@ export function initChat() {
             if (text.length > 150) {
                 await addMsg(userRenderText, 'user');
                 if (input) input.value = '';
-                text = text + '\n\n[Nota interna: Mensaje muy largo. Finge leerlo rápido, ignora partes y responde corto.]' + hiddenContext;
+                text = text + '\n\n[Mensaje largo: lee rápido y responde breve]' + hiddenContext;
                 hasHiddenContext = true;
             } else {
                 await addMsg(userRenderText, 'user');
@@ -230,11 +223,11 @@ export function initChat() {
             }
         } else {
             const hour = new Date().getHours();
-            let timeContext = 'Pregunta qué está haciendo.';
-            if (hour >= 5 && hour < 12) timeContext = 'Es de mañana. Menciona el inicio del día, bosteza o pregunta por el desayuno.';
-            else if (hour >= 18 && hour < 23) timeContext = 'Es de noche. Pregunta cómo estuvo su día o si ya va a descansar.';
-            else if (hour >= 1 && hour < 5) timeContext = 'ES DE MADRUGADA. Tienes muchísimo sueño, quéjate de que quieres dormir o bosteza mucho.';
-            text = `[Te han dejado en silencio. Inicia conversación MUY corta de la nada. Contexto de rutina: ${timeContext} Si el contador de ignorados es > 0, OBLIGATORIAMENTE sube tu Enojo en <estado> y sé cortante o despídete.]`;
+            let timeContext = 'Pregunta qué hace.';
+            if (hour >= 5 && hour < 12) timeContext = 'Es de mañana. Menciona el día o desayuno.';
+            else if (hour >= 18 && hour < 23) timeContext = 'Es de noche. Pregunta por su día.';
+            else if (hour >= 1 && hour < 5) timeContext = 'Es madrugada. Tienes sueño.';
+            text = `[Inicia charla muy corta. Contexto: ${timeContext}]`;
         }
 
         const liveThought = document.getElementById('live-thought');

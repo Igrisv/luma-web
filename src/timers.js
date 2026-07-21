@@ -36,7 +36,7 @@ export function initTimers(brain, addMessageFn, handleSendFn, input) {
     let messageJustArrived = false;
 
     async function handleReflection() {
-        const text = '[REFLEXIÓN INTERNA ASÍNCRONA: Analiza el contexto, actualiza tu estado emocional. MUY IMPORTANTE: DEJA LA ETIQUETA <respuesta> TOTALMENTE VACÍA.]';
+        const text = '[Reflexión: actualiza emociones. Deja <respuesta> VACÍA.]';
         const liveThought = document.getElementById('live-thought');
         if (liveThought) liveThought.textContent = 'Reflexionando en silencio...';
         try {
