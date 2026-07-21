@@ -296,15 +296,8 @@ export function initChat() {
                 setTimeout(() => {
                     handleSend(true, `[INSTRUCCIÓN INTERNA: Mientras estabas escribiendo tu último mensaje, el usuario envió lo siguiente rápido: "${queuedTexts}". Responde también a esto de inmediato.]`);
                 }, 500);
-            } else if (brain.ultimaAccion === 'escribir_mas' && !isAutonomous) {
-                brain.ultimaAccion = 'esperar';
-                window.logInspector('RITMO DINÁMICO', 'La IA decidió escribir más. Esperando 18s para el segundo mensaje...');
-                setTimeout(() => {
-                    if (!window.isThinking && brain.ignoredCount === 0) {
-                        handleSend(true, '[INSTRUCCIÓN INTERNA: Decidiste escribir más. Continúa con tu idea brevemente. No repitas el mensaje anterior.]');
-                    }
-                }, 18000);
             }
+            brain.ultimaAccion = 'esperar';
 
             if (isAutonomous && document.visibilityState === 'hidden' && 'Notification' in window && Notification.permission === 'granted') {
                 const strippedRes = finalRespuesta.replace(/\|\|/g, ' ');
