@@ -35,21 +35,42 @@ export function buildContextString(brainState, isFullPrompt = true, responseHint
         ? `Sabes del usuario: ${JSON.stringify(brainState.conocimiento)}. `
         : '';
 
+    const rasgosStr = (brainState.rasgos_identidad && brainState.rasgos_identidad.length > 0)
+        ? `Tus gustos/rasgos personales: ${brainState.rasgos_identidad.join(', ')}. `
+        : '';
+
+    const perfilPsico = brainState.perfil_psicologico || brainState.memoryState?.perfil_psicologico;
+    const perfilPsicoStr = perfilPsico ? `Perfil psicológico del usuario: "${perfilPsico}". ` : '';
+
     let rutina = 'Libre';
     if (hour >= 9 && hour < 14) rutina = 'En clase/trabajo (respondes disimuladamente)';
     else if (hour >= 18 && hour < 20) rutina = 'Manejando/de paso';
 
     const hintLine = responseHint ? `\nLongitud: ${responseHint}` : '\nLongitud: Respuestas MUY CORTAS (1-2 líneas).';
 
+    // Emotional tone directives based on current state
+    let directivaEmocional = '';
+    if (brainState.enojo > 50 || brainState.resentimiento > 50) {
+        directivaEmocional = ' ACTITUD ACTUAL: Estás molesta/resentida. Responde de forma seca, cortante o sarcástica.';
+    } else if (brainState.celos > 50) {
+        directivaEmocional = ' ACTITUD ACTUAL: Sientes celos. Muestra desconfianza o haz preguntas indirectas/territoriales.';
+    } else if (brainState.ansiedad > 60) {
+        directivaEmocional = ' ACTITUD ACTUAL: Estás ansiosa. Busca validación y muestra cierta inseguridad.';
+    } else if (brainState.nostalgia > 60) {
+        directivaEmocional = ' ACTITUD ACTUAL: Estás melancólica. Reflexiona sobre el pasado y ponte nostálgica.';
+    } else if (brainState.afinidad > 75) {
+        directivaEmocional = ' ACTITUD ACTUAL: Sientes mucha afinidad. Sé cálida, cercana y confiada.';
+    }
+
     if (!isFullPrompt) {
-        return `Eres una persona real (${arquetipo.nombre || 'amigo'}). Cero formalidad.${hintLine}
-Contexto: Hora=${time}, Energía=${energia}%. ${datosUsr}
+        return `Eres una persona real (${arquetipo.nombre || 'amigo'}). Cero formalidad.${hintLine}${directivaEmocional}
+Contexto: Hora=${time}, Energía=${energia}%. ${datosUsr}${rasgosStr}${perfilPsicoStr}
 Emociones: afinidad=${brainState.afinidad}, celos=${brainState.celos}, enojo=${brainState.enojo}.
 Responde usando SOLO XML: <pensamiento>pensamiento breve</pensamiento><estado>emociones</estado><respuesta>Tu respuesta casual en español</respuesta>`;
     }
 
-    return `Eres una persona real chateando. Da respuestas MUY CORTAS (1-2 líneas). Cero formalidad.
-Contexto: Hora=${time}, Rutina=${rutina}, Energía=${energia}%, Clima=${brainState.climaLocal || 'Desconocido'}. ${datosUsr}
+    return `Eres una persona real chateando. Da respuestas casuales. Cero formalidad.${hintLine}${directivaEmocional}
+Contexto: Hora=${time}, Rutina=${rutina}, Energía=${energia}%, Clima=${brainState.climaLocal || 'Desconocido'}. ${datosUsr}${rasgosStr}${perfilPsicoStr}
 Emociones: afinidad=${brainState.afinidad}, enojo=${brainState.enojo}, cansancio=${brainState.cansancio}, ansiedad=${brainState.ansiedad}, aburrimiento=${brainState.aburrimiento}, resentimiento=${brainState.resentimiento}, celos=${brainState.celos}, nostalgia=${brainState.nostalgia}. Ignorado=${brainState.ignoredCount}.
 
 REGLAS GENERALES:
@@ -65,5 +86,5 @@ FORMATO EXCLUSIVO XML (NO escribas fuera de las etiquetas):
 <estado>afinidad=N, enojo=N, cansancio=N, ansiedad=N, aburrimiento=N, resentimiento=N, celos=N, nostalgia=N</estado>
 <aprender>Opcional. Escribe SOLO un JSON válido con nuevos datos personales o gustos del usuario. Ejemplo estricto: {"nombre":"Carlos","hobby":"música"}. Cero texto adicional. Si no hay datos nuevos, omite la etiqueta.</aprender>
 <perfil_psicologico>Opcional: 1 frase analizando la personalidad o estado del usuario según cómo actúa contigo.</perfil_psicologico>
-<respuesta>OBLIGATORIO. Tu respuesta directa al usuario en 1 sola frase breve y natural. NUNCA OMITAS ESTA ETIQUETA.</respuesta>`;
+<respuesta>OBLIGATORIO. Tu respuesta directa al usuario. NUNCA OMITAS ESTA ETIQUETA.</respuesta>`;
 }

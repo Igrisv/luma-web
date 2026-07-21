@@ -370,6 +370,7 @@ export class ChatBrain {
             celos: this.celos,
             nostalgia: this.nostalgia,
             conocimiento: this.memoryState.conocimiento,
+            perfil_psicologico: this.memoryState.perfil_psicologico,
             ignoredCount: this.ignoredCount,
             arquetipo,
             nivelInfo,
