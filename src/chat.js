@@ -175,7 +175,7 @@ export function initChat() {
             }
 
             const cleanUserText = text;
-            saveEpisodeToServer(`Usuario dijo: ${cleanUserText}`);
+            saveEpisodeToServer(cleanUserText);
             const stopWords = ['que', 'del', 'los', 'las', 'por', 'con', 'para', 'una', 'uno'];
             const keywords = text.toLowerCase().replace(/[^\w\sñáéíóú]/g, '').split(/\s+/)
                 .filter(w => w.length >= 3 && !stopWords.includes(w));
@@ -184,7 +184,7 @@ export function initChat() {
                 const pastMemories = await searchEpisodesFromServer(keywords);
                 if (pastMemories.length > 0) {
                     const joined = pastMemories.join(' | ');
-                    hiddenContext += `\n[Recuerdos desenterrados del historial largo relacionados a esto: ${joined}]`;
+                    hiddenContext += `\n[Recuerdos de conversaciones pasadas sobre este tema: ${joined}]`;
                     if (joined.toLowerCase().includes('amig') || joined.toLowerCase().includes('compañer')) {
                         hiddenContext += `\n[ALERTA INTERNA: El usuario mencionó amistades o personas. Incrementa tu variable <estado> de 'celos' y actúa levemente pasivo-agresiva respecto a eso.]`;
                     } else if (Math.random() > 0.5) {
@@ -288,10 +288,12 @@ export function initChat() {
                     handleSend(true, `[INSTRUCCIÓN INTERNA: Mientras estabas escribiendo tu último mensaje, el usuario envió lo siguiente rápido: "${queuedTexts}". Responde también a esto de inmediato.]`);
                 }, 500);
             } else if (brain.ultimaAccion === 'escribir_mas') {
-                window.logInspector('RITMO DINÁMICO', 'La IA decidió escribir más. Enviando trigger oculto...');
+                window.logInspector('RITMO DINÁMICO', 'La IA decidió escribir más. Esperando 15s para el segundo mensaje...');
                 setTimeout(() => {
-                    handleSend(true, '[INSTRUCCIÓN INTERNA: Decidiste escribir más. Continúa con tu idea o añade algo nuevo. No repitas el mensaje anterior.]');
-                }, 3000);
+                    if (!window.isThinking) {
+                        handleSend(true, '[INSTRUCCIÓN INTERNA: Decidiste escribir más. Continúa con tu idea o añade algo nuevo. No repitas el mensaje anterior.]');
+                    }
+                }, 15000);
             }
 
             if (isAutonomous && document.visibilityState === 'hidden' && 'Notification' in window && Notification.permission === 'granted') {
