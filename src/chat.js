@@ -205,8 +205,9 @@ export function initChat() {
             ];
             
             // Only query vector memory if message explicitly triggers a memory recall intent
-            const memoryTriggers = ['recuerd', 'acuerd', 'mencion', 'dije', 'conté', 'hablamos', 'te dije', 'el otro dia', 'pasado'];
-            const hasMemoryIntent = memoryTriggers.some(t => cleanUserText.toLowerCase().includes(t));
+            const memoryTriggers = ['recuerd', 'acuerd', 'mencion', 'dije', 'conte', 'hablamos', 'te dije', 'el otro dia', 'pasado'];
+            const normalizedCleanText = cleanUserText.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            const hasMemoryIntent = memoryTriggers.some(t => normalizedCleanText.includes(t));
             if (cleanUserText.length >= 15 && hasMemoryIntent) {
                 const keywords = text.toLowerCase().replace(/[^\w\sñáéíóú]/g, '').split(/\s+/)
                     .filter(w => w.length >= 4 && !stopWords.includes(w));

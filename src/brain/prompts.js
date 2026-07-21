@@ -23,7 +23,12 @@ export function formatKeyValueMemory(conocimientoObj) {
     if (!conocimientoObj || typeof conocimientoObj !== 'object') return '';
     const entries = Object.entries(conocimientoObj);
     if (entries.length === 0) return '';
-    const kvPairs = entries.map(([k, v]) => `${k}=${Array.isArray(v) ? v.join('/') : v}`).join('; ');
+    const kvPairs = entries.map(([k, v]) => {
+        const valStr = (typeof v === 'object' && v !== null)
+            ? (Array.isArray(v) ? v.join('/') : JSON.stringify(v))
+            : String(v);
+        return `${k}=${valStr}`;
+    }).join('; ');
     return `Usuario: ${kvPairs}. `;
 }
 

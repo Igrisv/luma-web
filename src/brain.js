@@ -404,14 +404,16 @@ export class ChatBrain {
             return h;
         });
 
-        // Dynamic Lorebook trigger check on user's last message (0 Tokens if no match)
+        // Dynamic Lorebook trigger check on user's last message with accent-insensitive matching (0 Tokens if no match)
         let activeLore = [];
         const lastUserMsg = [...this.history].reverse().find(h => h.role === 'user')?.content || '';
         if (lastUserMsg && arquetipo.lorebook) {
-            const lowerUserMsg = lastUserMsg.toLowerCase();
+            const normalizeText = (str) => String(str).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            const normalizedUserMsg = normalizeText(lastUserMsg);
+
             for (const [triggerPattern, loreText] of Object.entries(arquetipo.lorebook)) {
-                const regex = new RegExp(`\\b(${triggerPattern})\\b`, 'i');
-                if (regex.test(lowerUserMsg)) {
+                const terms = normalizeText(triggerPattern).split('|');
+                if (terms.some(term => normalizedUserMsg.includes(term))) {
                     activeLore.push({ role: 'system', content: `[LORE DE TRASFONDO ACTIVO]: ${loreText}` });
                 }
             }
