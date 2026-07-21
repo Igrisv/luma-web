@@ -233,6 +233,8 @@ export function initChat() {
         markAllAsRead();
 
         let mainTypingDiv = null;
+        let streamMessageDiv = null;
+
         if (!isAutonomous) {
             mainTypingDiv = document.createElement('div');
             mainTypingDiv.className = 'message ai typing';
@@ -246,12 +248,34 @@ export function initChat() {
         try {
             window.isThinking = true;
             const isPromptHidden = isAutonomous || hasHiddenContext;
-            const finalRespuesta = await brain.sendMessageToAI(text, () => {}, (t) => {
-                if (liveThought) liveThought.textContent = t;
-            }, isPromptHidden, 0, isAutonomous);
+            const finalRespuesta = await brain.sendMessageToAI(
+                text,
+                (chunk) => {
+                    // Live Streaming Callback
+                    if (mainTypingDiv && mainTypingDiv.parentNode) {
+                        mainTypingDiv.parentNode.removeChild(mainTypingDiv);
+                        mainTypingDiv = null;
+                    }
+                    if (!streamMessageDiv) {
+                        streamMessageDiv = document.createElement('div');
+                        streamMessageDiv.className = 'message ai';
+                        if (messagesBox) messagesBox.appendChild(streamMessageDiv);
+                    }
+                    streamMessageDiv.textContent += chunk.replace(/\|\|/g, ' ');
+                    if (messagesBox) messagesBox.scrollTop = messagesBox.scrollHeight;
+                },
+                (t) => {
+                    if (liveThought) liveThought.textContent = t;
+                },
+                isPromptHidden,
+                0,
+                isAutonomous
+            );
 
-            window.isThinking = false;
-            removeAllTyping();
+            // Remove stream message div if final message will be added cleanly
+            if (streamMessageDiv && streamMessageDiv.parentNode) {
+                streamMessageDiv.parentNode.removeChild(streamMessageDiv);
+            }
 
             if (finalRespuesta && finalRespuesta.trim() !== '') {
                 await addMsg(finalRespuesta, 'assistant');
@@ -279,11 +303,7 @@ export function initChat() {
             if (!isAutonomous && timers) timers.setMessageJustArrived(true);
 
         } catch (e) {
-            console.error(e);
-            window.isThinking = false;
-            removeAllTyping();
-            if (liveThought) liveThought.textContent = '';
-
+            console.error('Chat error:', e);
             if (e.message === 'INTERNAL_LIMIT_REACHED') {
                 // Silencioso
             } else if (e.message === 'USER_LIMIT_REACHED') {
@@ -291,6 +311,10 @@ export function initChat() {
             } else {
                 await addMsg(`[Error del sistema: ${e.message}]`, 'assistant');
             }
+        } finally {
+            window.isThinking = false;
+            removeAllTyping();
+            if (liveThought) liveThought.textContent = 'En línea';
         }
     }
 

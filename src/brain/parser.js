@@ -3,13 +3,20 @@
 // ═══════════════════════════════════════════════════════════
 
 /**
- * Extrae el contenido dentro de una etiqueta XML dada.
+ * Extrae el contenido dentro de una etiqueta XML dada (soporta etiquetas cerradas y abiertas).
  */
 export function extractTag(text, tag) {
     if (!text) return '';
+    // 1. Coincidencia exacta con etiquetas de apertura y cierre
     const regex = new RegExp(`<${tag}>([\\s\\S]*?)</${tag}>`, 'i');
     const match = text.match(regex);
-    return match ? match[1].trim() : '';
+    if (match) return match[1].trim();
+
+    // 2. Fallback para etiqueta abierta no cerrada al final del stream
+    const openMatch = text.match(new RegExp(`<${tag}>([\\s\\S]*)$`, 'i'));
+    if (openMatch) return openMatch[1].trim();
+
+    return '';
 }
 
 /**
@@ -17,7 +24,7 @@ export function extractTag(text, tag) {
  * Si el LLM omitió las etiquetas XML, aplica un fallback para limpiar el texto y no mostrar XML crudo.
  */
 export function parseAIResponseData(fullResponse) {
-    const rawRespuesta = extractTag(fullResponse, 'respuesta');
+    let rawRespuesta = extractTag(fullResponse, 'respuesta');
     const pensamiento = extractTag(fullResponse, 'pensamiento');
     const accion = extractTag(fullResponse, 'accion') || 'esperar';
     const estadoStr = extractTag(fullResponse, 'estado');
@@ -29,18 +36,18 @@ export function parseAIResponseData(fullResponse) {
 
     let cleanText = rawRespuesta;
 
-    // Fallback: si no se encontró la etiqueta <respuesta>, remover etiquetas de control y usar el resto
+    // Fallback: si no se encontró la etiqueta <respuesta>, rescatar texto fuera de etiquetas de control
     if (!cleanText && fullResponse) {
         cleanText = fullResponse
-            .replace(/<pensamiento>[\s\S]*?<\/pensamiento>/gi, '')
-            .replace(/<critica>[\s\S]*?<\/critica>/gi, '')
-            .replace(/<estado>[\s\S]*?<\/estado>/gi, '')
-            .replace(/<accion>[\s\S]*?<\/accion>/gi, '')
-            .replace(/<aprender>[\s\S]*?<\/aprender>/gi, '')
-            .replace(/<olvidar>[\s\S]*?<\/olvidar>/gi, '')
-            .replace(/<rasgo_nuevo>[\s\S]*?<\/rasgo_nuevo>/gi, '')
-            .replace(/<cita>[\s\S]*?<\/cita>/gi, '')
-            .replace(/<diario>[\s\S]*?<\/diario>/gi, '')
+            .replace(/<pensamiento>[\s\S]*?(?:<\/pensamiento>|$)/gi, '')
+            .replace(/<critica>[\s\S]*?(?:<\/critica>|$)/gi, '')
+            .replace(/<estado>[\s\S]*?(?:<\/estado>|$)/gi, '')
+            .replace(/<accion>[\s\S]*?(?:<\/accion>|$)/gi, '')
+            .replace(/<aprender>[\s\S]*?(?:<\/aprender>|$)/gi, '')
+            .replace(/<olvidar>[\s\S]*?(?:<\/olvidar>|$)/gi, '')
+            .replace(/<rasgo_nuevo>[\s\S]*?(?:<\/rasgo_nuevo>|$)/gi, '')
+            .replace(/<cita>[\s\S]*?(?:<\/cita>|$)/gi, '')
+            .replace(/<diario>[\s\S]*?(?:<\/diario>|$)/gi, '')
             .replace(/<[^>]+>/g, '') // Quitar cualquier otra etiqueta remanente
             .trim();
     }

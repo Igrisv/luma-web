@@ -669,16 +669,9 @@ export class ChatBrain {
             if (retryCount === 0) window.logInspector('RESPUESTA CRUDA DE API', fullResponse);
             console.warn('RAW API RESPONSE:', fullResponse);
             this.parseAIResponse(fullResponse);
-            let finalRespuesta = this.extractTag(fullResponse, 'respuesta') || '';
-
-            if (finalRespuesta.trim() === '') {
-                // Intentar rescatar cualquier texto útil del response
-                const stripped = fullResponse.replace(/<[^>]+>[\s\S]*?<\/[^>]+>/g, '').replace(/<[^>]+>/g, '').trim();
-                if (stripped.length > 0) {
-                    window.logInspector('FALLBACK DE TEXTO', 'La IA ignoró el formato XML. Rescatando texto crudo...');
-                    finalRespuesta = stripped;
-                }
-            }
+            
+            const parsedData = parseAIResponseData(fullResponse);
+            let finalRespuesta = parsedData.respuesta || '';
 
             const rawCita = this.extractTag(fullResponse, 'cita');
             if (rawCita && !finalRespuesta.includes('<cita>')) {
