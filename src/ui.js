@@ -502,11 +502,7 @@ export function renderHistory(brain, messagesBox) {
         let renderText = msg.content;
 
         if (role === 'user') {
-            renderText = renderText
-                .replace(/\n\[Recuerdos desenterrados[\s\S]*?\]/g, '')
-                .replace(/\n\[ALERTA INTERNA[\s\S]*?\]/g, '')
-                .replace(/\n\[ALERTA DE VIDA[\s\S]*?\]/g, '')
-                .replace(/\n\[Nota interna[\s\S]*?\]/g, '');
+            renderText = renderText.replace(/\s*\[[\s\S]*?\]/g, '').trim();
         }
 
         if (role === 'assistant') {

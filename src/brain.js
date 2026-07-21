@@ -311,7 +311,9 @@ export class ChatBrain {
     }
 
     addMessage(role, content) {
-        this.history.push({ role, content });
+        const cleanContent = role === 'user' ? content.replace(/\s*\[[\s\S]*?\]/g, '').trim() : content;
+        if (!cleanContent && role === 'user') return;
+        this.history.push({ role, content: cleanContent });
         if (this.history.length > this.maxMemory) {
             this.history.shift();
         }
