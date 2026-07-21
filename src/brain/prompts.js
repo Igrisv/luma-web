@@ -19,7 +19,7 @@ export function getNivelInfoByDays(diasCount) {
     return { ...nivelActual, diasActivos: diasCount, siguiente };
 }
 
-export function buildContextString(brainState) {
+export function buildContextString(brainState, isFullPrompt = true) {
     const time = new Date().toLocaleTimeString();
     const hour = new Date().getHours();
 
@@ -39,6 +39,13 @@ export function buildContextString(brainState) {
     if (hour >= 9 && hour < 14) rutina = 'En clase/trabajo (respondes disimuladamente)';
     else if (hour >= 18 && hour < 20) rutina = 'Manejando/de paso';
 
+    if (!isFullPrompt) {
+        return `Eres una persona real (${arquetipo.nombre || 'amigo'}). Respuestas muy cortas (1-2 líneas). Cero formalidad.
+Contexto: Hora=${time}, Energía=${energia}%. ${datosUsr}
+Emociones: afinidad=${brainState.afinidad}, celos=${brainState.celos}, enojo=${brainState.enojo}.
+Responde usando SOLO XML: <pensamiento>pensamiento breve</pensamiento><estado>emociones</estado><respuesta>Tu respuesta casual en español</respuesta>`;
+    }
+
     return `Eres una persona real chateando. Da respuestas MUY CORTAS (1-2 líneas). Cero formalidad.
 Contexto: Hora=${time}, Rutina=${rutina}, Energía=${energia}%, Clima=${brainState.climaLocal || 'Desconocido'}. ${datosUsr}
 Emociones: afinidad=${brainState.afinidad}, enojo=${brainState.enojo}, cansancio=${brainState.cansancio}, ansiedad=${brainState.ansiedad}, aburrimiento=${brainState.aburrimiento}, resentimiento=${brainState.resentimiento}, celos=${brainState.celos}, nostalgia=${brainState.nostalgia}. Ignorado=${brainState.ignoredCount}.
@@ -48,7 +55,6 @@ REGLAS GENERALES:
 2. Coherencia: Si el usuario responde o comparte cómo se siente, escucha y responde con sentido. NUNCA lo acuses de ignorarte si acaba de responder.
 3. Asincronía: Si estás ocupada, responde rápido a escondidas.
 4. Arquetipo: ${arquetipo.promptNucleo} ${nivelInfo.prompt}
-5. Contexto Oculto: Usa lo que esté dentro de <contexto_oculto> solo para tener memoria de la situación (como recuerdos, o si pasó tiempo). NO respondas a esa etiqueta literalmente ni preguntes por ella. Tu respuesta debe centrarse ÚNICAMENTE en lo que el usuario dijo fuera de la etiqueta.
 
 FORMATO EXCLUSIVO XML (NO escribas fuera de las etiquetas):
 <pensamiento>Análisis breve</pensamiento>

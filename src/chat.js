@@ -214,12 +214,12 @@ export function initChat() {
             if (text.length > 150) {
                 await addMsg(userRenderText, 'user');
                 if (input) input.value = '';
-                text = text + '\n\n<contexto_oculto>Mensaje largo: lee rápido y responde breve</contexto_oculto>' + hiddenContext;
+                hiddenContext = '\n<contexto_oculto>Mensaje largo: lee rápido y responde breve</contexto_oculto>' + hiddenContext;
                 hasHiddenContext = true;
             } else {
                 await addMsg(userRenderText, 'user');
                 if (input) input.value = '';
-                if (hiddenContext) { text += hiddenContext; hasHiddenContext = true; }
+                if (hiddenContext) { hasHiddenContext = true; }
             }
         } else {
             const hour = new Date().getHours();
@@ -227,7 +227,8 @@ export function initChat() {
             if (hour >= 5 && hour < 12) timeContext = 'Es de mañana. Menciona el día o desayuno.';
             else if (hour >= 18 && hour < 23) timeContext = 'Es de noche. Pregunta por su día.';
             else if (hour >= 1 && hour < 5) timeContext = 'Es madrugada. Tienes sueño.';
-            text = `<contexto_oculto>Inicia charla muy corta. Contexto: ${timeContext}</contexto_oculto>`;
+            hiddenContext = `<contexto_oculto>Inicia charla muy corta. Contexto: ${timeContext}</contexto_oculto>`;
+            text = '';
         }
 
         const liveThought = document.getElementById('live-thought');
@@ -249,19 +250,19 @@ export function initChat() {
 
         try {
             window.isThinking = true;
-            const isPromptHidden = isAutonomous || hasHiddenContext;
             const finalRespuesta = await brain.sendMessageToAI(
-                text,
+                text, 
                 (chunk) => {
-                    // Live Streaming Callback
-                    if (mainTypingDiv && mainTypingDiv.parentNode) {
-                        mainTypingDiv.parentNode.removeChild(mainTypingDiv);
-                        mainTypingDiv = null;
+                    // Update thought process
+                    if (liveThought) {
+                        const pens = brain.extractTag(chunk, 'pensamiento');
+                        if (pens) liveThought.textContent = 'Pensando: ' + pens;
                     }
+                }, 
+                (chunk) => {
+                    if (mainTypingDiv) mainTypingDiv.remove();
                     if (!streamMessageDiv) {
                         streamMessageDiv = document.createElement('div');
-                        streamMessageDiv.className = 'message ai';
-                        if (messagesBox) messagesBox.appendChild(streamMessageDiv);
                     }
                     streamMessageDiv.textContent += chunk.replace(/\|\|/g, ' ');
                     if (messagesBox) messagesBox.scrollTop = messagesBox.scrollHeight;

@@ -55,6 +55,7 @@ export class ChatBrain {
         this.climaLocal = 'Desconocido';
         this.diasActivos = [];
         this.ultimaAccion = 'esperar';
+        this.messagesSinceFullPrompt = 5; // force full prompt on first message
         this.fetchClimaLocal();
 
         const configKey = `chatConfig_${this.arquetipoId}`;
@@ -343,6 +344,12 @@ export class ChatBrain {
         const evolucionEl = document.getElementById('evolucion-checkbox');
         const evolucionActiva = evolucionEl && evolucionEl.checked;
 
+        this.messagesSinceFullPrompt = (this.messagesSinceFullPrompt || 0) + 1;
+        const isFullPrompt = (this.messagesSinceFullPrompt >= 5) || (this.history.length === 0);
+        if (isFullPrompt) {
+            this.messagesSinceFullPrompt = 0;
+        }
+
         const contextStr = buildContextString({
             climaLocal: this.climaLocal,
             afinidad: this.afinidad,
@@ -359,7 +366,7 @@ export class ChatBrain {
             nivelInfo,
             evolucionActiva,
             rasgos_identidad: this.rasgos_identidad
-        });
+        }, isFullPrompt);
 
         const features = getFeatures();
         const effectiveHistory = (features.maxMessagesPerDay !== Infinity) ? this.history.slice(-4) : this.history;
@@ -579,10 +586,17 @@ export class ChatBrain {
         this.updateBrainUI();
     }
 
-    async sendMessageToAI(message, onChunk, onThoughtChunk, isHidden = false, retryCount = 0, isInternal = false) {
+    async sendMessageToAI(message, onChunk, onThoughtChunk, isHidden = false, retryCount = 0, isInternal = false, hiddenSystemContext = '') {
         const payload = this.getPayload();
-        this.addMessage('user', message);
-        payload.push({ role: 'user', content: message });
+        
+        if (hiddenSystemContext) {
+            payload.push({ role: 'system', content: `[MEMORIA OCULTA DEL SISTEMA - CONTEXTO ADICIONAL PARA TI, NO RESPONDAS A ESTO SINO AL USUARIO]:\n${hiddenSystemContext}` });
+        }
+
+        if (message) {
+            this.addMessage('user', message);
+            payload.push({ role: 'user', content: message });
+        }
 
         if (retryCount === 0) window.logInspector('PAYLOAD ENVIADO', payload);
 
