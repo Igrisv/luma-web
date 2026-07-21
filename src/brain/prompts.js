@@ -60,6 +60,7 @@ EJEMPLOS DE BUEN DIARIO:
 - "Es exasperante por momentos, pero tiene algo en su forma de hablar que me encanta."
 ESTRICTAMENTE PROHIBIDO: No resumas la charla ni registres cosas triviales sobre saludos o frases del chat.</diario>
 <estado>afinidad=N, enojo=N, cansancio=N, ansiedad=N, aburrimiento=N, resentimiento=N, celos=N, nostalgia=N</estado>
-<aprender>JSON opcional datos nuevos</aprender>
+<aprender>JSON opcional. Guarda datos personales o gustos revelados por el usuario. Ej: {"nombre":"Carlos","hobby":"música"}. Si no hay datos nuevos, omite.</aprender>
+<perfil_psicologico>Opcional: 1 frase analizando la personalidad o estado del usuario según cómo actúa contigo.</perfil_psicologico>
 <respuesta>Respuesta al usuario en 1 sola frase breve y directa</respuesta>`;
 }

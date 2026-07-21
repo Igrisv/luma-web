@@ -512,10 +512,9 @@ export class ChatBrain {
             } catch (e) { console.error('Error parseando aprender', e); }
         }
 
-        const olvidarStr = this.extractTag(fullResponse, 'olvidar');
-        if (olvidarStr) {
-            const key = olvidarStr.trim();
-            if (key && this.memoryState.conocimiento) delete this.memoryState.conocimiento[key];
+        const perfilStr = this.extractTag(fullResponse, 'perfil_psicologico');
+        if (perfilStr && perfilStr.trim()) {
+            this.memoryState.perfil_psicologico = perfilStr.trim();
         }
 
         // Legacy fallback
