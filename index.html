@@ -235,7 +235,25 @@
       </section>
 
       <!-- VIEW 2: ACTIVE CHAT WINDOW -->
-      <section class="chat-view" id="chatView" style="display: none;">
+      <section class="chat-view" id="chatView" style="display: none; position: relative;">
+        
+        <!-- RIGHT FLOATING QUICK ACTION DOCK (UBICADO EN LA ZONA DERECHA DEL CHAT) -->
+        <div class="chat-floating-actions-dock">
+          <button type="button" class="floating-action-btn" id="dockBondBtn" title="💖 Ver Estado Emocional & Stats">
+            <span class="dock-btn-icon">💖</span>
+            <span class="dock-btn-label">Vínculo & Stats</span>
+          </button>
+          
+          <button type="button" class="floating-action-btn" id="dockDiaryBtn" title="📖 Diario Secreto del Bot">
+            <span class="dock-btn-icon">📖</span>
+            <span class="dock-btn-label">Diario Secreto</span>
+          </button>
+          
+          <button type="button" class="floating-action-btn" id="dockConfigBtn" title="⚙️ Afinar Personalidad & Ajustes">
+            <span class="dock-btn-icon">⚙️</span>
+            <span class="dock-btn-label">Ajustes & Persona</span>
+          </button>
+        </div>
         <div class="chat-header">
           <div class="chat-header-user">
             <div class="avatar-wrapper">

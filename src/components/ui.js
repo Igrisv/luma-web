@@ -189,9 +189,23 @@ export function initPanels(brain) {
     const bondBtn = document.getElementById('bondBtn');
     const chatBondBtn = document.getElementById('chatBondToggleBtn');
 
+    const dockBondBtn = document.getElementById('dockBondBtn');
+    const dockDiaryBtn = document.getElementById('dockDiaryBtn');
+    const dockConfigBtn = document.getElementById('dockConfigBtn');
+
     if (configBtn) configBtn.addEventListener('click', () => togglePanel('config-panel'));
     if (bondBtn) bondBtn.addEventListener('click', () => togglePanel('bond-panel'));
     if (chatBondBtn) chatBondBtn.addEventListener('click', () => togglePanel('bond-panel'));
+
+    if (dockBondBtn) dockBondBtn.addEventListener('click', () => togglePanel('bond-panel'));
+    if (dockConfigBtn) dockConfigBtn.addEventListener('click', () => togglePanel('config-panel'));
+    if (dockDiaryBtn) {
+        dockDiaryBtn.addEventListener('click', () => {
+            closeAllPanels();
+            const diaryModal = document.getElementById('diary-modal');
+            if (diaryModal) diaryModal.classList.remove('hidden');
+        });
+    }
 
     return { closeAllPanels, togglePanel };
 }
