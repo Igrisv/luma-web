@@ -3,10 +3,10 @@
 // ═══════════════════════════════════════════════════════════
 import { apiFetch } from '../services/auth.js';
 import { getRemainingMessages, getFeatures } from '../services/tierGate.js';
-import { ARQUETIPOS } from '../brain/archetypes.js';
-import { NIVELES_CONFIANZA, getNivelInfoByDays, buildContextString, buildPostHistoryDirective } from '../brain/prompts.js';
-import { injectTypos } from '../brain/typos.js';
-import { extractTag, parseAIResponseData } from '../brain/parser.js';
+import { ARQUETIPOS } from './brain/archetypes.js';
+import { NIVELES_CONFIANZA, getNivelInfoByDays, buildContextString, buildPostHistoryDirective } from './brain/prompts.js';
+import { injectTypos } from './brain/typos.js';
+import { extractTag, parseAIResponseData } from './brain/parser.js';
 import { parseCharacterCardPNG, getEmotionalBadge } from '../services/cardParser.js';
 
 export { ARQUETIPOS, injectTypos, parseCharacterCardPNG, getEmotionalBadge };
