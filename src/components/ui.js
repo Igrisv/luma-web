@@ -56,7 +56,7 @@ export function playPopSound() {
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
         osc.start(ctx.currentTime);
         osc.stop(ctx.currentTime + 0.15);
-    } catch (e) {}
+    } catch (e) { }
 }
 
 export function playWhooshSound() {
@@ -75,7 +75,7 @@ export function playWhooshSound() {
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
         osc.start(ctx.currentTime);
         osc.stop(ctx.currentTime + 0.1);
-    } catch (e) {}
+    } catch (e) { }
 }
 
 export function playClickDropSound() {
@@ -94,7 +94,7 @@ export function playClickDropSound() {
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
         osc.start(ctx.currentTime);
         osc.stop(ctx.currentTime + 0.08);
-    } catch (e) {}
+    } catch (e) { }
 }
 
 export function playHoverTickSound() {
@@ -112,7 +112,7 @@ export function playHoverTickSound() {
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.03);
         osc.start(ctx.currentTime);
         osc.stop(ctx.currentTime + 0.03);
-    } catch (e) {}
+    } catch (e) { }
 }
 
 // ── View Switcher ───────────────────────────────────────────
@@ -149,7 +149,7 @@ export function showToast(message, type = 'info', duration = 4000) {
     toast.className = `toast toast-${type}`;
     const iconMap = { error: '⚠️', success: '✅', warning: '⚡', info: 'ℹ️' };
     toast.innerHTML = `<span class="toast-icon">${iconMap[type] || 'ℹ️'}</span><span class="toast-message">${message}</span>`;
-    
+
     container.appendChild(toast);
     requestAnimationFrame(() => toast.classList.add('show'));
 
@@ -233,60 +233,6 @@ export function initConfigPanel(brain, closeAllPanels, messagesBox) {
         });
     }
 
-    // Deep Character Tuning Logic
-    const tunePrompt = document.getElementById('tuneSystemPrompt');
-    const tuneTraitsList = document.getElementById('tuneTraitsList');
-    const tuneAddTraitBtn = document.getElementById('tuneAddTraitBtn');
-    const tuneTraitInput = document.getElementById('tuneCustomTraitInput');
-    const saveTuneBtn = document.getElementById('saveTuneBtn');
-
-    if (tunePrompt && brain) {
-        tunePrompt.value = brain.systemPrompt || '';
-    }
-
-    let tempTraits = brain && brain.rasgos_identidad ? [...brain.rasgos_identidad] : [];
-
-    function renderTuneTraits() {
-        if (!tuneTraitsList) return;
-        tuneTraitsList.innerHTML = tempTraits.map((t, idx) => `
-            <span class="trait-chip active" style="font-size: 0.72rem; padding: 2px 8px;">
-                ${t} <button type="button" data-idx="${idx}" class="remove-trait-btn" style="background:none;border:none;color:#ef4444;cursor:pointer;margin-left:4px;">✕</button>
-            </span>
-        `).join('');
-
-        tuneTraitsList.querySelectorAll('.remove-trait-btn').forEach(b => {
-            b.addEventListener('click', (e) => {
-                const idx = parseInt(e.target.dataset.idx, 10);
-                tempTraits.splice(idx, 1);
-                renderTuneTraits();
-            });
-        });
-    }
-    renderTuneTraits();
-
-    if (tuneAddTraitBtn && tuneTraitInput) {
-        tuneAddTraitBtn.addEventListener('click', () => {
-            const val = tuneTraitInput.value.trim();
-            if (val && !tempTraits.includes(val)) {
-                tempTraits.push(val);
-                tuneTraitInput.value = '';
-                renderTuneTraits();
-                playPopSound();
-            }
-        });
-    }
-
-    if (saveTuneBtn && brain) {
-        saveTuneBtn.addEventListener('click', () => {
-            if (tunePrompt) brain.systemPrompt = tunePrompt.value.trim();
-            brain.rasgos_identidad = tempTraits;
-            brain.saveState();
-            playPopSound();
-            closeAllPanels();
-            showToast('Ajustes de personalidad guardados con éxito ✨', 'success');
-        });
-    }
-
     const clearConfigBtn = document.getElementById('clear-config-btn');
     if (clearConfigBtn) {
         clearConfigBtn.addEventListener('click', () => {
@@ -321,7 +267,7 @@ export function renderHistory(brain, messagesBox) {
     if (!messagesBox) return;
     const targetContainer = document.getElementById('messagesList') || messagesBox;
     targetContainer.innerHTML = '';
-    
+
     brain.history.forEach(msg => {
         const role = msg.role === 'user' ? 'user' : 'bot';
         let renderText = msg.content;

@@ -4,14 +4,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <meta name="description" content="Luma AI — Inteligencia Artificial con emociones reales, memoria persistente y personajes únicos.">
+  <meta name="description"
+    content="Luma AI — Inteligencia Artificial con emociones reales, memoria persistente y personajes únicos.">
   <meta name="theme-color" content="#090a10">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <title>Luma AI — Tu Acompañante e Historias Interactivas</title>
-  
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="/src/style.css">
 </head>
 
@@ -21,7 +24,10 @@
   <div id="auth-modal" class="modal-overlay hidden">
     <div id="auth-content" class="modal-card auth-card">
       <div class="auth-logo">
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent-violet);"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent-violet);">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
       </div>
       <h1 class="auth-title">Luma AI</h1>
       <p class="auth-subtitle">Compañía con alma y personalidad propia</p>
@@ -32,18 +38,34 @@
       <div id="auth-login-section">
         <form id="auth-login-form">
           <div class="form-group">
-            <input type="email" id="auth-login-email" class="form-control" placeholder="Email" required autocomplete="email">
+            <input type="email" id="auth-login-email" class="form-control" placeholder="Email" required
+              autocomplete="email">
           </div>
           <div class="form-group">
-            <input type="password" id="auth-login-password" class="form-control" placeholder="Contraseña" required autocomplete="current-password">
+            <input type="password" id="auth-login-password" class="form-control" placeholder="Contraseña" required
+              autocomplete="current-password">
           </div>
           <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">Iniciar Sesión</button>
         </form>
         <button id="auth-google-btn" class="btn btn-secondary google-btn" style="width: 100%; margin-top: 0.75rem;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"
+              fill="#4285F4" />
+            <path
+              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+              fill="#34A853" />
+            <path
+              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+              fill="#FBBC05" />
+            <path
+              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+              fill="#EA4335" />
+          </svg>
           Continuar con Google
         </button>
-        <p class="auth-switch" style="margin-top: 1rem; text-align: center; font-size: 0.85rem; color: var(--text-muted);">
+        <p class="auth-switch"
+          style="margin-top: 1rem; text-align: center; font-size: 0.85rem; color: var(--text-muted);">
           ¿No tienes cuenta? <a href="#" id="auth-switch-register" style="color: var(--accent-violet);">Crear una</a>
         </p>
       </div>
@@ -52,14 +74,17 @@
       <div id="auth-register-section" class="hidden">
         <form id="auth-register-form">
           <div class="form-group">
-            <input type="email" id="auth-register-email" class="form-control" placeholder="Email" required autocomplete="email">
+            <input type="email" id="auth-register-email" class="form-control" placeholder="Email" required
+              autocomplete="email">
           </div>
           <div class="form-group">
-            <input type="password" id="auth-register-password" class="form-control" placeholder="Contraseña (mín. 6 caracteres)" required autocomplete="new-password">
+            <input type="password" id="auth-register-password" class="form-control"
+              placeholder="Contraseña (mín. 6 caracteres)" required autocomplete="new-password">
           </div>
           <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">Crear Cuenta</button>
         </form>
-        <p class="auth-switch" style="margin-top: 1rem; text-align: center; font-size: 0.85rem; color: var(--text-muted);">
+        <p class="auth-switch"
+          style="margin-top: 1rem; text-align: center; font-size: 0.85rem; color: var(--text-muted);">
           ¿Ya tienes cuenta? <a href="#" id="auth-switch-login" style="color: var(--accent-violet);">Inicia sesión</a>
         </p>
       </div>
@@ -69,44 +94,78 @@
   <!-- ========== TOP NAVBAR ========== -->
   <header class="navbar">
     <div class="brand" id="brandBtn">
-      <svg class="brand-svg-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 14a4 4 0 1 1 4-4 4 4 0 0 1-4 4z"></path></svg>
+      <svg class="brand-svg-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 14a4 4 0 1 1 4-4 4 4 0 0 1-4 4z"></path>
+      </svg>
       LUMA AI
     </div>
 
     <!-- Segmented Navigation Control -->
     <div class="nav-segmented-control">
       <button class="nav-segment-btn active" id="navSegmentGallery">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7"></rect>
+          <rect x="14" y="3" width="7" height="7"></rect>
+          <rect x="14" y="14" width="7" height="7"></rect>
+          <rect x="3" y="14" width="7" height="7"></rect>
+        </svg>
         <span>Galería</span>
       </button>
       <button class="nav-segment-btn" id="navSegmentChat">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
         <span>Chat</span>
       </button>
     </div>
 
     <div class="search-bar">
-      <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
       <input type="text" id="searchInput" placeholder="Buscar personajes o arquetipos...">
     </div>
 
     <div class="nav-actions">
       <div id="tierBadge" class="tier-badge tier-free">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+        </svg>
         <span>Plan Free</span>
       </div>
 
       <button class="btn btn-secondary nav-telemetry-btn" id="telemetryBtn" title="Estadísticas de Telemetría">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="20" x2="18" y2="10"></line>
+          <line x1="12" y1="20" x2="12" y2="4"></line>
+          <line x1="6" y1="20" x2="6" y2="14"></line>
+        </svg>
         Telemetría
       </button>
 
       <button class="btn btn-secondary nav-icon-btn" id="configBtn" title="Ajustes">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path
+            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+          </path>
+        </svg>
       </button>
 
       <button class="btn btn-secondary nav-icon-btn" id="bondBtn" title="Panel de Vínculo Emocional">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent-rose);"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent-rose);">
+          <path
+            d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+          </path>
+        </svg>
       </button>
     </div>
   </header>
@@ -118,17 +177,25 @@
     <aside class="sidebar" id="mainSidebar">
       <div class="sidebar-actions-compact">
         <button class="btn btn-primary btn-sm" id="openCreatorBtn" title="Crear Bot">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 5v14M5 12h14"></path>
+          </svg>
           <span>Crear Bot</span>
         </button>
         <button class="btn btn-secondary btn-sm" id="openImporterBtn" title="Importar">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
           <span>Importar</span>
         </button>
       </div>
 
       <div class="sidebar-section-title">MIS CONVERSACIONES</div>
-      
+
       <div class="chat-list" id="chatList">
         <!-- Dynamic chat items -->
       </div>
@@ -142,10 +209,14 @@
         <div class="hero-banner">
           <div class="hero-text">
             <h1>Descubre tus Acompañantes Ideales</h1>
-            <p>Conecta con inteligencias artificiales dinámicas con memoria persistente, emociones reales y voz sintetizada.</p>
+            <p>Conecta con inteligencias artificiales dinámicas con memoria persistente, emociones reales y voz
+              sintetizada.</p>
           </div>
           <button class="btn btn-primary hero-cta-btn" id="heroCreateBtn">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 5v14M5 12h14"></path>
+            </svg>
             Diseñar Nuevo Bot
           </button>
         </div>
@@ -168,7 +239,9 @@
         <div class="chat-header">
           <div class="chat-header-user">
             <div class="avatar-wrapper">
-              <img id="chatHeaderAvatar" class="avatar-sm" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80" alt="Avatar">
+              <img id="chatHeaderAvatar" class="avatar-sm"
+                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80"
+                alt="Avatar">
               <span id="chatEmotionalDot" class="status-dot green"></span>
             </div>
             <div>
@@ -179,11 +252,20 @@
 
           <div class="emotional-bar-container">
             <div id="affinityPill" class="affinity-pill">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="color: var(--accent-emerald);"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="color: var(--accent-emerald);">
+                <path
+                  d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                </path>
+              </svg>
               Afinidad: <span id="affinityScore">85%</span>
             </div>
             <button class="btn btn-secondary nav-icon-btn" id="chatBondToggleBtn" title="Ver Vínculo">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent-rose);"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent-rose);">
+                <path
+                  d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                </path>
+              </svg>
             </button>
           </div>
         </div>
@@ -218,15 +300,26 @@
 
             <div class="input-controls-row">
               <button id="micBtn" class="btn btn-secondary icon-only-btn" title="Activar entrada de voz (STT)">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                  <line x1="12" y1="19" x2="12" y2="23"></line>
+                  <line x1="8" y1="23" x2="16" y2="23"></line>
+                </svg>
               </button>
               <div class="input-wrapper">
-                <textarea id="chatInput" placeholder="Escribe un mensaje... (*acciones en cursiva*)" rows="1"></textarea>
+                <textarea id="chatInput" placeholder="Escribe un mensaje... (*acciones en cursiva*)"
+                  rows="1"></textarea>
                 <div class="token-counter" id="tokenIndicator">0 / 500 tokens</div>
               </div>
               <button class="btn btn-primary send-btn" id="sendMessageBtn">
                 <span>Enviar</span>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="22" y1="2" x2="11" y2="13"></line>
+                  <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
               </button>
             </div>
           </div>
@@ -247,7 +340,12 @@
       <!-- Magic AI Fast Generator Box -->
       <div class="magic-generator-box">
         <div class="magic-box-title">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #a78bfa;"><path d="M15 4V2M15 16v-2M8 9h2M20 9h-2M17.8 5.2l-1.4 1.4M17.8 12.8l-1.4-1.4M12.2 5.2l1.4 1.4M12.2 12.8l1.4-1.4M4.5 9a7.5 7.5 0 0 0 10.8 6.7L21 21l-2.3-5.7A7.5 7.5 0 1 0 4.5 9z"></path></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" style="color: #a78bfa;">
+            <path
+              d="M15 4V2M15 16v-2M8 9h2M20 9h-2M17.8 5.2l-1.4 1.4M17.8 12.8l-1.4-1.4M12.2 5.2l1.4 1.4M12.2 12.8l1.4-1.4M4.5 9a7.5 7.5 0 0 0 10.8 6.7L21 21l-2.3-5.7A7.5 7.5 0 1 0 4.5 9z">
+            </path>
+          </svg>
           <span>Generar Personaje con IA en 1 Clic</span>
         </div>
         <div class="preset-chips-row">
@@ -257,7 +355,8 @@
           <button class="concept-chip" data-concept="barista">☕ Compañera Dulce</button>
         </div>
         <div class="magic-input-group">
-          <input type="text" id="magicConceptInput" class="form-control" placeholder="O escribe una idea breve (Ej: Ingeniera espacial apasionada por la música rock...)">
+          <input type="text" id="magicConceptInput" class="form-control"
+            placeholder="O escribe una idea breve (Ej: Ingeniera espacial apasionada por la música rock...)">
           <button type="button" id="magicGenerateBtn" class="btn btn-primary magic-sparkle-btn">
             ✨ Auto-Generar Todo
           </button>
@@ -274,7 +373,7 @@
       </div>
 
       <form id="creatorForm" onsubmit="return false;">
-        
+
         <!-- Paso 1: Identidad & Avatar Estético -->
         <div class="wizard-step" id="wizardStep1">
           <div class="form-row">
@@ -287,15 +386,21 @@
             </div>
             <div class="form-group flex-1">
               <label>Línea Descriptiva / Tagline</label>
-              <input type="text" id="createTagline" class="form-control" placeholder="Ej. Tu ingeniera espacial favorita">
+              <input type="text" id="createTagline" class="form-control"
+                placeholder="Ej. Tu ingeniera espacial favorita">
             </div>
           </div>
 
           <div class="form-group" style="margin-top: 0.5rem;">
             <div class="label-with-spark">
               <label>Avatar del Personaje (Preset o Tu Imagen Local)</label>
-              <label for="avatarFileInput" class="btn-text-spark" style="cursor: pointer; display: flex; align-items: center; gap: 4px;">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+              <label for="avatarFileInput" class="btn-text-spark"
+                style="cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="17 8 12 3 7 8"></polyline>
+                  <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
                 <span>Subir Foto Local</span>
               </label>
               <input type="file" id="avatarFileInput" accept="image/*" class="hidden">
@@ -303,17 +408,38 @@
 
             <!-- Compact Avatar Presets Bar with Inline Preview -->
             <div class="avatar-presets-grid" id="avatarPresetsGrid">
-              <img class="avatar-preset-item active" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80" data-url="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80" title="Chica Cariñosa">
-              <img class="avatar-preset-item" src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&auto=format&fit=crop&q=80" data-url="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&auto=format&fit=crop&q=80" title="Chica Tsundere">
-              <img class="avatar-preset-item" src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=500&auto=format&fit=crop&q=80" data-url="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=500&auto=format&fit=crop&q=80" title="Chica Provocadora">
-              <img class="avatar-preset-item" src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=500&auto=format&fit=crop&q=80" data-url="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=500&auto=format&fit=crop&q=80" title="Chico Gamer">
-              <img class="avatar-preset-item" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=80" data-url="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=80" title="Chico Amigable">
-              <img class="avatar-preset-item" src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=500&auto=format&fit=crop&q=80" data-url="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=500&auto=format&fit=crop&q=80" title="Empresario Elegante">
+              <img class="avatar-preset-item active"
+                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80"
+                data-url="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80"
+                title="Chica Cariñosa">
+              <img class="avatar-preset-item"
+                src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&auto=format&fit=crop&q=80"
+                data-url="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&auto=format&fit=crop&q=80"
+                title="Chica Tsundere">
+              <img class="avatar-preset-item"
+                src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=500&auto=format&fit=crop&q=80"
+                data-url="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=500&auto=format&fit=crop&q=80"
+                title="Chica Provocadora">
+              <img class="avatar-preset-item"
+                src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=500&auto=format&fit=crop&q=80"
+                data-url="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=500&auto=format&fit=crop&q=80"
+                title="Chico Gamer">
+              <img class="avatar-preset-item"
+                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=80"
+                data-url="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=80"
+                title="Chico Amigable">
+              <img class="avatar-preset-item"
+                src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=500&auto=format&fit=crop&q=80"
+                data-url="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=500&auto=format&fit=crop&q=80"
+                title="Empresario Elegante">
             </div>
 
             <details style="margin-top: 0.5rem; font-size: 0.75rem; color: var(--text-dim);">
-              <summary style="cursor: pointer; opacity: 0.7;">🔗 Ingresar enlace web directo de imagen (opcional)</summary>
-              <input type="text" id="createAvatarUrl" class="form-control" placeholder="https://images.unsplash.com/..." value="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80" style="margin-top: 0.35rem; font-size: 0.8rem;">
+              <summary style="cursor: pointer; opacity: 0.7;">🔗 Ingresar enlace web directo de imagen (opcional)
+              </summary>
+              <input type="text" id="createAvatarUrl" class="form-control" placeholder="https://images.unsplash.com/..."
+                value="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80"
+                style="margin-top: 0.35rem; font-size: 0.8rem;">
             </details>
           </div>
         </div>
@@ -334,6 +460,16 @@
                 <option value="Directa e Imprudente">🔥 Directa e Imprudente</option>
               </select>
             </div>
+          </div>
+
+          <div class="form-group">
+            <label>Estilo de Mensajería & Escritura en Chat</label>
+            <select id="createChatStyle" class="form-control">
+              <option value="Directa & Frases Cortas" selected>💬 Frases Cortas & Directas (Casual)</option>
+              <option value="Expresiva con Emojis & Reacciones">✨ Expresiva & Emotiva</option>
+              <option value="Misteriosa & Mensajes Enigmáticos">🔮 Enigmática & Profunda</option>
+              <option value="Relajada con Minúsculas">🎧 Relajada & Desenfadada</option>
+            </select>
           </div>
 
           <div class="form-group">
@@ -375,7 +511,7 @@
 
           <!-- Quick Trait Chips Grid -->
           <div class="form-group">
-            <label>Selecciona Rasgos & Gustos (Ensamblaje en 1 Clic):</label>
+            <label>Selecciona Rasgos & Gustos (o Añade los Tuyos):</label>
             <div class="trait-chips-grid" id="traitChipsGrid">
               <button type="button" class="trait-chip active" data-trait="Amante del café">☕ Amante del café</button>
               <button type="button" class="trait-chip" data-trait="Trasnochadora">🌙 Trasnochadora</button>
@@ -386,23 +522,38 @@
               <button type="button" class="trait-chip" data-trait="Fan de la pizza">🍕 Fan de la pizza</button>
               <button type="button" class="trait-chip" data-trait="Lectora apasionada">📖 Lectora</button>
             </div>
+            
+            <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+              <input type="text" id="addCustomTraitInput" class="form-control" placeholder="Añadir rasgo o manía única (Ej. Le gusta la astronomía...)" style="font-size: 0.8rem; flex: 1;">
+              <button type="button" id="addCustomTraitBtn" class="btn btn-secondary" style="font-size: 0.78rem; padding: 0.35rem 0.75rem;">+ Añadir</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Secreto o Recuerdo Compartido (Opcional):</label>
+            <input type="text" id="createSharedSecret" class="form-control" placeholder="Ej. Se quedaron atrapados en la lluvia de noche...">
           </div>
 
           <div class="form-group">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
               <label style="margin:0;">Mensaje de Saludo Inicial *</label>
-              <button type="button" id="randomGreetingBtn" class="btn btn-secondary btn-sm" style="font-size: 0.72rem; padding: 0.2rem 0.5rem;">
+              <button type="button" id="randomGreetingBtn" class="btn btn-secondary btn-sm"
+                style="font-size: 0.72rem; padding: 0.2rem 0.5rem;">
                 🎲 Generar Frase
               </button>
             </div>
-            <textarea id="createFirstMessage" class="form-control" rows="2" placeholder="Ej. ¡Hola mi amor! Te estaba esperando... ¿cómo estuvo tu día?" required></textarea>
+            <textarea id="createFirstMessage" class="form-control" rows="2"
+              placeholder="Ej. ¡Hola mi amor! Te estaba esperando... ¿cómo estuvo tu día?" required></textarea>
           </div>
 
           <details class="advanced-prompt-box" style="margin-top: 0.75rem;">
-            <summary style="cursor: pointer; font-size: 0.8rem; color: var(--accent-violet); font-weight: 600; padding: 0.4rem 0;">
+            <summary
+              style="cursor: pointer; font-size: 0.8rem; color: var(--accent-violet); font-weight: 600; padding: 0.4rem 0;">
               ⚙️ Ver / Editar Prompt Ensamblado (Opcional)
             </summary>
-            <textarea id="createSystemPrompt" class="form-control" rows="3" placeholder="Se genera automáticamente según tus selecciones..." style="margin-top: 0.5rem; font-size: 0.8rem;" required></textarea>
+            <textarea id="createSystemPrompt" class="form-control" rows="3"
+              placeholder="Se genera automáticamente según tus selecciones..."
+              style="margin-top: 0.5rem; font-size: 0.8rem;" required></textarea>
           </details>
 
           <div class="form-group hidden">
@@ -412,7 +563,7 @@
 
         <!-- Paso 3: Atributos Emocionales & Diagnóstico VIVO -->
         <div class="wizard-step hidden" id="wizardStep3">
-          
+
           <div class="emotional-diagnosis-box">
             <div class="diagnosis-label">DIAGNÓSTICO EMOCIONAL EN TIEMPO REAL:</div>
             <div id="emotionalDiagnosisBadge" class="diagnosis-badge">
@@ -460,7 +611,13 @@
       </div>
 
       <div class="dropzone" id="dropzone">
-        <svg class="dropzone-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent-violet); margin: 0 auto 0.5rem auto;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+        <svg class="dropzone-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+          style="color: var(--accent-violet); margin: 0 auto 0.5rem auto;">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="17 8 12 3 7 8"></polyline>
+          <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>
         <p class="dropzone-title">Arrastra tu tarjeta PNG o archivo JSON aquí</p>
         <p class="dropzone-sub">Soporta la especificación Character Card V2 y V3 (SillyTavern, TavernAI)</p>
         <button class="btn btn-secondary" id="browseFileBtn" style="margin-top: 1rem;">Seleccionar Archivo</button>
@@ -512,7 +669,8 @@
             <li>✓ Memoria Episódica Persistente</li>
             <li>✓ Síntesis de Voz (TTS)</li>
           </ul>
-          <button class="btn btn-primary" data-upgrade-plan="premium" id="upgradePremiumBtn" style="width: 100%; margin-top: 1rem;">Mejorar a Premium</button>
+          <button class="btn btn-primary" data-upgrade-plan="premium" id="upgradePremiumBtn"
+            style="width: 100%; margin-top: 1rem;">Mejorar a Premium</button>
         </div>
 
         <div class="plan-box obsess">
@@ -525,7 +683,8 @@
             <li>✓ Importador de Tarjetas PNG/JSON</li>
             <li>✓ Prioridad Alta de Respuesta</li>
           </ul>
-          <button class="btn btn-primary upgrade-obsess-btn" data-upgrade-plan="obsesion" id="upgradeObsessionBtn" style="width: 100%; margin-top: 1rem;">Obtener Obsesión</button>
+          <button class="btn btn-primary upgrade-obsess-btn" data-upgrade-plan="obsesion" id="upgradeObsessionBtn"
+            style="width: 100%; margin-top: 1rem;">Obtener Obsesión</button>
         </div>
       </div>
     </div>
@@ -555,31 +714,46 @@
 
       <div class="stat-group">
         <label>Afinidad (<span id="val-afinidad">50</span>)</label>
-        <div class="progress-bar"><div id="bar-afinidad" style="width:50%;background:#ec4899;"></div></div>
+        <div class="progress-bar">
+          <div id="bar-afinidad" style="width:50%;background:#ec4899;"></div>
+        </div>
       </div>
       <div class="stat-group">
         <label>Enojo (<span id="val-enojo">0</span>)</label>
-        <div class="progress-bar"><div id="bar-enojo" style="width:0%;background:#ef4444;"></div></div>
+        <div class="progress-bar">
+          <div id="bar-enojo" style="width:0%;background:#ef4444;"></div>
+        </div>
       </div>
       <div class="stat-group">
         <label>Cansancio (<span id="val-cansancio">0</span>)</label>
-        <div class="progress-bar"><div id="bar-cansancio" style="width:0%;background:#3b82f6;"></div></div>
+        <div class="progress-bar">
+          <div id="bar-cansancio" style="width:0%;background:#3b82f6;"></div>
+        </div>
       </div>
       <div class="stat-group">
         <label>Ansiedad (<span id="val-ansiedad">0</span>)</label>
-        <div class="progress-bar"><div id="bar-ansiedad" style="width:0%;background:#fbbf24;"></div></div>
+        <div class="progress-bar">
+          <div id="bar-ansiedad" style="width:0%;background:#fbbf24;"></div>
+        </div>
       </div>
       <div class="stat-group">
         <label>Celos (<span id="val-celos">0</span>)</label>
-        <div class="progress-bar"><div id="bar-celos" style="width:0%;background:#a855f7;"></div></div>
+        <div class="progress-bar">
+          <div id="bar-celos" style="width:0%;background:#a855f7;"></div>
+        </div>
       </div>
       <div class="stat-group">
         <label>Resentimiento (<span id="val-resentimiento">0</span>)</label>
-        <div class="progress-bar"><div id="bar-resentimiento" style="width:0%;background:#991b1b;"></div></div>
+        <div class="progress-bar">
+          <div id="bar-resentimiento" style="width:0%;background:#991b1b;"></div>
+        </div>
       </div>
 
-      <button id="open-diary-btn" class="btn btn-secondary" style="margin-top:14px;width:100%;">📖 Diario Secreto</button>
-      <button id="open-ad-btn" class="btn btn-secondary" style="margin-top:8px;width:100%;background:rgba(16,185,129,0.15);border-color:rgba(16,185,129,0.3);color:#10b981;">📺 Ganar Mensajes (+5 Gratis)</button>
+      <button id="open-diary-btn" class="btn btn-secondary" style="margin-top:14px;width:100%;">📖 Diario
+        Secreto</button>
+      <button id="open-ad-btn" class="btn btn-secondary"
+        style="margin-top:8px;width:100%;background:rgba(16,185,129,0.15);border-color:rgba(16,185,129,0.3);color:#10b981;">📺
+        Ganar Mensajes (+5 Gratis)</button>
     </div>
   </div>
 
@@ -591,8 +765,11 @@
     </div>
     <div class="panel-body" style="display: flex; flex-direction: column; gap: 1.2rem;">
       <div class="settings-section">
-        <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Suscripción</div>
-        <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 12px; padding: 0.85rem; display: flex; align-items: center; justify-content: space-between;">
+        <div
+          style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">
+          Suscripción</div>
+        <div
+          style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 12px; padding: 0.85rem; display: flex; align-items: center; justify-content: space-between;">
           <div>
             <div style="font-size: 0.88rem; font-weight: 700;">Plan Actual</div>
             <div id="settingsTierLabel" style="font-size: 0.78rem; color: var(--accent-violet);">Free Tier</div>
@@ -604,58 +781,40 @@
       </div>
 
       <div class="settings-section">
-        <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Experiencia & Audio</div>
+        <div
+          style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">
+          Experiencia & Audio</div>
         <div style="display: flex; flex-direction: column; gap: 0.6rem;">
-          <label style="display: flex; align-items: center; justify-content: space-between; font-size: 0.85rem; cursor: pointer;">
+          <label
+            style="display: flex; align-items: center; justify-content: space-between; font-size: 0.85rem; cursor: pointer;">
             <span>🔊 Efectos de Sonido (UI)</span>
             <input type="checkbox" id="settingSoundEffects" checked style="accent-color: var(--accent-violet);">
           </label>
-          <label style="display: flex; align-items: center; justify-content: space-between; font-size: 0.85rem; cursor: pointer;">
+          <label
+            style="display: flex; align-items: center; justify-content: space-between; font-size: 0.85rem; cursor: pointer;">
             <span>🎙️ Lectura por Voz sintetizada (TTS)</span>
             <input type="checkbox" id="settingTTS" style="accent-color: var(--accent-violet);">
           </label>
-          <label style="display: flex; align-items: center; justify-content: space-between; font-size: 0.85rem; cursor: pointer;">
+          <label
+            style="display: flex; align-items: center; justify-content: space-between; font-size: 0.85rem; cursor: pointer;">
             <span>⚡ Mensajes Autónomos de IA</span>
             <input type="checkbox" id="settingAutoMessages" checked style="accent-color: var(--accent-violet);">
           </label>
         </div>
       </div>
 
-      <!-- Deep Character Tuning Section -->
       <div class="settings-section">
-        <div style="font-size: 0.8rem; font-weight: 700; color: var(--accent-violet); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
-          <span>🎭 Personalización del Bot Activo</span>
-        </div>
-
-        <div style="display: flex; flex-direction: column; gap: 0.75rem; background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 12px; padding: 0.85rem;">
-          <div>
-            <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-dim);">Monólogo / Persona en 1ª Persona</label>
-            <textarea id="tuneSystemPrompt" class="form-control" rows="3" style="font-size: 0.8rem; margin-top: 0.35rem;" placeholder="Modifica el monólogo del personaje activo..."></textarea>
-          </div>
-
-          <div>
-            <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-dim);">Añadir Rasgo o Gusto Personalizado</label>
-            <div style="display: flex; gap: 0.5rem; margin-top: 0.35rem;">
-              <input type="text" id="tuneCustomTraitInput" class="form-control" placeholder="Ej. Le gusta el anime de terror" style="font-size: 0.8rem; flex: 1;">
-              <button type="button" id="tuneAddTraitBtn" class="btn btn-secondary" style="font-size: 0.78rem; padding: 0.35rem 0.7rem;">+ Añadir</button>
-            </div>
-            <div id="tuneTraitsList" style="display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.5rem;"></div>
-          </div>
-
-          <button type="button" id="saveTuneBtn" class="btn btn-primary" style="font-size: 0.85rem; width: 100%;">
-            ✨ Guardar Ajustes de Personalidad
-          </button>
-        </div>
-      </div>
-
-      <div class="settings-section">
-        <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Gestión del Chat</div>
-        <button id="clear-config-btn" class="btn btn-secondary" style="width:100%; background:rgba(239,68,68,0.15); color:#fca5a5; border-color:rgba(239,68,68,0.3); font-size: 0.85rem;">
+        <div
+          style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">
+          Gestión del Chat</div>
+        <button id="clear-config-btn" class="btn btn-secondary"
+          style="width:100%; background:rgba(239,68,68,0.15); color:#fca5a5; border-color:rgba(239,68,68,0.3); font-size: 0.85rem;">
           🗑️ Reiniciar Historial del Personaje
         </button>
       </div>
 
-      <div class="settings-section" style="margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+      <div class="settings-section"
+        style="margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--border-color);">
         <button id="logout-btn" class="btn btn-secondary" style="width: 100%; font-size: 0.85rem;">
           🚪 Cerrar Sesión
         </button>
@@ -664,24 +823,29 @@
   </div>
 
   <!-- ========== DIARY MODAL ========== -->
-  <div id="diary-modal" class="panel hidden" style="position:fixed;inset:10px;margin:auto;max-width:500px;max-height:85vh;z-index:1000;">
+  <div id="diary-modal" class="panel hidden"
+    style="position:fixed;inset:10px;margin:auto;max-width:500px;max-height:85vh;z-index:1000;">
     <div class="panel-header">
       <h3>📖 Diario Secreto</h3>
       <button class="panel-close-btn" id="diary-close-btn">✕</button>
     </div>
     <div class="panel-body" id="diary-list-container">
-      <p style="font-size:0.85rem;color:var(--text-muted);">Confesiones íntimas y pensamientos privados que escribe al final del día...</p>
+      <p style="font-size:0.85rem;color:var(--text-muted);">Confesiones íntimas y pensamientos privados que escribe al
+        final del día...</p>
       <div id="diary-entries-list" style="margin-top:12px;display:flex;flex-direction:column;gap:12px;"></div>
     </div>
   </div>
 
   <!-- ========== REWARDED AD MODAL ========== -->
   <div id="reward-modal" class="hidden">
-    <div id="reward-content" style="background:rgba(15,23,42,0.95);border:1px solid var(--border-color);border-radius:20px;padding:30px;max-width:400px;width:90%;text-align:center;position:fixed;inset:0;margin:auto;height:fit-content;z-index:10001;backdrop-filter:blur(16px);">
+    <div id="reward-content"
+      style="background:rgba(15,23,42,0.95);border:1px solid var(--border-color);border-radius:20px;padding:30px;max-width:400px;width:90%;text-align:center;position:fixed;inset:0;margin:auto;height:fit-content;z-index:10001;backdrop-filter:blur(16px);">
       <div style="font-size:3rem;margin-bottom:12px;">📺</div>
       <h2 style="font-size:1.3rem;margin-bottom:8px;">Obtener +5 Mensajes Gratis</h2>
-      <p style="font-size:0.88rem;color:var(--text-muted);margin-bottom:20px;">Mira una breve demostración patrocinada de 5 segundos para recargar tu saldo.</p>
-      <div id="ad-video-sim" class="hidden" style="background:#000;border-radius:12px;padding:30px;margin-bottom:15px;color:#10b981;font-weight:600;">
+      <p style="font-size:0.88rem;color:var(--text-muted);margin-bottom:20px;">Mira una breve demostración patrocinada
+        de 5 segundos para recargar tu saldo.</p>
+      <div id="ad-video-sim" class="hidden"
+        style="background:#000;border-radius:12px;padding:30px;margin-bottom:15px;color:#10b981;font-weight:600;">
         ▶️ Reproduciendo anuncio... (<span id="ad-timer">5</span>s)
       </div>
       <button id="start-ad-btn" class="btn btn-primary" style="width:100%;">Ver Anuncio (5s)</button>
@@ -693,4 +857,5 @@
   <script type="module" src="/src/main.js"></script>
 
 </body>
+
 </html>

@@ -117,6 +117,8 @@ export function initCreatorWizard(onSaveCharacter, showToast) {
         const age = document.getElementById('createAge')?.value || '21';
         const archetypeKey = document.getElementById('createArchetype')?.value || 'pareja';
         const matizHumor = document.getElementById('createMatizHumor')?.value || 'Sarcástica & Sagaz';
+        const chatStyle = document.getElementById('createChatStyle')?.value || 'Directa & Frases Cortas';
+        const sharedSecret = document.getElementById('createSharedSecret')?.value.trim() || '';
         
         const selectedTraits = [];
         document.querySelectorAll('.trait-chip.active').forEach(chip => {
@@ -132,14 +134,44 @@ export function initCreatorWizard(onSaveCharacter, showToast) {
         };
 
         const phrase = archetypePhrases[archetypeKey] || archetypePhrases.pareja;
-        const traitsText = selectedTraits.length > 0 ? ` Mis gustos: ${selectedTraits.join(', ')}.` : '';
+        const traitsText = selectedTraits.length > 0 ? ` Mis gustos y rasgos: ${selectedTraits.join(', ')}.` : '';
+        const secretText = sharedSecret ? ` Secreto/Recuerdo: ${sharedSecret}.` : '';
+        const styleText = ` Estilo: ${chatStyle}.`;
 
-        const promptText = `Me llamo ${name}. Tengo ${age} años. ${phrase} Tono: ${matizHumor}.${traitsText} Hablo de forma humana, directa y espontánea. NUNCA admitiré que soy una IA.`;
+        const promptText = `Me llamo ${name}. Tengo ${age} años. ${phrase} Tono: ${matizHumor}.${traitsText}${secretText}${styleText} Hablo de forma humana, directa y espontánea. NUNCA admitiré que soy una IA.`;
 
         const systemPromptTextarea = document.getElementById('createSystemPrompt');
         if (systemPromptTextarea) {
             systemPromptTextarea.value = promptText;
         }
+    }
+
+    // Add Custom Trait Chip Handler
+    const addCustomTraitBtn = document.getElementById('addCustomTraitBtn');
+    const addCustomTraitInput = document.getElementById('addCustomTraitInput');
+    if (addCustomTraitBtn && addCustomTraitInput) {
+        addCustomTraitBtn.addEventListener('click', () => {
+            const val = addCustomTraitInput.value.trim();
+            if (val) {
+                const traitGrid = document.getElementById('traitChipsGrid');
+                if (traitGrid) {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'trait-chip active';
+                    btn.dataset.trait = val;
+                    btn.innerHTML = `✨ ${val}`;
+                    btn.addEventListener('click', () => {
+                        playPopSound();
+                        btn.classList.toggle('active');
+                        autoAssembleMonologue();
+                    });
+                    traitGrid.appendChild(btn);
+                    addCustomTraitInput.value = '';
+                    playPopSound();
+                    autoAssembleMonologue();
+                }
+            }
+        });
     }
 
     document.querySelectorAll('.trait-chip').forEach(chip => {
@@ -150,7 +182,7 @@ export function initCreatorWizard(onSaveCharacter, showToast) {
         });
     });
 
-    ['createName', 'createAge', 'createMatizHumor'].forEach(id => {
+    ['createName', 'createAge', 'createMatizHumor', 'createChatStyle', 'createSharedSecret'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.addEventListener('input', autoAssembleMonologue);
     });
