@@ -182,7 +182,29 @@ export function initCreatorWizard(onSaveCharacter, showToast) {
         });
     });
 
-    ['createName', 'createAge', 'createMatizHumor', 'createChatStyle', 'createSharedSecret'].forEach(id => {
+    const matizHumorSelect = document.getElementById('createMatizHumor');
+    if (matizHumorSelect) {
+        matizHumorSelect.addEventListener('change', () => {
+            playPopSound();
+            const selectedMatiz = matizHumorSelect.value;
+            
+            // Recommend & activate traits matching the selected tone
+            document.querySelectorAll('.trait-chip').forEach(chip => {
+                const trait = chip.dataset.trait || chip.textContent.trim();
+                const isMatch = (
+                    (selectedMatiz.includes('Dulce') && (trait.includes('café') || trait.includes('Lectora') || trait.includes('Música') || trait.includes('casera'))) ||
+                    (selectedMatiz.includes('Sarcástica') || selectedMatiz.includes('Directa')) && (trait.includes('Filtro') || trait.includes('chisme') || trait.includes('Gamer') || trait.includes('pizza')) ||
+                    (selectedMatiz.includes('Competitiva') || selectedMatiz.includes('Orgullosa')) && (trait.includes('Orgullo') || trait.includes('Gamer') || trait.includes('perder') || trait.includes('Apuestas')) ||
+                    (selectedMatiz.includes('Melancólica') || selectedMatiz.includes('Nostálgica')) && (trait.includes('pasado') || trait.includes('tristes') || trait.includes('nostalgia') || trait.includes('viejas')) ||
+                    (selectedMatiz.includes('Confidente') || selectedMatiz.includes('Leal')) && (trait.includes('Lealtad') || trait.includes('pizza') || trait.includes('café') || trait.includes('Discord'))
+                );
+                if (isMatch) chip.classList.add('active');
+            });
+            autoAssembleMonologue();
+        });
+    }
+
+    ['createName', 'createAge', 'createChatStyle', 'createSharedSecret'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.addEventListener('input', autoAssembleMonologue);
     });
