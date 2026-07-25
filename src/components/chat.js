@@ -10,6 +10,7 @@ import {
     renderHistory, createMessageElement, showToast
 } from './ui.js';
 import { apiFetch } from '../services/auth.js';
+import { getTier, canUseArchetype } from '../services/tierGate.js';
 
 export async function initChat() {
     let charactersData = {
@@ -74,6 +75,18 @@ export async function initChat() {
     let brain = new ChatBrain(currentCharacter.id, currentCharacter.arquetipo_id);
 
     function selectCharacter(char) {
+        const currentTier = getTier();
+        const isLockedByTier = (char.tier_required === 'premium' && currentTier === 'free') ||
+                               (char.tier_required === 'obsesion' && currentTier !== 'obsesion') ||
+                               (!canUseArchetype(char.arquetipo_id) && currentTier === 'free');
+
+        if (isLockedByTier) {
+            const billingModal = document.getElementById('billingModal') || document.getElementById('billing-modal');
+            if (billingModal) billingModal.classList.remove('hidden');
+            showToast(`El personaje "${char.name}" requiere Plan Premium. Mejora tu plan para chatear.`, 'warning');
+            return;
+        }
+
         currentCharacter = char;
         activeCharId = char.id || char.arquetipo_id;
         localStorage.setItem('lumaActiveCharacter', activeCharId);

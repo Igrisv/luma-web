@@ -1,6 +1,7 @@
 // ═══════════════════════════════════════════════════════════
-// wizard.js — 3-Step Bot Creator Component
+// wizard.js — 3-Step Bot Creator Component with Tier Protection
 // ═══════════════════════════════════════════════════════════
+import { canUseArchetype, getTier } from '../services/tierGate.js';
 
 export function initCreatorWizard(onSaveCharacter, showToast) {
     let currentStep = 1;
@@ -52,8 +53,18 @@ export function initCreatorWizard(onSaveCharacter, showToast) {
             }
             if (currentStep === 2) {
                 const prompt = document.getElementById('createSystemPrompt').value.trim();
+                const archetype = document.getElementById('createArchetype').value;
+
                 if (!prompt) {
                     if (showToast) showToast('Por favor completa el prompt de personalidad.', 'warning');
+                    return;
+                }
+
+                // Check tier protection for archetype
+                if (!canUseArchetype(archetype) && getTier() === 'free') {
+                    const billingModal = document.getElementById('billingModal') || document.getElementById('billing-modal');
+                    if (billingModal) billingModal.classList.remove('hidden');
+                    if (showToast) showToast('El arquetipo seleccionado requiere Plan Premium.', 'warning');
                     return;
                 }
             }
@@ -78,6 +89,13 @@ export function initCreatorWizard(onSaveCharacter, showToast) {
             const arquetipo_id = document.getElementById('createArchetype').value;
             const system_prompt = document.getElementById('createSystemPrompt').value.trim();
             const lorebookText = document.getElementById('createLorebook').value.trim();
+
+            if (!canUseArchetype(arquetipo_id) && getTier() === 'free') {
+                const billingModal = document.getElementById('billingModal') || document.getElementById('billing-modal');
+                if (billingModal) billingModal.classList.remove('hidden');
+                if (showToast) showToast('El arquetipo seleccionado requiere Plan Premium.', 'warning');
+                return;
+            }
 
             const afinidad = parseInt(document.getElementById('createAfinidad').value, 10) || 60;
             const celos = parseInt(document.getElementById('createCelos').value, 10) || 10;
