@@ -152,33 +152,52 @@ export function initPanels(brain) {
 }
 
 export function initConfigPanel(brain, closeAllPanels, messagesBox) {
-    const promptInput = document.getElementById('prompt-input');
-    const memoryInput = document.getElementById('memory-input');
-    if (promptInput) promptInput.value = brain.systemPrompt;
-    if (memoryInput) memoryInput.value = brain.maxMemory;
-
-    const saveConfigBtn = document.getElementById('save-config-btn');
-    if (saveConfigBtn) {
-        saveConfigBtn.addEventListener('click', () => {
-            if (promptInput) brain.systemPrompt = promptInput.value;
-            if (memoryInput) brain.maxMemory = parseInt(memoryInput.value, 10) || 10;
+    const openBillingBtn = document.getElementById('open-billing-btn');
+    if (openBillingBtn) {
+        openBillingBtn.addEventListener('click', () => {
             closeAllPanels();
-            brain.saveState();
-            brain.updateBrainUI();
-            showToast('Ajustes guardados correctamente.', 'success');
+            const billingModal = document.getElementById('billingModal') || document.getElementById('billing-modal');
+            if (billingModal) billingModal.classList.remove('hidden');
+        });
+    }
+
+    const soundToggle = document.getElementById('settingSoundEffects');
+    if (soundToggle) {
+        soundToggle.checked = localStorage.getItem('lumaSoundEnabled') !== 'false';
+        soundToggle.addEventListener('change', () => {
+            localStorage.setItem('lumaSoundEnabled', soundToggle.checked);
+            showToast(soundToggle.checked ? 'Efectos de sonido activados 🔊' : 'Sonidos desactivados 🔇', 'info');
+        });
+    }
+
+    const ttsToggle = document.getElementById('settingTTS');
+    if (ttsToggle) {
+        ttsToggle.checked = localStorage.getItem('lumaTTSEnabled') === 'true';
+        ttsToggle.addEventListener('change', () => {
+            localStorage.setItem('lumaTTSEnabled', ttsToggle.checked);
+            showToast(ttsToggle.checked ? 'Lectura por voz activada 🎙️' : 'Voz sintetizada desactivada 🔇', 'info');
+        });
+    }
+
+    const autoToggle = document.getElementById('settingAutoMessages');
+    if (autoToggle) {
+        autoToggle.checked = localStorage.getItem('lumaAutoMessagesEnabled') !== 'false';
+        autoToggle.addEventListener('change', () => {
+            localStorage.setItem('lumaAutoMessagesEnabled', autoToggle.checked);
+            showToast(autoToggle.checked ? 'Mensajes autónomos activados ⚡' : 'Mensajes autónomos pausados', 'info');
         });
     }
 
     const clearConfigBtn = document.getElementById('clear-config-btn');
     if (clearConfigBtn) {
         clearConfigBtn.addEventListener('click', () => {
-            if (confirm('¿Estás seguro de borrar toda la memoria e historial de este personaje?')) {
+            if (confirm('¿Estás seguro de borrar el historial de conversación con este personaje?')) {
                 brain.history = [];
                 brain.saveState();
                 if (messagesBox) messagesBox.innerHTML = '';
                 closeAllPanels();
                 brain.updateBrainUI();
-                showToast('Memoria del personaje reiniciada.', 'info');
+                showToast('Historial del personaje reiniciado.', 'info');
             }
         });
     }

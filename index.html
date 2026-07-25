@@ -442,20 +442,59 @@
   <!-- ========== PANEL: AJUSTES ========== -->
   <div id="config-panel" class="panel hidden">
     <div class="panel-header">
-      <h3>⚙️ Ajustes de Configuración</h3>
+      <h3>⚙️ Ajustes y Preferencias</h3>
       <button class="panel-close-btn" data-panel="config-panel">✕</button>
     </div>
-    <div class="panel-body">
-      <div class="form-group">
-        <label>Personalidad Base (System Prompt):</label>
-        <textarea id="prompt-input" class="form-control" rows="4"></textarea>
+    <div class="panel-body" style="display: flex; flex-direction: column; gap: 1.2rem;">
+      
+      <!-- Seccion: Plan & Suscripcion -->
+      <div class="settings-section">
+        <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Suscripción</div>
+        <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 12px; padding: 0.85rem; display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <div style="font-size: 0.88rem; font-weight: 700;">Plan Actual</div>
+            <div id="settingsTierLabel" style="font-size: 0.78rem; color: var(--accent-violet);">Free Tier</div>
+          </div>
+          <button id="open-billing-btn" class="btn btn-secondary" style="font-size: 0.78rem; padding: 0.35rem 0.7rem;">
+            Ver Planes ⚡
+          </button>
+        </div>
       </div>
-      <div class="form-group">
-        <label>Mensajes en Memoria:</label>
-        <input type="number" id="memory-input" class="form-control" value="10" min="2" max="50">
+
+      <!-- Seccion: Audio y Voz -->
+      <div class="settings-section">
+        <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Experiencia & Audio</div>
+        <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+          <label style="display: flex; align-items: center; justify-content: space-between; font-size: 0.85rem; cursor: pointer;">
+            <span>🔊 Efectos de Sonido (UI)</span>
+            <input type="checkbox" id="settingSoundEffects" checked style="accent-color: var(--accent-violet);">
+          </label>
+          <label style="display: flex; align-items: center; justify-content: space-between; font-size: 0.85rem; cursor: pointer;">
+            <span>🎙️ Lectura por Voz sintetizada (TTS)</span>
+            <input type="checkbox" id="settingTTS" style="accent-color: var(--accent-violet);">
+          </label>
+          <label style="display: flex; align-items: center; justify-content: space-between; font-size: 0.85rem; cursor: pointer;">
+            <span>⚡ Mensajes Autónomos de IA</span>
+            <input type="checkbox" id="settingAutoMessages" checked style="accent-color: var(--accent-violet);">
+          </label>
+        </div>
       </div>
-      <button id="save-config-btn" class="btn btn-primary" style="width:100%;margin-top:10px;">Guardar Ajustes</button>
-      <button id="clear-config-btn" class="btn btn-secondary" style="width:100%;margin-top:8px;background:rgba(239,68,68,0.2);color:#fca5a5;border-color:rgba(239,68,68,0.4);">Borrar Memoria e Historial</button>
+
+      <!-- Seccion: Privacidad & Conversacion -->
+      <div class="settings-section">
+        <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Gestión del Chat</div>
+        <button id="clear-config-btn" class="btn btn-secondary" style="width:100%; background:rgba(239,68,68,0.15); color:#fca5a5; border-color:rgba(239,68,68,0.3); font-size: 0.85rem;">
+          🗑️ Reiniciar Historial del Personaje
+        </button>
+      </div>
+
+      <!-- Seccion: Cuenta -->
+      <div class="settings-section" style="margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+        <button id="logout-btn" class="btn btn-secondary" style="width: 100%; font-size: 0.85rem;">
+          🚪 Cerrar Sesión
+        </button>
+      </div>
+
     </div>
   </div>
 
