@@ -73,6 +73,8 @@ export async function initChat() {
     let currentCharacter = allChars.find(c => c.id === activeCharId || c.arquetipo_id === activeCharId) || charactersData.official[0];
 
     let brain = new ChatBrain(currentCharacter.id, currentCharacter.arquetipo_id);
+    if (currentCharacter.system_prompt) brain.systemPrompt = currentCharacter.system_prompt;
+    if (currentCharacter.sensitivities) brain.sensitivities = currentCharacter.sensitivities;
 
     const starterPromptsMap = {
         pareja: ["💕 ¿Qué tal tu día, mi amor?", "✨ Cuéntame algo lindo sobre ti", "🍽️ ¿Qué cenamos hoy?", "🩷 ¿Cómo te sientes ahora mismo?"],
@@ -122,6 +124,7 @@ export async function initChat() {
 
         brain = new ChatBrain(char.id, char.arquetipo_id);
         if (char.system_prompt) brain.systemPrompt = char.system_prompt;
+        if (char.sensitivities) brain.sensitivities = char.sensitivities;
 
         const headerAvatar = document.getElementById('chatHeaderAvatar');
         const headerName = document.getElementById('chatHeaderName');
