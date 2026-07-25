@@ -1,13 +1,13 @@
 // ═══════════════════════════════════════════════════════════
-// ui.js — Modern SPA UI Controller & Component Hub
+// components/ui.js — UI Controller & Component Aggregator
 // ═══════════════════════════════════════════════════════════
-import { ARQUETIPOS } from './brain.js';
-import { apiFetch } from './auth.js';
-import { parseCharacterCardPNG, getEmotionalBadge } from './services/cardParser.js';
-import { renderGallery } from './components/gallery.js';
-import { renderSidebarChatList } from './components/sidebar.js';
-import { initCreatorWizard } from './components/wizard.js';
-import { initCardImporter } from './components/importer.js';
+import { ARQUETIPOS } from '../core/brain.js';
+import { apiFetch } from '../services/auth.js';
+import { parseCharacterCardPNG, getEmotionalBadge } from '../services/cardParser.js';
+import { renderGallery } from './gallery.js';
+import { renderSidebarChatList } from './sidebar.js';
+import { initCreatorWizard } from './wizard.js';
+import { initCardImporter } from './importer.js';
 
 export {
     parseCharacterCardPNG,
@@ -192,7 +192,6 @@ export function createMessageElement(text, sender) {
     const bubble = document.createElement('div');
     bubble.className = 'msg-bubble';
 
-    // Format italicized actions like *sonríe levemente* or *te mira fijamente*
     let formatted = text.replace(/\*([^*]+)\*/g, '<span class="msg-actions">*$1*</span>');
     bubble.innerHTML = formatted;
 

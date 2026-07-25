@@ -2,15 +2,14 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import './style.css';
-import { getSession, initAuthUI, onAuthStateChange, signOut } from './auth.js';
-import { initBillingUI, getBillingStatus, updateTierBadge } from './billing.js';
-import { setTier, applyTierGating, canUseArchetype } from './tierGate.js';
-import { initChat } from './chat.js';
+import { getSession, initAuthUI, onAuthStateChange, signOut } from './services/auth.js';
+import { initBillingUI, getBillingStatus, updateTierBadge } from './services/billing.js';
+import { setTier, applyTierGating, canUseArchetype } from './services/tierGate.js';
+import { initChat } from './components/chat.js';
 
-// Expose tier gate helpers globally for cross-module access without circular imports
+// Expose tier gate helpers globally
 window.__tierGate = { canUseArchetype };
 
-// ── Auth Flow ─────────────────────────────────────────────
 async function initApp() {
     initAuthUI();
     initBillingUI();
@@ -18,13 +17,11 @@ async function initApp() {
     const session = await getSession();
 
     if (!session) {
-        // Show auth modal
         const authModal = document.getElementById('auth-modal');
         if (authModal) authModal.classList.remove('hidden');
         return;
     }
 
-    // User is logged in — proceed
     await startApp();
 }
 
@@ -33,7 +30,6 @@ async function startApp() {
     if (appStarted) return;
     appStarted = true;
 
-    // Load billing status and set tier
     try {
         const billing = await getBillingStatus();
         window.lumaDailyCount = billing.dailyMessageCount || 0;
@@ -45,36 +41,29 @@ async function startApp() {
         updateTierBadge('free');
     }
 
-    // Initialize chat
     initChat();
 
-    // Apply tier gating after chat initializes (so archetype cards exist)
     setTimeout(() => applyTierGating(), 100);
 
-    // Init 3D scene
     init3D();
 
-    // ── Auto Night Mode ────────────────────────────────────
     function applyAutoNightMode() {
         const hour = new Date().getHours();
         const root = document.documentElement;
         
         if (hour >= 22 || hour < 6) {
-            // Deep night — warm dark
             root.style.setProperty('--luma-bg-overlay', 'rgba(10, 5, 20, 0.85)');
             root.style.setProperty('--luma-accent-glow', '#6d28d9');
             root.style.setProperty('--luma-text-dim', '0.7');
             document.body.classList.add('luma-night');
             document.body.classList.remove('luma-evening');
         } else if (hour >= 18 && hour < 22) {
-            // Evening — slightly warm
             root.style.setProperty('--luma-bg-overlay', 'rgba(15, 10, 30, 0.6)');
             root.style.setProperty('--luma-accent-glow', '#8b5cf6');
             root.style.setProperty('--luma-text-dim', '0.85');
             document.body.classList.add('luma-evening');
             document.body.classList.remove('luma-night');
         } else {
-            // Daytime — defaults
             root.style.removeProperty('--luma-bg-overlay');
             root.style.removeProperty('--luma-accent-glow');
             root.style.removeProperty('--luma-text-dim');
@@ -82,10 +71,9 @@ async function startApp() {
         }
     }
     applyAutoNightMode();
-    setInterval(applyAutoNightMode, 600000); // Re-check every 10 min
+    setInterval(applyAutoNightMode, 600000);
 }
 
-// Listen for auth changes
 onAuthStateChange(async (event, session) => {
     if (event === 'SIGNED_IN' && session) {
         const authModal = document.getElementById('auth-modal');
@@ -96,7 +84,6 @@ onAuthStateChange(async (event, session) => {
     }
 });
 
-// Logout button
 const logoutBtn = document.getElementById('logout-btn');
 if (logoutBtn) {
     logoutBtn.addEventListener('click', async () => {
@@ -105,9 +92,9 @@ if (logoutBtn) {
     });
 }
 
-// ── 3D Scene ──────────────────────────────────────────────
 function init3D() {
     const container = document.getElementById('canvas-container');
+    if (!container) return;
     const scene = new THREE.Scene();
 
     const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
@@ -141,7 +128,6 @@ function init3D() {
     fillLight.position.set(-5, 0, -5);
     scene.add(fillLight);
 
-    // Emotion-driven lighting
     window.addEventListener('emotionsChanged', (e) => {
         const { afinidad, enojo } = e.detail;
         const enojoFactor = enojo / 100;
@@ -162,136 +148,27 @@ function init3D() {
         dirLight.position.set(5 - (typingFactor * 2), 5, 5 + (typingFactor));
     });
 
-    // Load 3D model
     const loader = new GLTFLoader();
     const modeloUrl = '/avatar.glb';
     let currentModel = null;
 
-    function saveModelToDB(file) {
-        const request = indexedDB.open("ParejaDB", 1);
-        request.onupgradeneeded = e => e.target.result.createObjectStore("models");
-        request.onsuccess = e => {
-            e.target.result.transaction("models", "readwrite").objectStore("models").put(file, "customModel");
-        };
-    }
-
-    function loadModelFromDB(callback, fallback) {
-        const request = indexedDB.open("ParejaDB", 1);
-        request.onupgradeneeded = e => e.target.result.createObjectStore("models");
-        request.onsuccess = e => {
-            const db = e.target.result;
-            if (!db.objectStoreNames.contains("models")) return fallback();
-            const tx = db.transaction("models", "readonly");
-            const getReq = tx.objectStore("models").get("customModel");
-            getReq.onsuccess = () => getReq.result ? callback(getReq.result) : fallback();
-            getReq.onerror = fallback;
-        };
-        request.onerror = fallback;
-    }
-
-    function disposeMaterial(mat) {
-        if (!mat) return;
-        for (const key of Object.keys(mat)) {
-            const val = mat[key];
-            if (val && typeof val === 'object' && val.isTexture) {
-                val.dispose();
-            }
-        }
-        mat.dispose();
-    }
-
-    function disposeModelHierarchy(object) {
-        if (!object) return;
-        scene.remove(object);
-        object.traverse((child) => {
-            if (child.isMesh) {
-                if (child.geometry) child.geometry.dispose();
-                if (child.material) {
-                    if (Array.isArray(child.material)) {
-                        child.material.forEach(mat => disposeMaterial(mat));
-                    } else {
-                        disposeMaterial(child.material);
-                    }
-                }
-            }
-        });
-    }
-
-    function loadGLTF(url) {
-        loader.load(url, (gltf) => {
-            if (currentModel) disposeModelHierarchy(currentModel);
+    loader.load(
+        modeloUrl,
+        (gltf) => {
             currentModel = gltf.scene;
-            currentModel.traverse((child) => {
-                if (child.isMesh) {
-                    child.castShadow = true;
-                    child.receiveShadow = true;
-                }
-            });
+            currentModel.position.set(0, 0, 0);
             scene.add(currentModel);
-            const box = new THREE.Box3().setFromObject(currentModel);
-            const center = box.getCenter(new THREE.Vector3());
-            currentModel.position.x += (0 - center.x);
-            currentModel.position.y += (0.5 - center.y);
-            currentModel.position.z += (0 - center.z);
-        }, undefined, () => {
-            if (currentModel) disposeModelHierarchy(currentModel);
-            const geometry = new THREE.BoxGeometry(1, 1, 1);
-            const material = new THREE.MeshStandardMaterial({ color: 0x8b5cf6, roughness: 0.2, metalness: 0.8 });
-            currentModel = new THREE.Mesh(geometry, material);
-            currentModel.position.y = 1;
-            currentModel.castShadow = true;
-            scene.add(currentModel);
-        });
-    }
-
-    loadModelFromDB((file) => {
-        loadGLTF(URL.createObjectURL(file));
-    }, () => {
-        loadGLTF(modeloUrl);
-    });
-
-    const modelUpload = document.getElementById('model-upload');
-    if (modelUpload) {
-        modelUpload.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            if (file) {
-                saveModelToDB(file);
-                loadGLTF(URL.createObjectURL(file));
-            }
-        });
-    }
-
-    let modelBaseY = null;
-    let isRendering = true;
-    document.addEventListener('visibilitychange', () => {
-        isRendering = document.visibilityState === 'visible';
-    });
+        },
+        undefined,
+        () => {}
+    );
 
     function animate() {
         requestAnimationFrame(animate);
-        if (!isRendering) return;
         controls.update();
-        if (currentModel) {
-            if (modelBaseY === null) modelBaseY = currentModel.position.y;
-            currentModel.position.y = modelBaseY + Math.sin(Date.now() * 0.001) * 0.02;
-        }
         renderer.render(scene, camera);
     }
     animate();
-
-    window.addEventListener('resize', () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-    }, { passive: true });
 }
 
-// ── PWA Service Worker Registration ───────────────────────
-if ('serviceWorker' in navigator && import.meta.env.PROD) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration failed:', err));
-    });
-}
-
-// Boot
 initApp();

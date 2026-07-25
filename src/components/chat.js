@@ -1,14 +1,15 @@
 // ═══════════════════════════════════════════════════════════
 // chat.js — SPA Master Controller & Event Orchestrator
 // ═══════════════════════════════════════════════════════════
-import { ChatBrain, getEmotionalBadge } from './brain.js';
+import { ChatBrain } from '../core/brain.js';
+import { getEmotionalBadge } from '../services/cardParser.js';
 import {
     switchView, renderGallery, renderSidebarChatList,
     initCreatorWizard, initCardImporter, initPanels,
     initConfigPanel, initDiaryUI, initRewardedAdUI,
     renderHistory, createMessageElement, showToast
 } from './ui.js';
-import { apiFetch } from './auth.js';
+import { apiFetch } from '../services/auth.js';
 
 export async function initChat() {
     let charactersData = {
@@ -50,14 +51,12 @@ export async function initChat() {
         custom: JSON.parse(localStorage.getItem('lumaCustomCharacters') || '[]')
     };
 
-    // Try fetching characters from server
     try {
         const res = await apiFetch('/api/characters');
         if (res.ok) {
             const data = await res.json();
             if (data.official && data.official.length > 0) charactersData.official = data.official;
             if (data.custom) {
-                // Merge server custom with local custom
                 const customMap = new Map();
                 charactersData.custom.forEach(c => customMap.set(c.id, c));
                 data.custom.forEach(c => customMap.set(c.id, c));
@@ -72,18 +71,16 @@ export async function initChat() {
     let allChars = [...charactersData.official, ...charactersData.custom];
     let currentCharacter = allChars.find(c => c.id === activeCharId || c.arquetipo_id === activeCharId) || charactersData.official[0];
 
-    let brain = new ChatBrain(currentCharacter.arquetipo_id || currentCharacter.id);
+    let brain = new ChatBrain(currentCharacter.id, currentCharacter.arquetipo_id);
 
-    // ── Select Character Handler ────────────────────────────────
     function selectCharacter(char) {
         currentCharacter = char;
         activeCharId = char.id || char.arquetipo_id;
         localStorage.setItem('lumaActiveCharacter', activeCharId);
 
-        brain = new ChatBrain(char.arquetipo_id || char.id);
+        brain = new ChatBrain(char.id, char.arquetipo_id);
         if (char.system_prompt) brain.systemPrompt = char.system_prompt;
 
-        // Update header UI
         const headerAvatar = document.getElementById('chatHeaderAvatar');
         const headerName = document.getElementById('chatHeaderName');
         const headerTagline = document.getElementById('chatHeaderTagline');
@@ -101,7 +98,6 @@ export async function initChat() {
             emotionalDot.style.boxShadow = `0 0 6px ${badgeInfo.color}`;
         }
 
-        // Render history or first message
         const messagesArea = document.getElementById('messagesArea');
         if (messagesArea) {
             if (brain.history && brain.history.length > 0) {
@@ -118,11 +114,9 @@ export async function initChat() {
         switchView('chat');
     }
 
-    // Initial render
     renderGallery(charactersData, 'all', '', selectCharacter);
     renderSidebarChatList(charactersData, activeCharId, selectCharacter);
 
-    // ── Navbar & Navigation Listeners ──────────────────────────
     const brandBtn = document.getElementById('brandBtn');
     const exploreGalleryBtn = document.getElementById('exploreGalleryBtn');
     const backToGalleryBtn = document.getElementById('backToGalleryBtn');
@@ -149,7 +143,6 @@ export async function initChat() {
         });
     }
 
-    // ── Modals Triggers ─────────────────────────────────────────
     const openCreatorBtn = document.getElementById('openCreatorBtn');
     const heroCreateBtn = document.getElementById('heroCreateBtn');
     const closeCreatorModal = document.getElementById('closeCreatorModal');
@@ -173,7 +166,6 @@ export async function initChat() {
     if (tierBadge && billingModal) tierBadge.addEventListener('click', () => billingModal.classList.remove('hidden'));
     if (closeBillingModal && billingModal) closeBillingModal.addEventListener('click', () => billingModal.classList.add('hidden'));
 
-    // ── 3-Step Wizard Creator Handler ──────────────────────────
     initCreatorWizard(async (newCharData) => {
         const charId = `custom_${Date.now()}`;
         const fullChar = {
@@ -182,11 +174,9 @@ export async function initChat() {
             is_official: false
         };
 
-        // Save locally
         charactersData.custom.unshift(fullChar);
         localStorage.setItem('lumaCustomCharacters', JSON.stringify(charactersData.custom));
 
-        // Save to server if online
         try {
             await apiFetch('/api/characters', {
                 method: 'POST',
@@ -200,7 +190,6 @@ export async function initChat() {
         selectCharacter(fullChar);
     }, showToast);
 
-    // ── Card Importer Handler ──────────────────────────────────
     initCardImporter(async (importedChar) => {
         const charId = `imported_${Date.now()}`;
         const fullChar = {
@@ -219,14 +208,12 @@ export async function initChat() {
         selectCharacter(fullChar);
     }, showToast);
 
-    // ── Panels & Miscellaneous ─────────────────────────────────
     const { closeAllPanels } = initPanels(brain);
     const messagesArea = document.getElementById('messagesArea');
     initConfigPanel(brain, closeAllPanels, messagesArea);
     initDiaryUI(brain);
     initRewardedAdUI(brain);
 
-    // ── Chat Input & Streaming SSE ──────────────────────────────
     const chatInput = document.getElementById('chatInput');
     const sendMessageBtn = document.getElementById('sendMessageBtn');
     const tokenIndicator = document.getElementById('tokenIndicator');
@@ -250,7 +237,6 @@ export async function initChat() {
         sendMessageBtn.addEventListener('click', handleSendMessage);
     }
 
-    // Voice recognition (STT)
     if (micBtn) {
         const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (SpeechRec) {
@@ -301,7 +287,6 @@ export async function initChat() {
         chatInput.value = '';
         if (tokenIndicator) tokenIndicator.textContent = '0 / 500 tokens';
 
-        // Append user message
         brain.addMessage('user', text);
         const userDiv = createMessageElement(text, 'user');
         if (messagesArea) {
@@ -309,7 +294,6 @@ export async function initChat() {
             messagesArea.scrollTop = messagesArea.scrollHeight;
         }
 
-        // Placeholder bot message for streaming
         const botDiv = createMessageElement('...', 'bot');
         const bubble = botDiv.querySelector('.msg-bubble');
         if (messagesArea) {
@@ -327,7 +311,6 @@ export async function initChat() {
 
             await brain.sendMessageToAI(text, onChunk);
 
-            // Update emotional badge & affinity after message
             const badgeInfo = getEmotionalBadge(brain);
             const affinityScore = document.getElementById('affinityScore');
             const emotionalDot = document.getElementById('chatEmotionalDot');
