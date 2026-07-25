@@ -290,46 +290,94 @@ export function initDiaryUI(brain) {
     const modal = document.getElementById('diary-modal');
     const closeBtn = document.getElementById('diary-close-btn');
     const openBtn = document.getElementById('open-diary-btn');
-    const listContainer = document.getElementById('diary-entries-list');
     const generateBtn = document.getElementById('generateDiaryBtn');
+    const prevPageBtn = document.getElementById('prevPageBtn');
+    const nextPageBtn = document.getElementById('nextPageBtn');
 
-    function renderDiary() {
-        if (!listContainer) return;
+    const leftContent = document.getElementById('diaryPageLeftContent');
+    const rightContent = document.getElementById('diaryPageRightContent');
+    const leftPageNum = document.getElementById('diaryPageLeftNum');
+    const rightPageNum = document.getElementById('diaryPageRightNum');
+    const rightDate = document.getElementById('diaryPageRightDate');
+
+    let currentEntryIndex = 0;
+
+    function renderBookPages() {
         const entries = brain.memoryState ? (brain.memoryState.diario_entries || []) : [];
+        
         if (entries.length === 0) {
-            listContainer.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-muted);font-style:italic;">Aún no hay confesiones registradas en el diario hoy. Haz clic en el botón superior para generar una reflexón íntima.</div>';
+            if (leftContent) leftContent.innerHTML = `<div class="diary-handwritten-text" style="color:var(--text-muted);font-style:italic;">Querido diario... aún no he escrito mis pensamientos sobre esta persona.</div>`;
+            if (rightContent) rightContent.innerHTML = `<div class="diary-handwritten-text" style="color:var(--text-muted);font-style:italic;">Haz clic abajo en "✍️ Escribir Nueva Confesión" para redactar mi primer pensamiento de hoy.</div>`;
+            if (leftPageNum) leftPageNum.textContent = 'Pág. 1';
+            if (rightPageNum) rightPageNum.textContent = 'Pág. 2';
+            if (rightDate) rightDate.textContent = 'Reciente';
             return;
         }
 
-        listContainer.innerHTML = entries.map(entry => `
-            <div style="background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.25);border-radius:14px;padding:14px;backdrop-filter:blur(8px);">
-                <div style="font-size:0.75rem;font-weight:700;color:var(--accent-violet);margin-bottom:6px;display:flex;align-items:center;gap:6px;">
-                    📅 <span>${entry.date}</span>
-                </div>
-                <div style="font-size:0.88rem;line-height:1.5;color:var(--text-main);font-style:italic;">"${entry.text}"</div>
-            </div>
-        `).join('');
+        const leftEntry = entries[currentEntryIndex];
+        const rightEntry = entries[currentEntryIndex + 1];
+
+        if (leftContent) {
+            leftContent.innerHTML = leftEntry ? `
+                <div style="font-size:0.75rem;color:var(--accent-violet);margin-bottom:6px;">📅 ${leftEntry.date}</div>
+                <div class="diary-handwritten-text">"${leftEntry.text}"</div>
+            ` : `<div class="diary-handwritten-text" style="color:var(--text-muted);">Página en blanco.</div>`;
+        }
+
+        if (rightContent) {
+            rightContent.innerHTML = rightEntry ? `
+                <div style="font-size:0.75rem;color:#ec4899;margin-bottom:6px;">📅 ${rightEntry.date}</div>
+                <div class="diary-handwritten-text">"${rightEntry.text}"</div>
+            ` : `<div class="diary-handwritten-text" style="color:var(--text-muted);">Fin de las reflexiones por ahora...</div>`;
+        }
+
+        if (leftPageNum) leftPageNum.textContent = `Pág. ${currentEntryIndex + 1}`;
+        if (rightPageNum) rightPageNum.textContent = `Pág. ${currentEntryIndex + 2}`;
+        if (rightDate) rightDate.textContent = leftEntry ? leftEntry.date : '---';
+    }
+
+    if (prevPageBtn) {
+        prevPageBtn.addEventListener('click', () => {
+            if (currentEntryIndex > 0) {
+                currentEntryIndex -= 2;
+                if (currentEntryIndex < 0) currentEntryIndex = 0;
+                playPopSound();
+                renderBookPages();
+            }
+        });
+    }
+
+    if (nextPageBtn) {
+        nextPageBtn.addEventListener('click', () => {
+            const entries = brain.memoryState ? (brain.memoryState.diario_entries || []) : [];
+            if (currentEntryIndex + 2 < entries.length) {
+                currentEntryIndex += 2;
+                playPopSound();
+                renderBookPages();
+            }
+        });
     }
 
     if (generateBtn) {
         generateBtn.addEventListener('click', async () => {
             generateBtn.disabled = true;
-            generateBtn.textContent = '⏳ Escribiendo confesión secreta...';
+            generateBtn.textContent = '✒️ Mojando la pluma y escribiendo...';
             try {
                 await brain.generateDiaryEntry();
-                renderDiary();
+                currentEntryIndex = 0;
+                renderBookPages();
                 playPopSound();
-                if (showToast) showToast('Nueva entrada añadida al Diario Secreto 📖', 'success');
+                if (showToast) showToast('Nueva confesión escrita en el diario 📖', 'success');
             } catch (e) {
                 console.error(e);
             } finally {
                 generateBtn.disabled = false;
-                generateBtn.textContent = '✨ Generar Confesión Nocturna (Reflexión de Hoy)';
+                generateBtn.textContent = '✍️ Escribir Nueva Confesión (Reflexión de Hoy)';
             }
         });
     }
 
-    if (openBtn && modal) openBtn.addEventListener('click', () => { renderDiary(); modal.classList.remove('hidden'); });
+    if (openBtn && modal) openBtn.addEventListener('click', () => { currentEntryIndex = 0; renderBookPages(); modal.classList.remove('hidden'); });
     if (closeBtn && modal) closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
 }
 

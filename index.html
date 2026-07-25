@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="/src/style.css">
 </head>
@@ -822,21 +822,50 @@
     </div>
   </div>
 
-  <!-- ========== DIARY MODAL ========== -->
-  <div id="diary-modal" class="panel hidden"
-    style="position:fixed;inset:10px;margin:auto;max-width:520px;max-height:85vh;z-index:1000;">
-    <div class="panel-header">
-      <h3>📖 Diario Secreto de Pensamientos Íntimos</h3>
-      <button class="panel-close-btn" id="diary-close-btn">✕</button>
-    </div>
-    <div class="panel-body" id="diary-list-container" style="display:flex;flex-direction:column;gap:12px;">
-      <p style="font-size:0.82rem;color:var(--text-muted);margin:0;">Pensamientos privados en 1ª persona que el bot redacta sobre ti cuando no están hablando...</p>
+  <!-- ========== DIARY MODAL (PHYSICAL REALISTIC BOOK) ========== -->
+  <div id="diary-modal" class="modal-overlay hidden" style="backdrop-filter: blur(14px); background: rgba(5, 6, 12, 0.85);">
+    <div class="diary-book-wrapper">
+      <button class="diary-close-btn" id="diary-close-btn">✕</button>
       
-      <button type="button" id="generateDiaryBtn" class="btn btn-primary" style="font-size: 0.85rem; width: 100%;">
-        ✨ Generar Confesión Nocturna (Reflexión de Hoy)
-      </button>
+      <div class="diary-leather-cover">
+        <div class="diary-ribbon"></div>
+        
+        <div class="diary-open-pages">
+          <!-- Left Page -->
+          <div class="diary-page diary-left-page">
+            <div class="diary-page-header">
+              <span class="diary-book-title">📖 Cuaderno Intimo</span>
+              <span class="diary-page-num" id="diaryPageLeftNum">Pág. 1</span>
+            </div>
+            <div class="diary-page-content" id="diaryPageLeftContent">
+              <div class="diary-handwritten-text">Ojeando las páginas del diario...</div>
+            </div>
+          </div>
 
-      <div id="diary-entries-list" style="margin-top:8px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;max-height:55vh;"></div>
+          <!-- Middle Spine Fold -->
+          <div class="diary-spine"></div>
+
+          <!-- Right Page -->
+          <div class="diary-page diary-right-page">
+            <div class="diary-page-header">
+              <span class="diary-date-stamp" id="diaryPageRightDate">---</span>
+              <span class="diary-page-num" id="diaryPageRightNum">Pág. 2</span>
+            </div>
+            <div class="diary-page-content" id="diaryPageRightContent">
+              <div class="diary-handwritten-text">No hay entradas aún en esta página.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Book Toolbar Controls -->
+        <div class="diary-book-toolbar">
+          <button type="button" id="prevPageBtn" class="diary-nav-btn">◀ Pág. Anterior</button>
+          <button type="button" id="generateDiaryBtn" class="diary-ink-btn">
+            ✍️ Escribir Nueva Confesión (Reflexión de Hoy)
+          </button>
+          <button type="button" id="nextPageBtn" class="diary-nav-btn">Pág. Siguiente ▶</button>
+        </div>
+      </div>
     </div>
   </div>
 
