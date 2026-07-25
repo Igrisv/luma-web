@@ -314,6 +314,22 @@
 
         <!-- Paso 2: Selección Visual de Arquetipos e Historia -->
         <div class="wizard-step hidden" id="wizardStep2">
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label>Edad del Personaje</label>
+              <input type="number" id="createAge" class="form-control" value="22" min="18" max="99">
+            </div>
+            <div class="form-group flex-1">
+              <label>Matiz de Humor & Tono</label>
+              <select id="createMatizHumor" class="form-control">
+                <option value="Sarcástica & Sagaz">😼 Sarcástica & Sagaz</option>
+                <option value="Extremadamente Dulce" selected>🌸 Extremadamente Dulce</option>
+                <option value="Misteriosa & Reservada">✨ Misteriosa & Reservada</option>
+                <option value="Directa e Imprudente">🔥 Directa e Imprudente</option>
+              </select>
+            </div>
+          </div>
+
           <div class="form-group">
             <label>Elige el Arquetipo de Personalidad:</label>
             <input type="hidden" id="createArchetype" value="pareja">
@@ -351,6 +367,21 @@
             </div>
           </div>
 
+          <!-- Quick Trait Chips Grid -->
+          <div class="form-group">
+            <label>Selecciona Rasgos & Gustos (Ensamblaje en 1 Clic):</label>
+            <div class="trait-chips-grid" id="traitChipsGrid">
+              <button type="button" class="trait-chip active" data-trait="Amante del café">☕ Amante del café</button>
+              <button type="button" class="trait-chip" data-trait="Trasnochadora">🌙 Trasnochadora</button>
+              <button type="button" class="trait-chip" data-trait="Fotos análogas">📸 Fotos análogas</button>
+              <button type="button" class="trait-chip" data-trait="Gamer de corazón">🎮 Gamer</button>
+              <button type="button" class="trait-chip" data-trait="Directa sin filtro">💅 Directa sin filtro</button>
+              <button type="button" class="trait-chip" data-trait="Música indie">🎧 Música indie</button>
+              <button type="button" class="trait-chip" data-trait="Fan de la pizza">🍕 Fan de la pizza</button>
+              <button type="button" class="trait-chip" data-trait="Lectora apasionada">📖 Lectora</button>
+            </div>
+          </div>
+
           <div class="form-group">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
               <label style="margin:0;">Mensaje de Saludo Inicial *</label>
@@ -362,8 +393,8 @@
           </div>
 
           <div class="form-group">
-            <label>Prompt de Personalidad & Comportamiento *</label>
-            <textarea id="createSystemPrompt" class="form-control" rows="3" placeholder="Ej. Eres Camila, una ingeniera divertida. Te gusta bromear con el usuario y apoyarlo en sus metas..." required></textarea>
+            <label>Prompt Ensamblado Automáticamente (Monólogo en 1ª Persona) *</label>
+            <textarea id="createSystemPrompt" class="form-control" rows="3" placeholder="Se genera automáticamente según tus selecciones..." required></textarea>
           </div>
 
           <div class="form-group hidden">

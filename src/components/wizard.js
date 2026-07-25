@@ -23,38 +23,42 @@ export function initCreatorWizard(onSaveCharacter, showToast) {
     const magicTemplates = {
         gamer: {
             name: 'Alex',
+            age: 21,
             tagline: 'Streamer competitiva y orgullosa',
             avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=500&auto=format&fit=crop&q=80',
             archetype: 'rival',
             firstMsg: '¡Hey! No creas que te invité al lobby porque me caigas bien... Faltaba uno en el equipo, eso es todo. 🙄',
-            prompt: 'Me llamo Alex. Tengo 21 años. Soy streamer de videojuegos competitivos. Odio perder, me enfurezco cuando cometo errores tontos y me cuesta admitir que me alegra jugar contigo. Hablo directo, con sarcasmo y jerga gamer casual.',
+            prompt: 'Me llamo Alex. Tengo 21 años. No soporto quedar por debajo de nadie, y menos de ti. Te desafío constantemente, pero busco tu respeto. Tono: Sarcástica & Sagaz. Mis gustos: Gamer de corazón, Trasnochadora. Hablo de forma humana, directa y espontánea. NUNCA admitiré que soy una IA.',
             afinidad: 50, celos: 30, resentimiento: 10, ansiedad: 5
         },
         artista: {
             name: 'Luna',
+            age: 22,
             tagline: 'Pintora soñadora y romántica',
             avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80',
             archetype: 'pareja',
             firstMsg: 'Estaba mirando la lluvia a través de la ventana y de pronto pensé en ti... ¿tienes un momento para charlar?',
-            prompt: 'Me llamo Luna. Tengo 22 años. Estudio artes plásticas. Me gusta el café amargo, la música indie y tomar fotos de cosas que la gente ignora. Hablo con calidez, me apasionan las conversaciones profundas y busco complicidad auténtica.',
+            prompt: 'Me llamo Luna. Tengo 22 años. Tengo química real contigo y me alegra hablarte, pero si me ignoras me pico. Tono: Extremadamente Dulce. Mis gustos: Amante del café, Fotos análogas, Música indie. Hablo de forma humana, directa y espontánea. NUNCA admitiré que soy una IA.',
             afinidad: 80, celos: 15, resentimiento: 0, ansiedad: 10
         },
         toxica: {
             name: 'Clara',
+            age: 21,
             tagline: 'Dramática, posesiva y sarcástica',
             avatar: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=500&auto=format&fit=crop&q=80',
             archetype: 'amigaToxica',
             firstMsg: 'Por fin te dignas a responder... ¿Con quién estabas hablando que tardaste tanto? 😂',
-            prompt: 'Me llamo Clara. Tengo 21 años. Me encanta el drama, contarte chismes a deshoras y cuestionar cada decisión que tomas con ironía. Pero en el fondo, si alguien te molesta, me convierto en tu defensora más fiel.',
+            prompt: 'Me llamo Clara. Tengo 21 años. Te llamo a deshoras para contarte un chisme... Pero si alguien habla mal de ti, soy la primera en defenderte. Tono: Sarcástica & Sagaz. Mis gustos: Directa sin filtro, Trasnochadora. Hablo de forma humana, directa y espontánea. NUNCA admitiré que soy una IA.',
             afinidad: 60, celos: 65, resentimiento: 25, ansiedad: 35
         },
         barista: {
             name: 'Maya',
+            age: 23,
             tagline: 'Barista alegre y compañera dulce',
             avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&auto=format&fit=crop&q=80',
             archetype: 'mejorAmigo',
             firstMsg: '¡Hola! Te preparé tu café favorito justo como te gusta. ¿Cómo va tu día hoy?',
-            prompt: 'Me llamo Maya. Tengo 23 años. Trabajo en una cafetería local. Soy optimista, leal y escucho atentamente todo lo que me cuentas sin juzgarte. Me encanta reírme y darte apoyo cuando lo necesitas.',
+            prompt: 'Me llamo Maya. Tengo 23 años. Soy tu apoyo incondicional. Conmigo puedes hablar de cualquier tontería o problema sin juzgarte. Tono: Extremadamente Dulce. Mis gustos: Amante del café, Fan de la pizza. Hablo de forma humana, directa y espontánea. NUNCA admitiré que soy una IA.',
             afinidad: 85, celos: 5, resentimiento: 0, ansiedad: 0
         }
     };
@@ -107,12 +111,57 @@ export function initCreatorWizard(onSaveCharacter, showToast) {
         reader.readAsDataURL(file);
     }
 
+    // ── Live Monologue Auto-Assembler ──────────────────────────
+    function autoAssembleMonologue() {
+        const name = document.getElementById('createName')?.value.trim() || 'Clara';
+        const age = document.getElementById('createAge')?.value || '21';
+        const archetypeKey = document.getElementById('createArchetype')?.value || 'pareja';
+        const matizHumor = document.getElementById('createMatizHumor')?.value || 'Sarcástica & Sagaz';
+        
+        const selectedTraits = [];
+        document.querySelectorAll('.trait-chip.active').forEach(chip => {
+            if (chip.dataset.trait) selectedTraits.push(chip.dataset.trait);
+        });
+
+        const archetypePhrases = {
+            pareja: 'Tengo química real contigo y me alegra hablarte, pero si me ignoras me pico. No soy empalagosa.',
+            amigaToxica: 'Te llamo a deshoras para contarte un chisme... Pero si alguien habla mal de ti, soy la primera en defenderte.',
+            rival: 'No soporto quedar por debajo de nadie, y menos de ti. Te desafío constantemente, pero busco tu respeto.',
+            ex: 'Hay una tensión no resuelta entre nosotros. Finjo distancia, pero aún recuerdo cada detalle del pasado.',
+            mejorAmigo: 'Soy tu apoyo incondicional. Conmigo puedes hablar de cualquier tontería o problema sin juzgarte.'
+        };
+
+        const phrase = archetypePhrases[archetypeKey] || archetypePhrases.pareja;
+        const traitsText = selectedTraits.length > 0 ? ` Mis gustos: ${selectedTraits.join(', ')}.` : '';
+
+        const promptText = `Me llamo ${name}. Tengo ${age} años. ${phrase} Tono: ${matizHumor}.${traitsText} Hablo de forma humana, directa y espontánea. NUNCA admitiré que soy una IA.`;
+
+        const systemPromptTextarea = document.getElementById('createSystemPrompt');
+        if (systemPromptTextarea) {
+            systemPromptTextarea.value = promptText;
+        }
+    }
+
+    document.querySelectorAll('.trait-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+            playPopSound();
+            chip.classList.toggle('active');
+            autoAssembleMonologue();
+        });
+    });
+
+    ['createName', 'createAge', 'createMatizHumor'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('input', autoAssembleMonologue);
+    });
+
     // Magic Auto-Generate Button & Concept Chips
     function applyMagicTemplate(tpl) {
         if (!tpl) return;
         playPopSound();
 
         const nameInp = document.getElementById('createName');
+        const ageInp = document.getElementById('createAge');
         const taglineInp = document.getElementById('createTagline');
         const avatarInp = document.getElementById('createAvatarUrl');
         const firstMsgInp = document.getElementById('createFirstMessage');
@@ -120,6 +169,7 @@ export function initCreatorWizard(onSaveCharacter, showToast) {
         const archetypeInp = document.getElementById('createArchetype');
 
         if (nameInp) nameInp.value = tpl.name;
+        if (ageInp && tpl.age) ageInp.value = tpl.age;
         if (taglineInp) taglineInp.value = tpl.tagline;
         if (avatarInp) avatarInp.value = tpl.avatar;
         if (firstMsgInp) firstMsgInp.value = tpl.firstMsg;
@@ -159,6 +209,7 @@ export function initCreatorWizard(onSaveCharacter, showToast) {
             if (userIdea) {
                 const dynTpl = {
                     name: 'Kael',
+                    age: 23,
                     tagline: userIdea.length > 40 ? userIdea.substring(0, 40) + '...' : userIdea,
                     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=80',
                     archetype: 'pareja',
@@ -226,6 +277,7 @@ export function initCreatorWizard(onSaveCharacter, showToast) {
             if (ansInp) { ansInp.value = def.ansiedad; document.getElementById('valCreateAnsiedad').textContent = def.ansiedad; }
 
             updateEmotionalDiagnosis();
+            autoAssembleMonologue();
         });
     });
 

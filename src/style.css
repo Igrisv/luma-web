@@ -958,6 +958,38 @@ body {
   font-weight: 500;
 }
 
+/* Trait Chips Grid */
+.trait-chips-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.35rem;
+}
+
+.trait-chip {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-color);
+  border-radius: 99px;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.trait-chip:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-main);
+}
+
+.trait-chip.active {
+  background: rgba(139, 92, 246, 0.2);
+  border-color: var(--accent-violet);
+  color: var(--text-main);
+  box-shadow: 0 0 10px var(--accent-violet-glow);
+}
+
 /* Avatar Presets Grid */
 .avatar-presets-grid {
   display: grid;
