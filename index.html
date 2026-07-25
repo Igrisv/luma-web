@@ -277,9 +277,29 @@
         
         <!-- Paso 1: Identidad & Selector de Avatares Preset -->
         <div class="wizard-step" id="wizardStep1">
+          <!-- Magic Concept Generator Banner -->
+          <div class="magic-generator-box">
+            <div class="magic-gen-header">
+              <span class="magic-badge">⚡ AUTO-CREADOR EN 1 CLIC</span>
+              <h4 class="magic-gen-title">¿No quieres escribir a mano? Rellena todo al instante</h4>
+            </div>
+            <div class="magic-concept-chips">
+              <button type="button" class="concept-chip" data-concept="pareja">💕 Camila (Pareja Dulce)</button>
+              <button type="button" class="concept-chip" data-concept="amigaToxica">😈 Clara (Amiga Tóxica)</button>
+              <button type="button" class="concept-chip" data-concept="rival">⚔️ Elena (Rival Tsundere)</button>
+              <button type="button" class="concept-chip" data-concept="ex">🌧️ Valeria (Ex Nostálgica)</button>
+            </div>
+            <button type="button" id="magicGenerateBtn" class="btn-magic-spark">
+              <span>✨ Sorpréndeme con un Personaje Único (1 Clic)</span>
+            </button>
+          </div>
+
           <div class="form-row">
             <div class="form-group flex-1">
-              <label>Nombre del Personaje *</label>
+              <div class="label-with-spark">
+                <label>Nombre del Personaje *</label>
+                <button type="button" id="randomNameBtn" class="btn-text-spark">🎲 Nombre Rápido</button>
+              </div>
               <input type="text" id="createName" class="form-control" placeholder="Ej. Camila, Alex, Luna..." required>
             </div>
             <div class="form-group flex-1">
@@ -289,13 +309,13 @@
           </div>
 
           <div class="form-group">
-            <label>Elige un Avatar Estético (1 Clic) o Subes tu Foto Local (100% Gratis):</label>
+            <label>Elige un Avatar Estético (1 Clic) o Sube tu Foto (100% Gratis):</label>
             
             <!-- Direct Local File Upload Box -->
             <div class="avatar-upload-box" id="avatarDropZone">
               <div class="avatar-upload-text">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent-violet);"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                <span>Haz clic o arrastra una imagen desde tu dispositivo</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent-violet);"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                <span>Subir imagen desde tu dispositivo (Haz clic o arrastra)</span>
               </div>
               <input type="file" id="avatarFileInput" accept="image/*" class="hidden">
             </div>

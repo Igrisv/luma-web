@@ -155,6 +155,20 @@ export function initCreatorWizard(onSaveCharacter, showToast) {
         if (el) el.addEventListener('input', autoAssembleMonologue);
     });
 
+    const randomNameBtn = document.getElementById('randomNameBtn');
+    if (randomNameBtn) {
+        randomNameBtn.addEventListener('click', () => {
+            playPopSound();
+            const names = ['Camila', 'Kael', 'Luna', 'Alex', 'Valeria', 'Mateo', 'Sofía', 'Bruno', 'Maya', 'Dante'];
+            const randomName = names[Math.floor(Math.random() * names.length)];
+            const createNameInp = document.getElementById('createName');
+            if (createNameInp) {
+                createNameInp.value = randomName;
+                autoAssembleMonologue();
+            }
+        });
+    }
+
     // Magic Auto-Generate Button & Concept Chips
     function applyMagicTemplate(tpl) {
         if (!tpl) return;
