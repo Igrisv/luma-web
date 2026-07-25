@@ -82,13 +82,19 @@ export function playWhooshSound() {
 export function switchView(viewName) {
     const galleryView = document.getElementById('galleryView');
     const chatView = document.getElementById('chatView');
+    const btnGallery = document.getElementById('navSegmentGallery');
+    const btnChat = document.getElementById('navSegmentChat');
 
     if (viewName === 'gallery') {
         if (galleryView) galleryView.style.display = 'flex';
         if (chatView) chatView.style.display = 'none';
+        if (btnGallery) btnGallery.classList.add('active');
+        if (btnChat) btnChat.classList.remove('active');
     } else {
         if (galleryView) galleryView.style.display = 'none';
         if (chatView) chatView.style.display = 'flex';
+        if (btnChat) btnChat.classList.add('active');
+        if (btnGallery) btnGallery.classList.remove('active');
     }
 }
 
@@ -222,7 +228,9 @@ export function createMessageElement(text, sender) {
 
 export function renderHistory(brain, messagesBox) {
     if (!messagesBox) return;
-    messagesBox.innerHTML = '';
+    const targetContainer = document.getElementById('messagesList') || messagesBox;
+    targetContainer.innerHTML = '';
+    
     brain.history.forEach(msg => {
         const role = msg.role === 'user' ? 'user' : 'bot';
         let renderText = msg.content;
@@ -236,7 +244,7 @@ export function renderHistory(brain, messagesBox) {
         }
 
         const div = createMessageElement(renderText, role);
-        messagesBox.appendChild(div);
+        targetContainer.appendChild(div);
     });
     messagesBox.scrollTop = messagesBox.scrollHeight;
 }

@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════
-// chat.js — SPA Master Controller & Event Orchestrator
+// chat.js — SPA Master Controller & Centered Reading UI Layout
 // ═══════════════════════════════════════════════════════════
 import { ChatBrain } from '../core/brain.js';
 import { getEmotionalBadge } from '../services/cardParser.js';
@@ -74,6 +74,35 @@ export async function initChat() {
 
     let brain = new ChatBrain(currentCharacter.id, currentCharacter.arquetipo_id);
 
+    const starterPromptsMap = {
+        pareja: ["💕 ¿Qué tal tu día, mi amor?", "✨ Cuéntame algo lindo sobre ti", "🍽️ ¿Qué cenamos hoy?", "🩷 ¿Cómo te sientes ahora mismo?"],
+        rival: ["⚡ Apuesto a que no puedes ganarme hoy", "😏 ¿Sigues pensando en nuestra discusión?", "🔥 Cuéntame tu mayor secreto"],
+        amigaToxica: ["😈 ¿Qué drama me vas a contar hoy?", "😂 No me digas que sigues triste...", "☕ ¡Cuéntame el chisme completo!"],
+        ex: ["🌧️ ¿Aún guardas recuerdos míos?", "💔 ¿Alguna vez piensas en lo que tuvimos?", "🍷 ¿Cómo has estado últimamente?"],
+        mejorAmigo: ["🤝 ¿Qué hay de nuevo hoy, amigo?", "🎮 ¿Jugamos o charlamos un rato?", "🍿 Cuéntame tu mejor historia"]
+    };
+
+    function renderQuickStarters(archetypeId) {
+        const startersContainer = document.getElementById('quickStartersContainer');
+        if (!startersContainer) return;
+
+        const prompts = starterPromptsMap[archetypeId] || starterPromptsMap.pareja;
+        startersContainer.innerHTML = prompts.map(p => `
+            <button class="starter-chip" data-prompt="${p}">${p}</button>
+        `).join('');
+
+        startersContainer.querySelectorAll('.starter-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                const prompt = chip.dataset.prompt;
+                const chatInput = document.getElementById('chatInput');
+                if (chatInput && prompt) {
+                    chatInput.value = prompt;
+                    handleSendMessage();
+                }
+            });
+        });
+    }
+
     function selectCharacter(char) {
         const currentTier = getTier();
         const isLockedByTier = (char.tier_required === 'premium' && currentTier === 'free') ||
@@ -111,18 +140,42 @@ export async function initChat() {
             emotionalDot.style.boxShadow = `0 0 6px ${badgeInfo.color}`;
         }
 
+        // Populate Chat Hero Card
+        const heroAvatar = document.getElementById('heroCardAvatar');
+        const heroName = document.getElementById('heroCardName');
+        const heroTagline = document.getElementById('heroCardTagline');
+        const heroArchetype = document.getElementById('heroCardArchetype');
+        const heroAffinity = document.getElementById('heroCardAffinity');
+
+        if (heroAvatar) heroAvatar.src = char.avatar_url;
+        if (heroName) heroName.textContent = char.name;
+        if (heroTagline) heroTagline.textContent = char.description || char.tagline || '';
+        
+        const archetypeNames = {
+            pareja: '💕 Pareja Cariñosa',
+            rival: '⚔️ Rival Competitiva',
+            amigaToxica: '😈 Amiga Tóxica',
+            ex: '🌧️ Ex que No Supera',
+            mejorAmigo: '🤝 Mejor Amigo/a'
+        };
+        if (heroArchetype) heroArchetype.textContent = archetypeNames[char.arquetipo_id] || '🎭 Acompañante';
+        if (heroAffinity) heroAffinity.textContent = `💚 ${brain.afinidad}% Afinidad`;
+
         const messagesArea = document.getElementById('messagesArea');
-        if (messagesArea) {
+        const messagesList = document.getElementById('messagesList') || messagesArea;
+        
+        if (messagesArea && messagesList) {
             if (brain.history && brain.history.length > 0) {
                 renderHistory(brain, messagesArea);
             } else {
-                messagesArea.innerHTML = '';
+                messagesList.innerHTML = '';
                 const initialMsg = char.first_message || '¡Hola! Me alegra hablar contigo.';
                 brain.addMessage('assistant', `<respuesta>${initialMsg}</respuesta>`);
                 renderHistory(brain, messagesArea);
             }
         }
 
+        renderQuickStarters(char.arquetipo_id);
         renderSidebarChatList(charactersData, activeCharId, selectCharacter);
         switchView('chat');
     }
@@ -130,14 +183,15 @@ export async function initChat() {
     renderGallery(charactersData, 'all', '', selectCharacter);
     renderSidebarChatList(charactersData, activeCharId, selectCharacter);
 
+    // Top Segmented Switcher & Navigation
+    const navSegmentGallery = document.getElementById('navSegmentGallery');
+    const navSegmentChat = document.getElementById('navSegmentChat');
     const brandBtn = document.getElementById('brandBtn');
-    const exploreGalleryBtn = document.getElementById('exploreGalleryBtn');
-    const backToGalleryBtn = document.getElementById('backToGalleryBtn');
     const searchInput = document.getElementById('searchInput');
 
+    if (navSegmentGallery) navSegmentGallery.addEventListener('click', () => switchView('gallery'));
+    if (navSegmentChat) navSegmentChat.addEventListener('click', () => switchView('chat'));
     if (brandBtn) brandBtn.addEventListener('click', () => switchView('gallery'));
-    if (exploreGalleryBtn) exploreGalleryBtn.addEventListener('click', () => switchView('gallery'));
-    if (backToGalleryBtn) backToGalleryBtn.addEventListener('click', () => switchView('gallery'));
 
     let activeCategory = 'all';
     const categoryTabs = document.querySelectorAll('.tab-btn');
@@ -302,16 +356,17 @@ export async function initChat() {
 
         brain.addMessage('user', text);
         const userDiv = createMessageElement(text, 'user');
-        if (messagesArea) {
-            messagesArea.appendChild(userDiv);
-            messagesArea.scrollTop = messagesArea.scrollHeight;
+        const targetList = document.getElementById('messagesList') || messagesArea;
+        if (targetList) {
+            targetList.appendChild(userDiv);
+            if (messagesArea) messagesArea.scrollTop = messagesArea.scrollHeight;
         }
 
         const botDiv = createMessageElement('...', 'bot');
         const bubble = botDiv.querySelector('.msg-bubble');
-        if (messagesArea) {
-            messagesArea.appendChild(botDiv);
-            messagesArea.scrollTop = messagesArea.scrollHeight;
+        if (targetList) {
+            targetList.appendChild(botDiv);
+            if (messagesArea) messagesArea.scrollTop = messagesArea.scrollHeight;
         }
 
         try {

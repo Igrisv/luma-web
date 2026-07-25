@@ -73,6 +73,18 @@
       LUMA AI
     </div>
 
+    <!-- Segmented Navigation Control -->
+    <div class="nav-segmented-control">
+      <button class="nav-segment-btn active" id="navSegmentGallery">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        <span>Galería</span>
+      </button>
+      <button class="nav-segment-btn" id="navSegmentChat">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        <span>Chat</span>
+      </button>
+    </div>
+
     <div class="search-bar">
       <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
       <input type="text" id="searchInput" placeholder="Buscar personajes o arquetipos...">
@@ -84,7 +96,7 @@
         <span>Plan Free</span>
       </div>
 
-      <button class="btn btn-secondary nav-telemetry-btn" id="telemetryBtn">
+      <button class="btn btn-secondary nav-telemetry-btn" id="telemetryBtn" title="Estadísticas de Telemetría">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
         Telemetría
       </button>
@@ -93,7 +105,7 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
       </button>
 
-      <button class="btn btn-secondary nav-icon-btn" id="bondBtn" title="Panel de Vínculo">
+      <button class="btn btn-secondary nav-icon-btn" id="bondBtn" title="Panel de Vínculo Emocional">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent-rose);"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
       </button>
     </div>
@@ -104,18 +116,14 @@
 
     <!-- LEFT SIDEBAR -->
     <aside class="sidebar" id="mainSidebar">
-      <div class="sidebar-actions">
-        <button class="btn btn-primary" id="exploreGalleryBtn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-          <span>Explorar Galería</span>
+      <div class="sidebar-actions-compact">
+        <button class="btn btn-primary btn-sm" id="openCreatorBtn" title="Crear Bot">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>
+          <span>Crear Bot</span>
         </button>
-        <button class="btn btn-secondary" id="openCreatorBtn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>
-          <span>Crear Personaje</span>
-        </button>
-        <button class="btn btn-secondary" id="openImporterBtn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-          <span>Importar Tarjeta</span>
+        <button class="btn btn-secondary btn-sm" id="openImporterBtn" title="Importar">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <span>Importar</span>
         </button>
       </div>
 
@@ -155,14 +163,10 @@
         </div>
       </section>
 
-      <!-- VIEW 2: ACTIVE CHAT WINDOW -->
+      <!-- VIEW 2: ACTIVE CHAT WINDOW (CENTERED COLUMN LAYOUT) -->
       <section class="chat-view" id="chatView" style="display: none;">
         <div class="chat-header">
           <div class="chat-header-user">
-            <button class="btn btn-secondary back-to-gallery-btn" id="backToGalleryBtn">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-              Galería
-            </button>
             <div class="avatar-wrapper">
               <img id="chatHeaderAvatar" class="avatar-sm" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80" alt="Avatar">
               <span id="chatEmotionalDot" class="status-dot green"></span>
@@ -184,9 +188,28 @@
           </div>
         </div>
 
-        <!-- Messages Area -->
+        <!-- Messages Scroll Area -->
         <div class="messages-area" id="messagesArea">
-          <!-- Message Bubbles -->
+          <div class="chat-stream-container" id="chatStreamContainer">
+            
+            <!-- Character Welcome Hero Card -->
+            <div class="chat-hero-card" id="chatHeroBanner">
+              <div class="hero-avatar-wrapper">
+                <img id="heroCardAvatar" src="" alt="Character Avatar" class="hero-avatar-img">
+                <div class="hero-avatar-glow"></div>
+              </div>
+              <h2 id="heroCardName" class="hero-card-title">Sofía</h2>
+              <p id="heroCardTagline" class="hero-card-tagline">Tu Pareja Cariñosa</p>
+              <div class="hero-card-meta">
+                <span id="heroCardArchetype" class="hero-meta-tag">💕 Pareja</span>
+                <span id="heroCardAffinity" class="hero-meta-tag glow">💚 85% Afinidad</span>
+              </div>
+            </div>
+
+            <!-- Dynamic Messages Bubbles Container -->
+            <div id="messagesList" class="messages-list"></div>
+
+          </div>
         </div>
 
         <!-- Reply bar preview -->
@@ -195,19 +218,29 @@
           <button id="cancel-reply-btn" class="cancel-reply-btn">✕</button>
         </div>
 
-        <!-- Chat Input Area -->
+        <!-- Chat Input Area (Centered Container) -->
         <div class="chat-input-area">
-          <button id="micBtn" class="btn btn-secondary icon-only-btn" title="Activar entrada de voz (STT)">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
-          </button>
-          <div class="input-wrapper">
-            <textarea id="chatInput" placeholder="Escribe un mensaje... (*acciones en cursiva*)" rows="1"></textarea>
-            <div class="token-counter" id="tokenIndicator">0 / 500 tokens</div>
+          <div class="chat-input-centered-box">
+            
+            <!-- Quick Conversation Starters -->
+            <div class="quick-starters-bar" id="quickStartersContainer">
+              <!-- Dynamic Quick Starter Chips -->
+            </div>
+
+            <div class="input-controls-row">
+              <button id="micBtn" class="btn btn-secondary icon-only-btn" title="Activar entrada de voz (STT)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+              </button>
+              <div class="input-wrapper">
+                <textarea id="chatInput" placeholder="Escribe un mensaje... (*acciones en cursiva*)" rows="1"></textarea>
+                <div class="token-counter" id="tokenIndicator">0 / 500 tokens</div>
+              </div>
+              <button class="btn btn-primary send-btn" id="sendMessageBtn">
+                <span>Enviar</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+              </button>
+            </div>
           </div>
-          <button class="btn btn-primary send-btn" id="sendMessageBtn">
-            Enviar
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-          </button>
         </div>
       </section>
 
