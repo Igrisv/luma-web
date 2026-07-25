@@ -454,6 +454,13 @@ export function initCreatorWizard(onSaveCharacter, showToast) {
             const resentimiento = parseInt(document.getElementById('createResentimiento').value, 10) || 0;
             const ansiedad = parseInt(document.getElementById('createAnsiedad').value, 10) || 10;
 
+            const sensitivities = {
+                celos_sensibility: celos > 40 ? 1.8 : 1.0,
+                resentment_decay: resentimiento > 20 ? 0.3 : 0.8,
+                vulnerability_threshold: afinidad < 50 ? 80 : 60,
+                night_owl_affinity: 1.35
+            };
+
             const newChar = {
                 name,
                 tagline,
@@ -461,6 +468,7 @@ export function initCreatorWizard(onSaveCharacter, showToast) {
                 first_message,
                 arquetipo_id,
                 system_prompt,
+                sensitivities,
                 emociones_inicio: { afinidad, celos, resentimiento, ansiedad },
                 lorebook: {}
             };
