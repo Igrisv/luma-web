@@ -931,6 +931,33 @@ body {
   flex: 1;
 }
 
+/* Avatar File Upload Box */
+.avatar-upload-box {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1.5px dashed var(--border-color);
+  border-radius: 12px;
+  padding: 0.65rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 0.5rem;
+}
+
+.avatar-upload-box:hover, .avatar-upload-box.dragover {
+  border-color: var(--accent-violet);
+  background: rgba(139, 92, 246, 0.08);
+}
+
+.avatar-upload-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
 /* Avatar Presets Grid */
 .avatar-presets-grid {
   display: grid;

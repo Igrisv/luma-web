@@ -56,6 +56,11 @@ export function canUseArchetype(archetypeId) {
   return features.arquetipos.includes(archetypeId);
 }
 
+export function canCreateCustomBot(currentCustomCount) {
+  if (currentTier === 'premium' || currentTier === 'obsesion') return true;
+  return currentCustomCount < 3;
+}
+
 export function getRemainingMessages(usedToday) {
   const features = getFeatures();
   if (features.maxMessagesPerDay === Infinity) return Infinity;
