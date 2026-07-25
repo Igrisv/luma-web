@@ -276,6 +276,21 @@ export function initCreatorWizard(onSaveCharacter, showToast) {
             if (resInp) { resInp.value = def.resentimiento; document.getElementById('valCreateResentimiento').textContent = def.resentimiento; }
             if (ansInp) { ansInp.value = def.ansiedad; document.getElementById('valCreateAnsiedad').textContent = def.ansiedad; }
 
+            // Recommended Trait Chips by Archetype Branch (Max 4 recommended per branch)
+            const recommendedTraits = {
+                pareja: ['Amante del café', 'Fotos análogas', 'Música indie', 'Lectora apasionada'],
+                amigaToxica: ['Directa sin filtro', 'Trasnochadora', 'Gamer de corazón', 'Fan de la pizza'],
+                rival: ['Gamer de corazón', 'Directa sin filtro', 'Trasnochadora', 'Lectora apasionada'],
+                ex: ['Música indie', 'Fotos análogas', 'Trasnochadora', 'Amante del café'],
+                mejorAmigo: ['Fan de la pizza', 'Gamer de corazón', 'Amante del café', 'Directa sin filtro']
+            };
+
+            const recs = recommendedTraits[archetype] || recommendedTraits.pareja;
+            document.querySelectorAll('.trait-chip').forEach(chip => {
+                const trait = chip.dataset.trait;
+                chip.classList.toggle('active', recs.includes(trait));
+            });
+
             updateEmotionalDiagnosis();
             autoAssembleMonologue();
         });

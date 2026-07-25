@@ -128,6 +128,10 @@ function init3D() {
     fillLight.position.set(-5, 0, -5);
     scene.add(fillLight);
 
+    const rimLight = new THREE.PointLight(0xa78bfa, 0.8, 10);
+    rimLight.position.set(0, 2, -2);
+    scene.add(rimLight);
+
     window.addEventListener('emotionsChanged', (e) => {
         const { afinidad, enojo } = e.detail;
         const enojoFactor = enojo / 100;
@@ -140,6 +144,7 @@ function init3D() {
         const fillHex = new THREE.Color().setHSL(0.8, afFactor, 0.5);
         fillLight.color.copy(fillHex);
         fillLight.intensity = 0.2 + (afFactor * 0.6);
+        rimLight.color.setHSL(0.75 + (afFactor * 0.1), 0.8, 0.6);
     });
 
     window.addEventListener('userTyping', (e) => {
