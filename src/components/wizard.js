@@ -290,20 +290,115 @@ export function initCreatorWizard(onSaveCharacter, showToast) {
             if (resInp) { resInp.value = def.resentimiento; document.getElementById('valCreateResentimiento').textContent = def.resentimiento; }
             if (ansInp) { ansInp.value = def.ansiedad; document.getElementById('valCreateAnsiedad').textContent = def.ansiedad; }
 
-            // Recommended Trait Chips by Archetype Branch (Max 4 recommended per branch)
-            const recommendedTraits = {
-                pareja: ['Amante del café', 'Fotos análogas', 'Música indie', 'Lectora apasionada'],
-                amigaToxica: ['Directa sin filtro', 'Trasnochadora', 'Gamer de corazón', 'Fan de la pizza'],
-                rival: ['Gamer de corazón', 'Directa sin filtro', 'Trasnochadora', 'Lectora apasionada'],
-                ex: ['Música indie', 'Fotos análogas', 'Trasnochadora', 'Amante del café'],
-                mejorAmigo: ['Fan de la pizza', 'Gamer de corazón', 'Amante del café', 'Directa sin filtro']
+            // Dynamic Matices de Humor & Trait Chips per Archetype Branch
+            const archetypeDynamicOptions = {
+                pareja: {
+                    matices: [
+                        { val: '🌸 Extremadamente Dulce & Cómplice', text: '🌸 Extremadamente Dulce & Cómplice' },
+                        { val: '💕 Romántica & Posesiva', text: '💕 Romántica & Posesiva' },
+                        { val: '☕ Cálida & Detallista', text: '☕ Cálida & Detallista' },
+                        { val: '🥰 Cariñosa con Humor Seco', text: '🥰 Cariñosa con Humor Seco' }
+                    ],
+                    traits: [
+                        { icon: '☕', name: 'Amante del café' },
+                        { icon: '📸', name: 'Fotos análogas' },
+                        { icon: '🎧', name: 'Música indie' },
+                        { icon: '📖', name: 'Lectora apasionada' },
+                        { icon: '🧁', name: 'Repostería casera' },
+                        { icon: '🌙', name: 'Charlas nocturnas' }
+                    ]
+                },
+                amigaToxica: {
+                    matices: [
+                        { val: '😈 Sarcástica & Burlona', text: '😈 Sarcástica & Burlona' },
+                        { val: '🔥 Drama & Chisme Total', text: '🔥 Drama & Chisme Total' },
+                        { val: '💅 Directa Sin Filtro', text: '💅 Directa Sin Filtro' },
+                        { val: '👑 Provocadora & Picante', text: '👑 Provocadora & Picante' }
+                    ],
+                    traits: [
+                        { icon: '💅', name: 'Directa sin filtro' },
+                        { icon: '🌙', name: 'Trasnochadora' },
+                        { icon: '🎮', name: 'Gamer de corazón' },
+                        { icon: '🍕', name: 'Fan de la pizza' },
+                        { icon: '🍿', name: 'Adicta al chisme' },
+                        { icon: '🖤', name: 'Ironía constante' }
+                    ]
+                },
+                rival: {
+                    matices: [
+                        { val: '⚔️ Orgullosa & Competitiva', text: '⚔️ Orgullosa & Competitiva' },
+                        { val: '😏 Tsundere Mordaz', text: '😏 Tsundere Mordaz' },
+                        { val: '🔥 Fiera & Fuerte', text: '🔥 Fiera & Fuerte' },
+                        { val: '🏆 Odia Perder', text: '🏆 Odia Perder' }
+                    ],
+                    traits: [
+                        { icon: '⚔️', name: 'Orgullo gigante' },
+                        { icon: '🎯', name: 'Apuestas altas' },
+                        { icon: '🎮', name: 'Gamer competitiva' },
+                        { icon: '📖', name: 'Debates acalorados' },
+                        { icon: '🏆', name: 'Odia perder' },
+                        { icon: '🏃‍♀️', name: 'Atleta feroz' }
+                    ]
+                },
+                ex: {
+                    matices: [
+                        { val: '🌧️ Melancólica & Distante', text: '🌧️ Melancólica & Distante' },
+                        { val: '💔 Nostálgica & Misteriosa', text: '💔 Nostálgica & Misteriosa' },
+                        { val: '🍷 Asuntos Pendientes', text: '🍷 Asuntos Pendientes' },
+                        { val: '🖤 Tensión No Resuelta', text: '🖤 Tensión No Resuelta' }
+                    ],
+                    traits: [
+                        { icon: '🌧️', name: 'Recuerdos del pasado' },
+                        { icon: '🎧', name: 'Canciones tristes' },
+                        { icon: '🍷', name: 'Noches de nostalgia' },
+                        { icon: '🌙', name: 'Trasnochadora' },
+                        { icon: '📸', name: 'Fotos viejas' },
+                        { icon: '💔', name: 'Melancólica' }
+                    ]
+                },
+                mejorAmigo: {
+                    matices: [
+                        { val: '🤝 Confidente Sin Filtro', text: '🤝 Confidente Sin Filtro' },
+                        { val: '🎮 Relajado & Hermano', text: '🎮 Relajado & Hermano' },
+                        { val: '🍕 Leal & Divertido', text: '🍕 Leal & Divertido' },
+                        { val: '🔥 Cómplice de Aventuras', text: '🔥 Cómplice de Aventuras' }
+                    ],
+                    traits: [
+                        { icon: '🎮', name: 'Gamer de corazón' },
+                        { icon: '🍕', name: 'Fan de la pizza' },
+                        { icon: '🎧', name: 'Discord nocturno' },
+                        { icon: '☕', name: 'Café sin azúcar' },
+                        { icon: '🚗', name: 'Viajes improvisados' },
+                        { icon: '🤝', name: 'Lealtad absoluta' }
+                    ]
+                }
             };
 
-            const recs = recommendedTraits[archetype] || recommendedTraits.pareja;
-            document.querySelectorAll('.trait-chip').forEach(chip => {
-                const trait = chip.dataset.trait;
-                chip.classList.toggle('active', recs.includes(trait));
-            });
+            const dynData = archetypeDynamicOptions[archetype] || archetypeDynamicOptions.pareja;
+
+            const matizSelect = document.getElementById('createMatizHumor');
+            if (matizSelect) {
+                matizSelect.innerHTML = dynData.matices.map((m, idx) => `
+                    <option value="${m.val}" ${idx === 0 ? 'selected' : ''}>${m.text}</option>
+                `).join('');
+            }
+
+            const traitGrid = document.getElementById('traitChipsGrid');
+            if (traitGrid) {
+                traitGrid.innerHTML = dynData.traits.map((t, idx) => `
+                    <button type="button" class="trait-chip ${idx < 3 ? 'active' : ''}" data-trait="${t.name}">
+                        ${t.icon} ${t.name}
+                    </button>
+                `).join('');
+
+                traitGrid.querySelectorAll('.trait-chip').forEach(chip => {
+                    chip.addEventListener('click', () => {
+                        playPopSound();
+                        chip.classList.toggle('active');
+                        autoAssembleMonologue();
+                    });
+                });
+            }
 
             updateEmotionalDiagnosis();
             autoAssembleMonologue();

@@ -398,10 +398,12 @@
             <textarea id="createFirstMessage" class="form-control" rows="2" placeholder="Ej. ¡Hola mi amor! Te estaba esperando... ¿cómo estuvo tu día?" required></textarea>
           </div>
 
-          <div class="form-group">
-            <label>Prompt Ensamblado Automáticamente (Monólogo en 1ª Persona) *</label>
-            <textarea id="createSystemPrompt" class="form-control" rows="3" placeholder="Se genera automáticamente según tus selecciones..." required></textarea>
-          </div>
+          <details class="advanced-prompt-box" style="margin-top: 0.75rem;">
+            <summary style="cursor: pointer; font-size: 0.8rem; color: var(--accent-violet); font-weight: 600; padding: 0.4rem 0;">
+              ⚙️ Ver / Editar Prompt Ensamblado (Opcional)
+            </summary>
+            <textarea id="createSystemPrompt" class="form-control" rows="3" placeholder="Se genera automáticamente según tus selecciones..." style="margin-top: 0.5rem; font-size: 0.8rem;" required></textarea>
+          </details>
 
           <div class="form-group hidden">
             <input type="text" id="createLorebook" class="form-control">

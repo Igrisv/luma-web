@@ -1587,3 +1587,15 @@ body {
   color: #ffffff;
   box-shadow: 0 0 10px var(--accent-violet-glow);
 }
+
+select.form-control {
+  background-color: #11131f !important;
+  color: #ffffff !important;
+  cursor: pointer;
+}
+
+select.form-control option {
+  background-color: #11131f !important;
+  color: #ffffff !important;
+  padding: 8px 12px;
+}
