@@ -554,7 +554,7 @@ body {
 }
 
 /* ============================================================
-   ACTIVE CHAT VIEW (CENTERED COLUMN LAYOUT max-width: 860px)
+   ACTIVE CHAT VIEW
 ============================================================ */
 .chat-view {
   display: flex;
@@ -615,7 +615,6 @@ body {
   padding: 1.5rem 1rem;
 }
 
-/* Centered Reading Stream Container */
 .chat-stream-container {
   max-width: 860px;
   margin: 0 auto;
@@ -625,7 +624,6 @@ body {
   gap: 1.25rem;
 }
 
-/* Hero Card inside Chat Stream */
 .chat-hero-card {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(139, 92, 246, 0.08) 100%);
   border: 1px solid var(--border-color);
@@ -763,7 +761,7 @@ body {
   cursor: pointer;
 }
 
-/* Centered Chat Input Box Area */
+/* Centered Input Area */
 .chat-input-area {
   padding: 1rem 1.5rem 1.25rem 1.5rem;
   border-top: 1px solid var(--border-color);
@@ -780,7 +778,6 @@ body {
   gap: 0.75rem;
 }
 
-/* Quick Starters Bar */
 .quick-starters-bar {
   display: flex;
   gap: 0.5rem;
@@ -860,8 +857,199 @@ body {
 }
 
 /* ============================================================
-   MODALS SYSTEM
+   MAGIC BOT STUDIO STYLES
 ============================================================ */
+.magic-studio-card {
+  max-width: 680px;
+}
+
+.magic-generator-box {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(6, 182, 212, 0.1) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.35);
+  border-radius: 16px;
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.15);
+}
+
+.magic-box-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #c4b5fd;
+}
+
+.preset-chips-row {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.concept-chip {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  border-radius: 99px;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.concept-chip:hover {
+  background: rgba(139, 92, 246, 0.25);
+  border-color: var(--accent-violet);
+  transform: translateY(-1px);
+}
+
+.magic-input-group {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.magic-input-group input {
+  flex: 1;
+}
+
+.magic-sparkle-btn {
+  white-space: nowrap;
+  font-size: 0.82rem;
+  padding: 0.55rem 1.1rem;
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+/* Avatar Presets Grid */
+.avatar-presets-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.6rem;
+  margin-top: 0.4rem;
+}
+
+.avatar-preset-item {
+  width: 100%;
+  height: 64px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.avatar-preset-item:hover {
+  transform: scale(1.06);
+}
+
+.avatar-preset-item.active {
+  border-color: var(--accent-violet);
+  box-shadow: 0 0 12px var(--accent-violet-glow);
+  transform: scale(1.06);
+}
+
+/* Archetype Interactive Cards Grid */
+.archetype-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.archetype-select-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.archetype-select-card:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.archetype-select-card.selected {
+  background: rgba(139, 92, 246, 0.18);
+  border-color: var(--accent-violet);
+  box-shadow: 0 0 16px var(--accent-violet-glow);
+}
+
+.archetype-select-card.locked-arc {
+  opacity: 0.8;
+  border-color: rgba(244, 63, 94, 0.3);
+}
+
+.arc-icon {
+  font-size: 1.5rem;
+}
+
+.arc-name {
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.arc-desc {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  line-height: 1.3;
+}
+
+.arc-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  margin-top: auto;
+  padding-top: 0.3rem;
+}
+
+.arc-badge.lock {
+  color: var(--accent-rose);
+}
+
+/* Emotional Diagnosis Box */
+.emotional-diagnosis-box {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 0.85rem 1.1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.diagnosis-label {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--accent-violet);
+}
+
+.diagnosis-badge {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+/* Modals Overlay */
 .modal-overlay {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -1194,5 +1382,11 @@ body {
   }
   .search-bar {
     width: 140px;
+  }
+  .avatar-presets-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .archetype-cards-grid {
+    grid-template-columns: 1fr;
   }
 }

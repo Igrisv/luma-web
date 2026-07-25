@@ -163,7 +163,7 @@
         </div>
       </section>
 
-      <!-- VIEW 2: ACTIVE CHAT WINDOW (CENTERED COLUMN LAYOUT) -->
+      <!-- VIEW 2: ACTIVE CHAT WINDOW -->
       <section class="chat-view" id="chatView" style="display: none;">
         <div class="chat-header">
           <div class="chat-header-user">
@@ -188,11 +188,8 @@
           </div>
         </div>
 
-        <!-- Messages Scroll Area -->
         <div class="messages-area" id="messagesArea">
           <div class="chat-stream-container" id="chatStreamContainer">
-            
-            <!-- Character Welcome Hero Card -->
             <div class="chat-hero-card" id="chatHeroBanner">
               <div class="hero-avatar-wrapper">
                 <img id="heroCardAvatar" src="" alt="Character Avatar" class="hero-avatar-img">
@@ -206,26 +203,18 @@
               </div>
             </div>
 
-            <!-- Dynamic Messages Bubbles Container -->
             <div id="messagesList" class="messages-list"></div>
-
           </div>
         </div>
 
-        <!-- Reply bar preview -->
         <div id="reply-box" class="reply-box hidden">
           <div id="reply-text" class="reply-text"></div>
           <button id="cancel-reply-btn" class="cancel-reply-btn">✕</button>
         </div>
 
-        <!-- Chat Input Area (Centered Container) -->
         <div class="chat-input-area">
           <div class="chat-input-centered-box">
-            
-            <!-- Quick Conversation Starters -->
-            <div class="quick-starters-bar" id="quickStartersContainer">
-              <!-- Dynamic Quick Starter Chips -->
-            </div>
+            <div class="quick-starters-bar" id="quickStartersContainer"></div>
 
             <div class="input-controls-row">
               <button id="micBtn" class="btn btn-secondary icon-only-btn" title="Activar entrada de voz (STT)">
@@ -247,90 +236,163 @@
     </main>
   </div>
 
-  <!-- ========== MODAL 1: BOT CREATOR WIZARD (3 PASOS) ========== -->
+  <!-- ========== MODAL: MAGIC BOT STUDIO (DOPAMINERGIC WIZARD) ========== -->
   <div class="modal-overlay hidden" id="creatorModal">
-    <div class="modal-card wizard-card">
+    <div class="modal-card wizard-card magic-studio-card">
       <div class="modal-header">
-        <h2>✨ Creador de Personajes</h2>
+        <h2>✨ Studio Mágico de Personajes</h2>
         <button class="btn btn-secondary modal-close-btn" id="closeCreatorModal">✕</button>
       </div>
 
+      <!-- Magic AI Fast Generator Box -->
+      <div class="magic-generator-box">
+        <div class="magic-box-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #a78bfa;"><path d="M15 4V2M15 16v-2M8 9h2M20 9h-2M17.8 5.2l-1.4 1.4M17.8 12.8l-1.4-1.4M12.2 5.2l1.4 1.4M12.2 12.8l1.4-1.4M4.5 9a7.5 7.5 0 0 0 10.8 6.7L21 21l-2.3-5.7A7.5 7.5 0 1 0 4.5 9z"></path></svg>
+          <span>Generar Personaje con IA en 1 Clic</span>
+        </div>
+        <div class="preset-chips-row">
+          <button class="concept-chip" data-concept="gamer">🎮 Gamer Tsundere</button>
+          <button class="concept-chip" data-concept="artista">🎨 Artista Soñadora</button>
+          <button class="concept-chip" data-concept="toxica">😈 Tóxica de Universidad</button>
+          <button class="concept-chip" data-concept="barista">☕ Compañera Dulce</button>
+        </div>
+        <div class="magic-input-group">
+          <input type="text" id="magicConceptInput" class="form-control" placeholder="O escribe una idea breve (Ej: Ingeniera espacial apasionada por la música rock...)">
+          <button type="button" id="magicGenerateBtn" class="btn btn-primary magic-sparkle-btn">
+            ✨ Auto-Generar Todo
+          </button>
+        </div>
+      </div>
+
+      <!-- Stepper indicator -->
       <div class="stepper-bar">
-        <div class="step-indicator active" id="stepInd1">1. Identidad</div>
+        <div class="step-indicator active" id="stepInd1">1. Identidad & Avatar</div>
         <div class="step-line"></div>
-        <div class="step-indicator" id="stepInd2">2. Personalidad</div>
+        <div class="step-indicator" id="stepInd2">2. Arquetipo & Prompt</div>
         <div class="step-line"></div>
-        <div class="step-indicator" id="stepInd3">3. Emociones</div>
+        <div class="step-indicator" id="stepInd3">3. Perfil Emocional</div>
       </div>
 
       <form id="creatorForm" onsubmit="return false;">
+        
+        <!-- Paso 1: Identidad & Selector de Avatares Preset -->
         <div class="wizard-step" id="wizardStep1">
-          <div class="form-group">
-            <label>Nombre del Personaje *</label>
-            <input type="text" id="createName" class="form-control" placeholder="Ej. Camila, Alex, Kael..." required>
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label>Nombre del Personaje *</label>
+              <input type="text" id="createName" class="form-control" placeholder="Ej. Camila, Alex, Luna..." required>
+            </div>
+            <div class="form-group flex-1">
+              <label>Línea Descriptiva / Tagline</label>
+              <input type="text" id="createTagline" class="form-control" placeholder="Ej. Tu ingeniera espacial favorita">
+            </div>
           </div>
 
           <div class="form-group">
-            <label>Línea Descriptiva / Tagline</label>
-            <input type="text" id="createTagline" class="form-control" placeholder="Ej. Tu compañera de universidad talentosa">
-          </div>
-
-          <div class="form-group">
-            <label>URL del Avatar (Imagen)</label>
-            <input type="text" id="createAvatarUrl" class="form-control" placeholder="https://images.unsplash.com/...">
-          </div>
-
-          <div class="form-group">
-            <label>Mensaje de Saludo Inicial (First Message) *</label>
-            <textarea id="createFirstMessage" class="form-control" rows="2" placeholder="Ej. ¡Hola! Me alegra verte por aquí... ¿cómo estuvo tu día?" required></textarea>
+            <label>Elige un Avatar Estético (1 Clic) o pega tu propia URL:</label>
+            <div class="avatar-presets-grid" id="avatarPresetsGrid">
+              <img class="avatar-preset-item active" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80" data-url="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80" title="Chica Cariñosa">
+              <img class="avatar-preset-item" src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&auto=format&fit=crop&q=80" data-url="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&auto=format&fit=crop&q=80" title="Chica Tsundere">
+              <img class="avatar-preset-item" src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=500&auto=format&fit=crop&q=80" data-url="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=500&auto=format&fit=crop&q=80" title="Chica Provocadora">
+              <img class="avatar-preset-item" src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=500&auto=format&fit=crop&q=80" data-url="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=500&auto=format&fit=crop&q=80" title="Chico Gamer">
+              <img class="avatar-preset-item" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=80" data-url="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=80" title="Chico Amigable">
+              <img class="avatar-preset-item" src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=500&auto=format&fit=crop&q=80" data-url="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=500&auto=format&fit=crop&q=80" title="Empresario Elegante">
+            </div>
+            <input type="text" id="createAvatarUrl" class="form-control" placeholder="https://images.unsplash.com/..." value="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80" style="margin-top: 0.5rem; font-size: 0.8rem;">
           </div>
         </div>
 
+        <!-- Paso 2: Selección Visual de Arquetipos e Historia -->
         <div class="wizard-step hidden" id="wizardStep2">
           <div class="form-group">
-            <label>Arquetipo Base</label>
-            <select id="createArchetype" class="form-control">
-              <option value="pareja">💕 Pareja Cariñosa (Free)</option>
-              <option value="amigaToxica">😈 Amiga Tóxica (Free)</option>
-              <option value="rival">⚔️ Rival Competitiva (Free)</option>
-              <option value="ex">🌧️ Ex que No Supera (🔒 Premium)</option>
-              <option value="mejorAmigo">🤝 Mejor Amigo/a (Free)</option>
-            </select>
+            <label>Elige el Arquetipo de Personalidad:</label>
+            <input type="hidden" id="createArchetype" value="pareja">
+            <div class="archetype-cards-grid">
+              <div class="archetype-select-card selected" data-archetype="pareja">
+                <div class="arc-icon">💕</div>
+                <div class="arc-name">Pareja Cariñosa</div>
+                <div class="arc-desc">Dulce, afectuosa y atenta con química romántica.</div>
+                <span class="arc-badge">Free</span>
+              </div>
+              <div class="archetype-select-card" data-archetype="amigaToxica">
+                <div class="arc-icon">😈</div>
+                <div class="arc-name">Amiga Tóxica</div>
+                <div class="arc-desc">Provocadora, sarcástica y dramática.</div>
+                <span class="arc-badge">Free</span>
+              </div>
+              <div class="archetype-select-card" data-archetype="rival">
+                <div class="arc-icon">⚔️</div>
+                <div class="arc-name">Rival Competitiva</div>
+                <div class="arc-desc">Tsundere, orgullosa y jamás admite perder.</div>
+                <span class="arc-badge">Free</span>
+              </div>
+              <div class="archetype-select-card locked-arc" data-archetype="ex">
+                <div class="arc-icon">🌧️</div>
+                <div class="arc-name">Ex que No Supera</div>
+                <div class="arc-desc">Nostálgica, intensa y llena de recuerdos.</div>
+                <span class="arc-badge lock">🔒 Premium</span>
+              </div>
+              <div class="archetype-select-card" data-archetype="mejorAmigo">
+                <div class="arc-icon">🤝</div>
+                <div class="arc-name">Mejor Amigo/a</div>
+                <div class="arc-desc">Leal, divertida y dispuesta a apoyarte siempre.</div>
+                <span class="arc-badge">Free</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+              <label style="margin:0;">Mensaje de Saludo Inicial *</label>
+              <button type="button" id="randomGreetingBtn" class="btn btn-secondary btn-sm" style="font-size: 0.72rem; padding: 0.2rem 0.5rem;">
+                🎲 Generar Frase
+              </button>
+            </div>
+            <textarea id="createFirstMessage" class="form-control" rows="2" placeholder="Ej. ¡Hola mi amor! Te estaba esperando... ¿cómo estuvo tu día?" required></textarea>
           </div>
 
           <div class="form-group">
             <label>Prompt de Personalidad & Comportamiento *</label>
-            <textarea id="createSystemPrompt" class="form-control" rows="4" placeholder="Ej. Eres Camila, una ingeniera divertida. Te gusta bromear con el usuario y apoyarlo en sus metas..." required></textarea>
+            <textarea id="createSystemPrompt" class="form-control" rows="3" placeholder="Ej. Eres Camila, una ingeniera divertida. Te gusta bromear con el usuario y apoyarlo en sus metas..." required></textarea>
           </div>
 
-          <div class="form-group">
-            <label>Secretos / Lorebook (Palabras clave y recuerdos)</label>
-            <input type="text" id="createLorebook" class="form-control" placeholder="Ej. música: Te fascina el rock indie | comida: Amas el helado de menta">
+          <div class="form-group hidden">
+            <input type="text" id="createLorebook" class="form-control">
           </div>
         </div>
 
+        <!-- Paso 3: Atributos Emocionales & Diagnóstico VIVO -->
         <div class="wizard-step hidden" id="wizardStep3">
-          <div class="slider-group">
-            <label>Afinidad Inicial (<span id="valCreateAfinidad">60</span>%)</label>
-            <input type="range" id="createAfinidad" min="0" max="100" value="60" class="slider-control">
+          
+          <div class="emotional-diagnosis-box">
+            <div class="diagnosis-label">DIAGNÓSTICO EMOCIONAL EN TIEMPO REAL:</div>
+            <div id="emotionalDiagnosisBadge" class="diagnosis-badge">
+              🔮 Personalidad Cariñosa, Equilibrada y Fiel
+            </div>
           </div>
 
           <div class="slider-group">
-            <label>Nivel de Celos Inicial (<span id="valCreateCelos">10</span>%)</label>
-            <input type="range" id="createCelos" min="0" max="100" value="10" class="slider-control">
+            <label>Afinidad Inicial (<span id="valCreateAfinidad">70</span>%)</label>
+            <input type="range" id="createAfinidad" min="0" max="100" value="70" class="slider-control">
           </div>
 
           <div class="slider-group">
-            <label>Nivel de Resentimiento (<span id="valCreateResentimiento">0</span>%)</label>
+            <label>Nivel de Celos Inicial (<span id="valCreateCelos">15</span>%)</label>
+            <input type="range" id="createCelos" min="0" max="100" value="15" class="slider-control">
+          </div>
+
+          <div class="slider-group">
+            <label>Resentimiento (<span id="valCreateResentimiento">0</span>%)</label>
             <input type="range" id="createResentimiento" min="0" max="100" value="0" class="slider-control">
           </div>
 
           <div class="slider-group">
-            <label>Ansiedad Inicial (<span id="valCreateAnsiedad">0</span>%)</label>
-            <input type="range" id="createAnsiedad" min="0" max="100" value="0" class="slider-control">
+            <label>Ansiedad (<span id="valCreateAnsiedad">10</span>%)</label>
+            <input type="range" id="createAnsiedad" min="0" max="100" value="10" class="slider-control">
           </div>
         </div>
 
+        <!-- Wizard Navigation -->
         <div class="wizard-actions">
           <button type="button" class="btn btn-secondary hidden" id="prevWizardStepBtn">← Anterior</button>
           <button type="button" class="btn btn-primary" id="nextWizardStepBtn">Siguiente →</button>
@@ -340,7 +402,7 @@
     </div>
   </div>
 
-  <!-- ========== MODAL 2: CARD IMPORTER (PNG/JSON V2/V3 SPEC) ========== -->
+  <!-- ========== MODAL 2: CARD IMPORTER ========== -->
   <div class="modal-overlay hidden" id="importModal">
     <div class="modal-card">
       <div class="modal-header">
@@ -479,8 +541,6 @@
       <button class="panel-close-btn" data-panel="config-panel">✕</button>
     </div>
     <div class="panel-body" style="display: flex; flex-direction: column; gap: 1.2rem;">
-      
-      <!-- Seccion: Plan & Suscripcion -->
       <div class="settings-section">
         <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Suscripción</div>
         <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 12px; padding: 0.85rem; display: flex; align-items: center; justify-content: space-between;">
@@ -494,7 +554,6 @@
         </div>
       </div>
 
-      <!-- Seccion: Audio y Voz -->
       <div class="settings-section">
         <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Experiencia & Audio</div>
         <div style="display: flex; flex-direction: column; gap: 0.6rem;">
@@ -513,7 +572,6 @@
         </div>
       </div>
 
-      <!-- Seccion: Privacidad & Conversacion -->
       <div class="settings-section">
         <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Gestión del Chat</div>
         <button id="clear-config-btn" class="btn btn-secondary" style="width:100%; background:rgba(239,68,68,0.15); color:#fca5a5; border-color:rgba(239,68,68,0.3); font-size: 0.85rem;">
@@ -521,13 +579,11 @@
         </button>
       </div>
 
-      <!-- Seccion: Cuenta -->
       <div class="settings-section" style="margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--border-color);">
         <button id="logout-btn" class="btn btn-secondary" style="width: 100%; font-size: 0.85rem;">
           🚪 Cerrar Sesión
         </button>
       </div>
-
     </div>
   </div>
 
