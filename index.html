@@ -235,25 +235,7 @@
       </section>
 
       <!-- VIEW 2: ACTIVE CHAT WINDOW -->
-      <section class="chat-view" id="chatView" style="display: none; position: relative;">
-        
-        <!-- RIGHT FLOATING QUICK ACTION DOCK (UBICADO EN LA ZONA DERECHA DEL CHAT) -->
-        <div class="chat-floating-actions-dock">
-          <button type="button" class="floating-action-btn" id="dockBondBtn" title="💖 Ver Estado Emocional & Stats">
-            <span class="dock-btn-icon">💖</span>
-            <span class="dock-btn-label">Vínculo & Stats</span>
-          </button>
-          
-          <button type="button" class="floating-action-btn" id="dockDiaryBtn" title="📖 Diario Secreto del Bot">
-            <span class="dock-btn-icon">📖</span>
-            <span class="dock-btn-label">Diario Secreto</span>
-          </button>
-          
-          <button type="button" class="floating-action-btn" id="dockConfigBtn" title="⚙️ Afinar Personalidad & Ajustes">
-            <span class="dock-btn-icon">⚙️</span>
-            <span class="dock-btn-label">Ajustes & Persona</span>
-          </button>
-        </div>
+      <section class="chat-view" id="chatView" style="display: none;">
         <div class="chat-header">
           <div class="chat-header-user">
             <div class="avatar-wrapper">
@@ -268,22 +250,21 @@
             </div>
           </div>
 
+          <!-- HEADER QUICK ACTIONS BAR (VÍNCULO, DIARIO, AJUSTES) -->
           <div class="emotional-bar-container">
-            <div id="affinityPill" class="affinity-pill">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="color: var(--accent-emerald);">
-                <path
-                  d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
-                </path>
-              </svg>
-              Afinidad: <span id="affinityScore">85%</span>
-            </div>
-            <button class="btn btn-secondary nav-icon-btn" id="chatBondToggleBtn" title="Ver Vínculo">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent-rose);">
-                <path
-                  d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
-                </path>
-              </svg>
+            <button type="button" class="header-action-pill" id="dockBondBtn" title="💖 Ver Estado Emocional & Stats">
+              <span style="color: var(--accent-rose);">💖</span>
+              <span>Vínculo & Stats (<span id="affinityScore">60%</span>)</span>
+            </button>
+            
+            <button type="button" class="header-action-pill" id="dockDiaryBtn" title="📖 Diario Secreto del Bot">
+              <span>📖</span>
+              <span>Diario Secreto</span>
+            </button>
+            
+            <button type="button" class="header-action-pill" id="dockConfigBtn" title="⚙️ Afinar Personalidad & Ajustes">
+              <span>⚙️</span>
+              <span>Ajustes & Persona</span>
             </button>
           </div>
         </div>

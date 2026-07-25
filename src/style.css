@@ -1793,70 +1793,36 @@ select.form-control option {
 }
 
 /* ============================================================
-   RIGHT FLOATING QUICK ACTION DOCK
+   HEADER QUICK ACTION PILLS (VÍNCULO, DIARIO, AJUSTES)
 ============================================================ */
-.chat-floating-actions-dock {
-  position: absolute;
-  top: 90px;
-  right: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 0.85rem;
-  z-index: 100;
-}
-
-.floating-action-btn {
-  background: rgba(22, 21, 40, 0.85);
-  border: 1px solid rgba(139, 92, 246, 0.35);
-  border-radius: 16px;
-  padding: 0.75rem;
-  color: #ffffff;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.3rem;
-  cursor: pointer;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), inset 0 0 10px rgba(139, 92, 246, 0.15);
-  backdrop-filter: blur(12px);
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  width: 92px;
-  height: 82px;
-}
-
-.floating-action-btn:hover {
-  transform: translateX(-4px) scale(1.05);
-  border-color: var(--accent-violet);
-  box-shadow: 0 12px 30px rgba(139, 92, 246, 0.4);
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(236, 72, 153, 0.2));
-}
-
-.dock-btn-icon {
-  font-size: 1.5rem;
-}
-
-.dock-btn-label {
-  font-size: 0.68rem;
-  font-weight: 700;
+.header-action-pill {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 99px;
+  padding: 0.45rem 0.85rem;
   color: var(--text-main);
-  text-align: center;
-  line-height: 1.15;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-@media (max-width: 900px) {
-  .chat-floating-actions-dock {
-    top: 70px;
-    right: 10px;
+.header-action-pill:hover {
+  background: rgba(139, 92, 246, 0.2);
+  border-color: var(--accent-violet);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.3);
+}
+
+@media (max-width: 768px) {
+  .header-action-pill span:last-child {
+    display: none;
   }
-  .floating-action-btn {
-    width: 65px;
-    height: 65px;
-    padding: 0.4rem;
-  }
-  .dock-btn-icon {
-    font-size: 1.2rem;
-  }
-  .dock-btn-label {
-    font-size: 0.58rem;
+  .header-action-pill {
+    padding: 0.4rem 0.6rem;
   }
 }
