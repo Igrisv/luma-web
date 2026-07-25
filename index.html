@@ -621,6 +621,33 @@
         </div>
       </div>
 
+      <!-- Deep Character Tuning Section -->
+      <div class="settings-section">
+        <div style="font-size: 0.8rem; font-weight: 700; color: var(--accent-violet); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+          <span>🎭 Personalización del Bot Activo</span>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 0.75rem; background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 12px; padding: 0.85rem;">
+          <div>
+            <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-dim);">Monólogo / Persona en 1ª Persona</label>
+            <textarea id="tuneSystemPrompt" class="form-control" rows="3" style="font-size: 0.8rem; margin-top: 0.35rem;" placeholder="Modifica el monólogo del personaje activo..."></textarea>
+          </div>
+
+          <div>
+            <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-dim);">Añadir Rasgo o Gusto Personalizado</label>
+            <div style="display: flex; gap: 0.5rem; margin-top: 0.35rem;">
+              <input type="text" id="tuneCustomTraitInput" class="form-control" placeholder="Ej. Le gusta el anime de terror" style="font-size: 0.8rem; flex: 1;">
+              <button type="button" id="tuneAddTraitBtn" class="btn btn-secondary" style="font-size: 0.78rem; padding: 0.35rem 0.7rem;">+ Añadir</button>
+            </div>
+            <div id="tuneTraitsList" style="display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.5rem;"></div>
+          </div>
+
+          <button type="button" id="saveTuneBtn" class="btn btn-primary" style="font-size: 0.85rem; width: 100%;">
+            ✨ Guardar Ajustes de Personalidad
+          </button>
+        </div>
+      </div>
+
       <div class="settings-section">
         <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Gestión del Chat</div>
         <button id="clear-config-btn" class="btn btn-secondary" style="width:100%; background:rgba(239,68,68,0.15); color:#fca5a5; border-color:rgba(239,68,68,0.3); font-size: 0.85rem;">
