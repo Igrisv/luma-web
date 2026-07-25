@@ -291,21 +291,42 @@ export function initDiaryUI(brain) {
     const closeBtn = document.getElementById('diary-close-btn');
     const openBtn = document.getElementById('open-diary-btn');
     const listContainer = document.getElementById('diary-entries-list');
+    const generateBtn = document.getElementById('generateDiaryBtn');
 
     function renderDiary() {
         if (!listContainer) return;
         const entries = brain.memoryState ? (brain.memoryState.diario_entries || []) : [];
         if (entries.length === 0) {
-            listContainer.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-muted);font-style:italic;">Aún no hay confesiones registradas en el diario hoy.</div>';
+            listContainer.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-muted);font-style:italic;">Aún no hay confesiones registradas en el diario hoy. Haz clic en el botón superior para generar una reflexón íntima.</div>';
             return;
         }
 
         listContainer.innerHTML = entries.map(entry => `
-            <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border-color);border-radius:12px;padding:12px;">
-                <div style="font-size:0.75rem;color:var(--accent-violet);margin-bottom:4px;">📅 ${entry.date}</div>
-                <div style="font-size:0.9rem;">"${entry.text}"</div>
+            <div style="background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.25);border-radius:14px;padding:14px;backdrop-filter:blur(8px);">
+                <div style="font-size:0.75rem;font-weight:700;color:var(--accent-violet);margin-bottom:6px;display:flex;align-items:center;gap:6px;">
+                    📅 <span>${entry.date}</span>
+                </div>
+                <div style="font-size:0.88rem;line-height:1.5;color:var(--text-main);font-style:italic;">"${entry.text}"</div>
             </div>
         `).join('');
+    }
+
+    if (generateBtn) {
+        generateBtn.addEventListener('click', async () => {
+            generateBtn.disabled = true;
+            generateBtn.textContent = '⏳ Escribiendo confesión secreta...';
+            try {
+                await brain.generateDiaryEntry();
+                renderDiary();
+                playPopSound();
+                if (showToast) showToast('Nueva entrada añadida al Diario Secreto 📖', 'success');
+            } catch (e) {
+                console.error(e);
+            } finally {
+                generateBtn.disabled = false;
+                generateBtn.textContent = '✨ Generar Confesión Nocturna (Reflexión de Hoy)';
+            }
+        });
     }
 
     if (openBtn && modal) openBtn.addEventListener('click', () => { renderDiary(); modal.classList.remove('hidden'); });

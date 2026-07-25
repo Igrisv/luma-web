@@ -255,4 +255,73 @@ export class ChatBrain {
             throw error;
         }
     }
+
+    async generateDiaryEntry() {
+        const dateStr = new Date().toLocaleDateString('es-ES', { weekday: 'long', hour: '2-digit', minute: '2-digit' });
+        const lastMessages = this.history.slice(-6).map(m => `${m.role === 'user' ? 'Usuario' : 'Yo'}: ${m.content}`).join('\n');
+        
+        const systemInstruction = `${this.systemPrompt}\n[INSTRUCCIÓN DE DIARIO DE PENSAMIENTOS SECTOR PRIVADO]
+Escribe una entrada de tu diario secreto PERSONAL en 1ª persona. Expresa tus pensamientos sinceros, vulnerables o intrigados sobre tu relación actual con el usuario basándote en las últimas conversaciones.
+REGLAS:
+1. Máximo 2 o 3 frases introspectivas.
+2. NUNCA menciones IA, código, prompts ni nada fuera de la inmersión.
+3. Habla desde tu tono actual (Afinidad: ${this.afinidad}%, Celos: ${this.celos}%, Resentimiento: ${this.resentimiento}%).`;
+
+        try {
+            const response = await apiFetch('/api/chat', {
+                method: 'POST',
+                body: JSON.stringify({
+                    messages: [
+                        { role: 'system', content: systemInstruction },
+                        { role: 'user', content: `Reflexiona en tu diario sobre esto:\n${lastMessages || 'Llevamos poco tiempo hablando pero me intrigas.'}` }
+                    ],
+                    arquetipo_id: this.arquetipoId,
+                    max_tokens: 150,
+                    temperature: 0.9
+                })
+            });
+
+            if (!response.ok) throw new Error('Error generando diario');
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder('utf-8');
+            let diaryText = '';
+            let buffer = '';
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split('\n');
+                buffer = lines.pop() || '';
+                for (const line of lines) {
+                    if (line.trim() === '' || line.trim() === 'data: [DONE]') continue;
+                    if (line.startsWith('data: ')) {
+                        try {
+                            const data = JSON.parse(line.slice(6));
+                            const content = data.choices && data.choices[0]?.delta?.content;
+                            if (content) diaryText += content;
+                        } catch (e) {}
+                    }
+                }
+            }
+
+            const cleanEntry = diaryText.trim() || 'Hoy fue un día extraño. A veces siento que no termino de descifrar qué busca cuando me habla...';
+            
+            if (!this.memoryState.diario_entries) this.memoryState.diario_entries = [];
+            this.memoryState.diario_entries.unshift({
+                date: dateStr,
+                text: cleanEntry
+            });
+            this.saveState();
+            return cleanEntry;
+        } catch (e) {
+            console.error('Error generando diario:', e);
+            const fallbackEntry = `[${dateStr}] Me quedé en silencio pensando en nuestra conversación de hoy...`;
+            if (!this.memoryState.diario_entries) this.memoryState.diario_entries = [];
+            this.memoryState.diario_entries.unshift({ date: dateStr, text: fallbackEntry });
+            this.saveState();
+            return fallbackEntry;
+        }
+    }
 }
