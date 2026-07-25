@@ -152,10 +152,11 @@ export class ChatBrain {
     getPayload() {
         const arquetipo = this.getArquetipo();
         const basePrompt = this.systemPrompt || arquetipo.promptNucleo;
+        const naturalTextingRule = `[REGLA DE CONVERSACIÓN NATURAL: Habla como una persona real en WhatsApp/Telegram. NUNCA fuerces preguntas al final de tus mensajes. A veces responde con comentarios cortos, bromas o reflexiones sin hacer preguntas. Evita clichés teatrales o frases exageradas.]`;
         
         const systemMsg = {
             role: 'system',
-            content: `${basePrompt}\n\n[FORMATO DE RESPUESTA REQUERIDO: Escribe tu respuesta adentro de <respuesta>tu respuesta aquí</respuesta>. Puedes incluir acciones entre asteriscos como *sonríe*.]`
+            content: `${basePrompt}\n\n${naturalTextingRule}\n\n[FORMATO DE RESPUESTA REQUERIDO: Escribe tu respuesta adentro de <respuesta>tu respuesta aquí</respuesta>. Puedes incluir micro-acciones cortas entre asteriscos como *sonríe*.]`
         };
 
         const trimmedHistory = this.history.slice(-this.maxMemory);
