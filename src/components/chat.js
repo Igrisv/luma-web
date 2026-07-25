@@ -7,7 +7,7 @@ import {
     switchView, renderGallery, renderSidebarChatList,
     initCreatorWizard, initCardImporter, initPanels,
     initConfigPanel, initDiaryUI, initRewardedAdUI,
-    renderHistory, createMessageElement, showToast
+    renderHistory, createMessageElement, showToast, playPopSound
 } from './ui.js';
 import { apiFetch } from '../services/auth.js';
 import { getTier, canUseArchetype } from '../services/tierGate.js';
@@ -323,6 +323,18 @@ export async function initChat() {
             };
 
             await brain.sendMessageToAI(text, onChunk);
+
+            playPopSound();
+
+            if ('speechSynthesis' in window && localStorage.getItem('lumaTTSEnabled') === 'true') {
+                const cleanMsg = botText.replace(/<[^>]+>/g, '').replace(/\*([^*]+)\*/g, '');
+                if (cleanMsg.trim()) {
+                    window.speechSynthesis.cancel();
+                    const utterance = new SpeechSynthesisUtterance(cleanMsg.trim());
+                    utterance.lang = 'es-MX';
+                    window.speechSynthesis.speak(utterance);
+                }
+            }
 
             const badgeInfo = getEmotionalBadge(brain);
             const affinityScore = document.getElementById('affinityScore');

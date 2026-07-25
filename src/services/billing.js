@@ -71,9 +71,15 @@ export function initBillingUI() {
 
 export function updateTierBadge(tier) {
   const badge = document.getElementById('tierBadge') || document.getElementById('tier-badge');
-  if (!badge) return;
-
   const upperTier = (tier || 'free').toUpperCase();
-  badge.className = `tier-badge tier-${tier}`;
-  badge.innerHTML = `<span>⚡ Plan ${upperTier}</span>`;
+
+  if (badge) {
+    badge.className = `tier-badge tier-${tier}`;
+    badge.innerHTML = `<span>⚡ Plan ${upperTier}</span>`;
+  }
+
+  const settingsLabel = document.getElementById('settingsTierLabel');
+  if (settingsLabel) {
+    settingsLabel.textContent = `Plan ${upperTier}`;
+  }
 }

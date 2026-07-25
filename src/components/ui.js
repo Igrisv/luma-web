@@ -42,6 +42,7 @@ function getAudioCtx() {
 }
 
 export function playPopSound() {
+    if (localStorage.getItem('lumaSoundEnabled') === 'false') return;
     try {
         const ctx = getAudioCtx();
         if (!ctx) return;
@@ -59,6 +60,7 @@ export function playPopSound() {
 }
 
 export function playWhooshSound() {
+    if (localStorage.getItem('lumaSoundEnabled') === 'false') return;
     try {
         const ctx = getAudioCtx();
         if (!ctx) return;
