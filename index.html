@@ -275,25 +275,8 @@
 
       <form id="creatorForm" onsubmit="return false;">
         
-        <!-- Paso 1: Identidad & Selector de Avatares Preset -->
+        <!-- Paso 1: Identidad & Avatar Estético -->
         <div class="wizard-step" id="wizardStep1">
-          <!-- Magic Concept Generator Banner -->
-          <div class="magic-generator-box">
-            <div class="magic-gen-header">
-              <span class="magic-badge">⚡ AUTO-CREADOR EN 1 CLIC</span>
-              <h4 class="magic-gen-title">¿No quieres escribir a mano? Rellena todo al instante</h4>
-            </div>
-            <div class="magic-concept-chips">
-              <button type="button" class="concept-chip" data-concept="pareja">💕 Camila (Pareja Dulce)</button>
-              <button type="button" class="concept-chip" data-concept="amigaToxica">😈 Clara (Amiga Tóxica)</button>
-              <button type="button" class="concept-chip" data-concept="rival">⚔️ Elena (Rival Tsundere)</button>
-              <button type="button" class="concept-chip" data-concept="ex">🌧️ Valeria (Ex Nostálgica)</button>
-            </div>
-            <button type="button" id="magicGenerateBtn" class="btn-magic-spark">
-              <span>✨ Sorpréndeme con un Personaje Único (1 Clic)</span>
-            </button>
-          </div>
-
           <div class="form-row">
             <div class="form-group flex-1">
               <div class="label-with-spark">
@@ -308,18 +291,17 @@
             </div>
           </div>
 
-          <div class="form-group">
-            <label>Elige un Avatar Estético (1 Clic) o Sube tu Foto (100% Gratis):</label>
-            
-            <!-- Direct Local File Upload Box -->
-            <div class="avatar-upload-box" id="avatarDropZone">
-              <div class="avatar-upload-text">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent-violet);"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                <span>Subir imagen desde tu dispositivo (Haz clic o arrastra)</span>
-              </div>
+          <div class="form-group" style="margin-top: 0.5rem;">
+            <div class="label-with-spark">
+              <label>Avatar del Personaje (Preset o Tu Imagen Local)</label>
+              <label for="avatarFileInput" class="btn-text-spark" style="cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                <span>Subir Foto Local</span>
+              </label>
               <input type="file" id="avatarFileInput" accept="image/*" class="hidden">
             </div>
 
+            <!-- Compact Avatar Presets Bar with Inline Preview -->
             <div class="avatar-presets-grid" id="avatarPresetsGrid">
               <img class="avatar-preset-item active" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80" data-url="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80" title="Chica Cariñosa">
               <img class="avatar-preset-item" src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&auto=format&fit=crop&q=80" data-url="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&auto=format&fit=crop&q=80" title="Chica Tsundere">
@@ -328,7 +310,11 @@
               <img class="avatar-preset-item" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=80" data-url="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=80" title="Chico Amigable">
               <img class="avatar-preset-item" src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=500&auto=format&fit=crop&q=80" data-url="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=500&auto=format&fit=crop&q=80" title="Empresario Elegante">
             </div>
-            <input type="text" id="createAvatarUrl" class="form-control" placeholder="https://images.unsplash.com/..." value="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80" style="margin-top: 0.5rem; font-size: 0.8rem;">
+
+            <details style="margin-top: 0.5rem; font-size: 0.75rem; color: var(--text-dim);">
+              <summary style="cursor: pointer; opacity: 0.7;">🔗 Ingresar enlace web directo de imagen (opcional)</summary>
+              <input type="text" id="createAvatarUrl" class="form-control" placeholder="https://images.unsplash.com/..." value="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80" style="margin-top: 0.35rem; font-size: 0.8rem;">
+            </details>
           </div>
         </div>
 
