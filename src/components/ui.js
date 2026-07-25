@@ -162,12 +162,14 @@ export function showToast(message, type = 'info', duration = 4000) {
 // ── Panels & Modals Manager ──────────────────────────────────
 export function initPanels(brain) {
     const allPanels = ['config-panel', 'bond-panel'];
+    const dock = document.querySelector('.chat-floating-actions-dock');
 
     function closeAllPanels() {
         allPanels.forEach(id => {
             const p = document.getElementById(id);
             if (p) p.classList.add('hidden');
         });
+        if (dock) dock.classList.remove('hidden');
     }
 
     function togglePanel(panelId) {
@@ -177,6 +179,7 @@ export function initPanels(brain) {
         closeAllPanels();
         if (isHidden) {
             panel.classList.remove('hidden');
+            if (dock) dock.classList.add('hidden');
             if (panelId === 'bond-panel') brain.updateBrainUI();
         }
     }

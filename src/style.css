@@ -1342,7 +1342,7 @@ body {
   width: 380px;
   background: var(--bg-surface);
   border-left: 1px solid var(--border-color);
-  z-index: 90;
+  z-index: 2000;
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
