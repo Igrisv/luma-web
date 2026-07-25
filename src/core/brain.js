@@ -151,7 +151,7 @@ export class ChatBrain {
 
     getPayload() {
         const arquetipo = this.getArquetipo();
-        const basePrompt = arquetipo.promptNucleo || this.systemPrompt;
+        const basePrompt = this.systemPrompt || arquetipo.promptNucleo;
         
         const systemMsg = {
             role: 'system',
