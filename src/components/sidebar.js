@@ -8,12 +8,21 @@ export function renderSidebarChatList(activeCharacters, activeCharId, onSelectCh
     const chatList = document.getElementById('chatList');
     if (!chatList) return;
 
-    if (!activeCharacters || activeCharacters.length === 0) {
+    let list = [];
+    if (Array.isArray(activeCharacters)) {
+        list = activeCharacters;
+    } else if (activeCharacters && typeof activeCharacters === 'object') {
+        const off = Array.isArray(activeCharacters.official) ? activeCharacters.official : [];
+        const cust = Array.isArray(activeCharacters.custom) ? activeCharacters.custom : [];
+        list = [...off, ...cust];
+    }
+
+    if (!list || list.length === 0) {
         chatList.innerHTML = '<div style="font-size: 0.78rem; color: var(--text-muted); padding: 0.75rem; text-align: center;">Sin conversaciones activas.</div>';
         return;
     }
 
-    chatList.innerHTML = activeCharacters.map(c => {
+    chatList.innerHTML = list.map(c => {
         const charKey = c.id || c.arquetipo_id;
         const isActive = charKey === activeCharId || c.id === activeCharId || c.arquetipo_id === activeCharId;
         const configKey = `chatConfig_${charKey}`;

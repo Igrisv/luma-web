@@ -627,50 +627,9 @@ export async function initChat() {
             }
 
             renderQuickStarters(currentCharacter.arquetipo_id);
-            renderSidebarChatList(charactersData, activeCharId, selectCharacter, deleteCharacter);
+            renderSidebarChatList(getActiveCharacters(), activeCharId, selectCharacter, deleteCharacter);
         } catch (err) {
             if (bubble) bubble.textContent = 'Error al recibir respuesta del servidor.';
         }
-    }
-
-    function deleteCharacter(charId) {
-        if (!charId) return;
-
-        let customChars = JSON.parse(localStorage.getItem('lumaCustomCharacters') || '[]');
-        const targetChar = customChars.find(c => c.id === charId || c.arquetipo_id === charId);
-
-        if (!targetChar) {
-            const confirmClear = window.confirm(`¿Estás seguro de borrar el historial de chat con esta IA?`);
-            if (!confirmClear) return;
-
-            localStorage.removeItem(`chatHistory_${charId}`);
-            localStorage.removeItem(`chatConfig_${charId}`);
-            if (brain) brain.history = [];
-            const messagesArea = document.getElementById('messagesArea');
-            if (messagesArea) messagesArea.innerHTML = '';
-            if (showToast) showToast('Historial de chat limpiado correctamente.', 'success');
-        } else {
-            const confirmDelete = window.confirm(`¿Estás seguro de eliminar el personaje "${targetChar.name}" y toda su conversación?`);
-            if (!confirmDelete) return;
-
-            customChars = customChars.filter(c => c.id !== charId && c.arquetipo_id !== charId);
-            localStorage.setItem('lumaCustomCharacters', JSON.stringify(customChars));
-            localStorage.removeItem(`chatHistory_${charId}`);
-            localStorage.removeItem(`chatConfig_${charId}`);
-
-            if (showToast) showToast(`Personaje "${targetChar.name}" eliminado.`, 'success');
-        }
-
-        const updatedCustom = JSON.parse(localStorage.getItem('lumaCustomCharacters') || '[]');
-        charactersData.custom = updatedCustom;
-        const defaultChar = charactersData.official[0];
-        selectCharacter(defaultChar);
-
-        renderSidebarChatList(
-            { official: charactersData.official, custom: updatedCustom },
-            defaultChar.id,
-            selectCharacter,
-            deleteCharacter
-        );
     }
 }
