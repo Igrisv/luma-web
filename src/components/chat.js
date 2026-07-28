@@ -45,10 +45,31 @@ export async function initChat() {
     } catch (e) {
         console.log('Using offline character defaults.');
     }
+    let activeChatIds = JSON.parse(localStorage.getItem('lumaActiveChatIds') || '["pareja"]');
 
-    let activeCharId = localStorage.getItem('lumaActiveCharacter') || 'pareja';
+    function saveActiveChatIds() {
+        localStorage.setItem('lumaActiveChatIds', JSON.stringify(activeChatIds));
+    }
+
+    function getActiveCharacters() {
+        const all = [...charactersData.official, ...charactersData.custom];
+        return all.filter(c => activeChatIds.includes(c.id) || activeChatIds.includes(c.arquetipo_id));
+    }
+
+    let activeCharId = localStorage.getItem('lumaActiveCharacter');
+    let activeChars = getActiveCharacters();
+
+    if (!activeCharId || !activeChars.some(c => c.id === activeCharId || c.arquetipo_id === activeCharId)) {
+        if (activeChars.length > 0) {
+            activeCharId = activeChars[0].id || activeChars[0].arquetipo_id;
+            localStorage.setItem('lumaActiveCharacter', activeCharId);
+        } else {
+            activeCharId = null;
+        }
+    }
+
     let allChars = [...charactersData.official, ...charactersData.custom];
-    let currentCharacter = allChars.find(c => c.id === activeCharId || c.arquetipo_id === activeCharId) || charactersData.official[0];
+    let currentCharacter = activeCharId ? (allChars.find(c => c.id === activeCharId || c.arquetipo_id === activeCharId) || activeChars[0]) : null;
 
     let brain = new ChatBrain(currentCharacter.id, currentCharacter.arquetipo_id);
     if (currentCharacter.system_prompt) brain.systemPrompt = currentCharacter.system_prompt;
@@ -202,6 +223,48 @@ export async function initChat() {
         btnZero.addEventListener('click', handleZero);
     }
 
+    function deleteCharacter(charId) {
+        const all = [...charactersData.official, ...charactersData.custom];
+        const targetChar = all.find(c => c.id === charId || c.arquetipo_id === charId);
+        const name = targetChar ? targetChar.name : 'este personaje';
+
+        if (!confirm(`¿Eliminar la conversación con ${name}?`)) return;
+
+        const targetKey = targetChar ? (targetChar.id || targetChar.arquetipo_id) : charId;
+        activeChatIds = activeChatIds.filter(id => id !== charId && id !== targetKey && id !== (targetChar ? targetChar.arquetipo_id : ''));
+        saveActiveChatIds();
+
+        localStorage.removeItem(`chatConfig_${charId}`);
+        localStorage.removeItem(`chatHistory_${charId}`);
+        if (targetChar && targetChar.arquetipo_id) {
+            localStorage.removeItem(`chatConfig_${targetChar.arquetipo_id}`);
+            localStorage.removeItem(`chatHistory_${targetChar.arquetipo_id}`);
+        }
+
+        if (targetChar && !targetChar.is_official) {
+            charactersData.custom = charactersData.custom.filter(c => c.id !== charId);
+            localStorage.setItem('lumaCustomCharacters', JSON.stringify(charactersData.custom));
+            apiFetch(`/api/characters/${charId}`, { method: 'DELETE' }).catch(() => {});
+        }
+
+        showToast(`Conversación con ${name} eliminada.`, 'info');
+
+        const remainingActive = getActiveCharacters();
+
+        if (activeCharId === charId || (targetChar && activeCharId === targetChar.arquetipo_id)) {
+            if (remainingActive.length > 0) {
+                selectCharacter(remainingActive[0]);
+            } else {
+                activeCharId = null;
+                localStorage.removeItem('lumaActiveCharacter');
+                renderSidebarChatList([], null, selectCharacter, deleteCharacter);
+                switchView('gallery');
+            }
+        } else {
+            renderSidebarChatList(remainingActive, activeCharId, selectCharacter, deleteCharacter);
+        }
+    }
+
     function selectCharacter(char, forcePrompt = false) {
         const currentTier = getTier();
         const isLockedByTier = (char.tier_required === 'premium' && currentTier === 'free') ||
@@ -213,6 +276,12 @@ export async function initChat() {
             if (billingModal) billingModal.classList.remove('hidden');
             showToast(`El personaje "${char.name}" requiere Plan Premium. Mejora tu plan para chatear.`, 'warning');
             return;
+        }
+
+        const targetId = char.id || char.arquetipo_id;
+        if (!activeChatIds.includes(targetId)) {
+            activeChatIds.push(targetId);
+            saveActiveChatIds();
         }
 
         promptStartModeIfNeeded(char, forcePrompt, () => {
@@ -282,13 +351,13 @@ export async function initChat() {
             }
 
             renderQuickStarters(char.arquetipo_id);
-            renderSidebarChatList(charactersData, activeCharId, selectCharacter, deleteCharacter);
+            renderSidebarChatList(getActiveCharacters(), activeCharId, selectCharacter, deleteCharacter);
             switchView('chat');
         });
     }
 
     renderGallery(charactersData, 'all', '', selectCharacter);
-    renderSidebarChatList(charactersData, activeCharId, selectCharacter, deleteCharacter);
+    renderSidebarChatList(getActiveCharacters(), activeCharId, selectCharacter, deleteCharacter);
 
     // Top Segmented Switcher & Navigation
     const navSegmentGallery = document.getElementById('navSegmentGallery');

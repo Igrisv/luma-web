@@ -4,19 +4,18 @@
 import { getEmotionalBadge } from '../services/cardParser.js';
 import { canUseArchetype, getTier } from '../services/tierGate.js';
 
-export function renderSidebarChatList(charactersData, activeCharId, onSelectCharacter, onDeleteCharacter) {
+export function renderSidebarChatList(activeCharacters, activeCharId, onSelectCharacter, onDeleteCharacter) {
     const chatList = document.getElementById('chatList');
     if (!chatList) return;
 
-    const allChars = [...(charactersData.official || []), ...(charactersData.custom || [])];
     const currentTier = getTier();
 
-    if (allChars.length === 0) {
-        chatList.innerHTML = '<div style="font-size: 0.78rem; color: var(--text-muted); padding: 0.5rem;">Sin conversaciones activas.</div>';
+    if (!activeCharacters || activeCharacters.length === 0) {
+        chatList.innerHTML = '<div style="font-size: 0.78rem; color: var(--text-muted); padding: 0.75rem; text-align: center;">Sin conversaciones activas.</div>';
         return;
     }
 
-    chatList.innerHTML = allChars.map(c => {
+    chatList.innerHTML = activeCharacters.map(c => {
         const isActive = c.id === activeCharId || c.arquetipo_id === activeCharId;
         const configKey = `chatConfig_${c.id || c.arquetipo_id}`;
         const savedConfig = JSON.parse(localStorage.getItem(configKey) || '{}');
@@ -26,7 +25,6 @@ export function renderSidebarChatList(charactersData, activeCharId, onSelectChar
                          (c.tier_required === 'obsesion' && currentTier !== 'obsesion') ||
                          (!canUseArchetype(c.arquetipo_id) && currentTier === 'free');
 
-        const isCustom = !c.is_official;
         const badgeInfo = getEmotionalBadge(savedConfig);
 
         return `
@@ -40,7 +38,7 @@ export function renderSidebarChatList(charactersData, activeCharId, onSelectChar
                         <span>${c.name}</span>
                         <div style="display:flex; align-items:center; gap:4px;">
                             ${isLocked ? `<span style="font-size:0.7rem; color:var(--accent-rose);">🔒</span>` : ''}
-                            ${isCustom ? `<button class="btn-delete-chat-item" data-id="${c.id}" title="Eliminar Chat">🗑️</button>` : ''}
+                            <button class="btn-delete-chat-item" data-id="${c.id}" title="Eliminar conversación">🗑️</button>
                         </div>
                     </div>
                     <div class="chat-item-sub">
@@ -63,7 +61,7 @@ export function renderSidebarChatList(charactersData, activeCharId, onSelectChar
         item.addEventListener('click', (e) => {
             if (e.target.closest('.btn-delete-chat-item')) return;
             const charId = item.dataset.id;
-            const targetChar = allChars.find(c => c.id === charId);
+            const targetChar = activeCharacters.find(c => c.id === charId);
             if (targetChar && onSelectCharacter) {
                 onSelectCharacter(targetChar);
             }
