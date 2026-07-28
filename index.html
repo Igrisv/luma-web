@@ -4,11 +4,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <meta name="description"
-    content="Luma AI — Inteligencia Artificial con emociones reales, memoria persistente y personajes únicos.">
+  <meta name="description" content="Melora AI ">
   <meta name="theme-color" content="#090a10">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <title>Luma AI — Tu Acompañante e Historias Interactivas</title>
+  <title>Melora AI — Tu Acompañante e Historias Interactivas</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,6 +15,10 @@
     href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="/src/style.css">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1371507374686222"
+    crossorigin="anonymous"></script>
+  <script src="https://imasdk.googleapis.com/js/sdk/v3/google_ima.js" async
+    onerror="console.log('[ADS] IMA SDK no disponible (AdBlocker activo o sin conexión)')"></script>
 </head>
 
 <body>
@@ -24,12 +27,11 @@
   <div id="auth-modal" class="modal-overlay hidden">
     <div id="auth-content" class="modal-card auth-card">
       <div class="auth-logo">
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent-violet);">
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-        </svg>
+        <div class="auth-logo-badge">
+          <img src="/melora-logo.svg" alt="Melora AI Logo" class="auth-logo-img">
+        </div>
       </div>
-      <h1 class="auth-title">Luma AI</h1>
+      <h1 class="auth-title">Melora AI</h1>
       <p class="auth-subtitle">Compañía con alma y personalidad propia</p>
 
       <div id="auth-error" class="auth-error hidden"></div>
@@ -83,6 +85,24 @@
           </div>
           <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">Crear Cuenta</button>
         </form>
+        <button id="auth-google-register-btn" class="btn btn-secondary google-btn"
+          style="width: 100%; margin-top: 0.75rem;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"
+              fill="#4285F4" />
+            <path
+              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+              fill="#34A853" />
+            <path
+              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+              fill="#FBBC05" />
+            <path
+              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+              fill="#EA4335" />
+          </svg>
+          Registrarse con Google
+        </button>
         <p class="auth-switch"
           style="margin-top: 1rem; text-align: center; font-size: 0.85rem; color: var(--text-muted);">
           ¿Ya tienes cuenta? <a href="#" id="auth-switch-login" style="color: var(--accent-violet);">Inicia sesión</a>
@@ -94,11 +114,8 @@
   <!-- ========== TOP NAVBAR ========== -->
   <header class="navbar">
     <div class="brand" id="brandBtn">
-      <svg class="brand-svg-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-        stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 14a4 4 0 1 1 4-4 4 4 0 0 1-4 4z"></path>
-      </svg>
-      LUMA AI
+      <img src="/melora-logo.svg" alt="Melora AI Logo" class="brand-logo-img">
+      <span class="brand-text">MELORA AI</span>
     </div>
 
     <!-- Segmented Navigation Control -->
@@ -139,31 +156,12 @@
         <span>Plan Free</span>
       </div>
 
-      <button class="btn btn-secondary nav-telemetry-btn" id="telemetryBtn" title="Estadísticas de Telemetría">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round">
-          <line x1="18" y1="20" x2="18" y2="10"></line>
-          <line x1="12" y1="20" x2="12" y2="4"></line>
-          <line x1="6" y1="20" x2="6" y2="14"></line>
-        </svg>
-        Telemetría
-      </button>
-
-      <button class="btn btn-secondary nav-icon-btn" id="configBtn" title="Ajustes">
+      <button class="btn btn-secondary nav-icon-btn" id="configBtn" title="Ajustes y Perfil">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
           stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="3"></circle>
           <path
             d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
-          </path>
-        </svg>
-      </button>
-
-      <button class="btn btn-secondary nav-icon-btn" id="bondBtn" title="Panel de Vínculo Emocional">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent-rose);">
-          <path
-            d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
           </path>
         </svg>
       </button>
@@ -181,7 +179,7 @@
             stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 5v14M5 12h14"></path>
           </svg>
-          <span>Crear Bot</span>
+          <span>Nuevo Personaje</span>
         </button>
         <button class="btn btn-secondary btn-sm" id="openImporterBtn" title="Importar">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -194,7 +192,7 @@
         </button>
       </div>
 
-      <div class="sidebar-section-title">MIS CONVERSACIONES</div>
+      <div class="sidebar-section-title">CONVERSACIONES</div>
 
       <div class="chat-list" id="chatList">
         <!-- Dynamic chat items -->
@@ -209,24 +207,23 @@
         <div class="hero-banner">
           <div class="hero-text">
             <h1>Descubre tus Acompañantes Ideales</h1>
-            <p>Conecta con inteligencias artificiales dinámicas con memoria persistente, emociones reales y voz
-              sintetizada.</p>
+            <p>Conecta con inteligencias artificiales dinámicas con memoria adaptativa, matices emocionales y voz sintetizada.</p>
           </div>
           <button class="btn btn-primary hero-cta-btn" id="heroCreateBtn">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 5v14M5 12h14"></path>
             </svg>
-            Diseñar Nuevo Bot
+            Crear Personaje
           </button>
         </div>
 
         <div class="tab-bar" id="categoryTabBar">
           <button class="tab-btn active" data-category="all">Todos</button>
-          <button class="tab-btn" data-category="official">🎭 Oficiales</button>
-          <button class="tab-btn" data-category="custom">🎨 Mis Creaciones</button>
-          <button class="tab-btn" data-category="pareja">💕 Romance</button>
-          <button class="tab-btn" data-category="rival">⚡ Rivalidad</button>
+          <button class="tab-btn" data-category="official">Oficiales</button>
+          <button class="tab-btn" data-category="custom">Mis Creaciones</button>
+          <button class="tab-btn" data-category="pareja">Romance</button>
+          <button class="tab-btn" data-category="rival">Rivalidad</button>
         </div>
 
         <div class="character-grid" id="characterGrid">
@@ -236,6 +233,22 @@
 
       <!-- VIEW 2: ACTIVE CHAT WINDOW -->
       <section class="chat-view" id="chatView" style="display: none;">
+        <!-- 3D BACKGROUND AMBIENT STAGE CANVAS -->
+        <div id="canvas-container" class="canvas-3d-stage"></div>
+
+        <!-- Floating 3D Stage Controls Overlay -->
+        <div class="stage-3d-controls-overlay">
+          <button type="button" class="stage-3d-pill" id="toggle3dBtn" title="Alternar Escenario 3D Fondo">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+            <span>3D (<span id="mode3dStatus">ON</span>)</span>
+          </button>
+          <div class="stage-3d-framing-group">
+            <button type="button" class="btn-framing-pill" id="mainZoomFace" title="Enfocar Rostro">Rostro</button>
+            <button type="button" class="btn-framing-pill active" id="mainZoomTorso" title="Enfocar Torso">Torso</button>
+            <button type="button" class="btn-framing-pill" id="mainZoomBody" title="Enfocar Cuerpo Completo">Cuerpo</button>
+          </div>
+        </div>
+
         <div class="chat-header">
           <div class="chat-header-user">
             <div class="avatar-wrapper">
@@ -250,21 +263,28 @@
             </div>
           </div>
 
-          <!-- HEADER QUICK ACTIONS BAR (VÍNCULO, DIARIO, AJUSTES) -->
+          <!-- HEADER QUICK ACTIONS BAR -->
           <div class="emotional-bar-container">
-            <button type="button" class="header-action-pill" id="dockBondBtn" title="💖 Ver Estado Emocional & Stats">
-              <span style="color: var(--accent-rose);">💖</span>
-              <span>Vínculo & Stats (<span id="affinityScore">60%</span>)</span>
+            <button type="button" class="header-action-pill" id="dockBondBtn" title="Ver Estado Emocional & Vínculo">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+              <span>Vínculo (<span id="affinityScore">60%</span>)</span>
             </button>
-            
-            <button type="button" class="header-action-pill" id="dockDiaryBtn" title="📖 Diario Secreto del Bot">
-              <span>📖</span>
-              <span>Diario Secreto</span>
+
+            <button type="button" class="header-action-pill" id="dockDiaryBtn" title="Diario del Personaje">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+              <span>Diario</span>
             </button>
-            
-            <button type="button" class="header-action-pill" id="dockConfigBtn" title="⚙️ Afinar Personalidad & Ajustes">
-              <span>⚙️</span>
-              <span>Ajustes & Persona</span>
+
+            <button type="button" class="header-action-pill" id="dockConfigBtn"
+              title="Ajustes y Persona">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+              <span>Ajustes</span>
+            </button>
+
+            <button type="button" class="header-action-pill" id="deleteChatBtn"
+              title="Eliminar esta conversación" style="border-color: rgba(244, 63, 94, 0.4); color: var(--accent-rose);">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              <span>Borrar</span>
             </button>
           </div>
         </div>
@@ -364,241 +384,363 @@
 
       <!-- Stepper indicator -->
       <div class="stepper-bar">
-        <div class="step-indicator active" id="stepInd1">1. Identidad & Avatar</div>
+        <div class="step-indicator active" id="stepInd1">1. Identidad</div>
         <div class="step-line"></div>
-        <div class="step-indicator" id="stepInd2">2. Arquetipo & Prompt</div>
+        <div class="step-indicator" id="stepInd2">2. Apariencia & 3D</div>
         <div class="step-line"></div>
-        <div class="step-indicator" id="stepInd3">3. Perfil Emocional</div>
+        <div class="step-indicator" id="stepInd3">3. Personalidad</div>
+        <div class="step-line"></div>
+        <div class="step-indicator" id="stepInd4">4. Emociones & Chat</div>
       </div>
 
-      <form id="creatorForm" onsubmit="return false;">
+      <form id="creatorForm" onsubmit="return false;" class="wizard-form-layout">
+        <!-- COLUMNA IZQUIERDA: PASOS DEL WIZARD -->
+        <div class="wizard-steps-container">
 
-        <!-- Paso 1: Identidad & Avatar Estético -->
-        <div class="wizard-step" id="wizardStep1">
-          <div class="form-row" style="align-items: flex-end;">
-            <div class="form-group flex-1">
-              <div class="label-with-spark">
-                <label>Nombre del Personaje *</label>
-                <button type="button" id="randomNameBtn" class="btn-text-spark">🎲 Nombre Rápido</button>
+          <!-- PASO 1: IDENTIDAD BÁSICA & CONCEPTO -->
+          <div class="wizard-step" id="wizardStep1">
+            <div class="form-row" style="align-items: flex-end;">
+              <div class="form-group flex-1">
+                <div class="label-with-spark">
+                  <label>Nombre del Personaje *</label>
+                  <button type="button" id="randomNameBtn" class="btn-text-spark">🎲 Nombre Rápido</button>
+                </div>
+                <input type="text" id="createName" class="form-control" placeholder="Ej. Sofía, Alex, Luna..." required>
               </div>
-              <input type="text" id="createName" class="form-control" placeholder="Ej. Camila, Alex, Luna..." required>
+              <div class="form-group flex-1">
+                <label>Edad del Personaje</label>
+                <input type="number" id="createAge" class="form-control" value="22" min="18" max="99">
+              </div>
             </div>
-            <div class="form-group flex-1">
+
+            <div class="form-group" style="margin-top: 0.5rem;">
               <div class="label-with-spark">
                 <label>Línea Descriptiva / Tagline</label>
               </div>
-              <input type="text" id="createTagline" class="form-control"
-                placeholder="Ej. Tu ingeniera espacial favorita">
+              <input type="text" id="createTagline" class="form-control" placeholder="Ej. Tu pareja cariñosa y atenta">
+            </div>
+
+            <div class="section-hint-box" style="margin-top: 0.75rem;">
+              <span>💡 Define la identidad principal. En el siguiente paso podrás personalizar su foto y modelo
+                3D.</span>
             </div>
           </div>
 
-          <div class="form-group" style="margin-top: 0.5rem;">
-            <div class="label-with-spark">
-              <label>Avatar del Personaje (Preset o Tu Imagen Local)</label>
-              <label for="avatarFileInput" class="btn-text-spark"
-                style="cursor: pointer; display: flex; align-items: center; gap: 4px;">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                  <polyline points="17 8 12 3 7 8"></polyline>
-                  <line x1="12" y1="3" x2="12" y2="15"></line>
-                </svg>
-                <span>Subir Foto Local</span>
-              </label>
-              <input type="file" id="avatarFileInput" accept="image/*" class="hidden">
+          <!-- PASO 2: APARIENCIA VISUAL & MODELO 3D -->
+          <div class="wizard-step hidden" id="wizardStep2">
+            <!-- 2D AVATAR SELECTION SECTION -->
+            <div class="form-group">
+              <div class="label-with-spark">
+                <label>1. Imagen de Avatar 2D (Presets o Tu Foto Local)</label>
+                <label for="avatarFileInput" class="btn-text-spark"
+                  style="cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                  </svg>
+                  <span>Subir Foto Local</span>
+                </label>
+                <input type="file" id="avatarFileInput" accept="image/*" class="hidden">
+              </div>
+
+              <!-- Presets Grid -->
+              <div class="avatar-presets-grid" id="avatarPresetsGrid">
+                <img class="avatar-preset-item active"
+                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80"
+                  data-url="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80"
+                  title="Chica Cariñosa">
+                <img class="avatar-preset-item"
+                  src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&auto=format&fit=crop&q=80"
+                  data-url="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&auto=format&fit=crop&q=80"
+                  title="Chica Tsundere">
+                <img class="avatar-preset-item"
+                  src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=500&auto=format&fit=crop&q=80"
+                  data-url="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=500&auto=format&fit=crop&q=80"
+                  title="Chica Provocadora">
+                <img class="avatar-preset-item"
+                  src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=500&auto=format&fit=crop&q=80"
+                  data-url="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=500&auto=format&fit=crop&q=80"
+                  title="Chico Gamer">
+                <img class="avatar-preset-item"
+                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=80"
+                  data-url="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=80"
+                  title="Chico Amigable">
+                <img class="avatar-preset-item"
+                  src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=500&auto=format&fit=crop&q=80"
+                  data-url="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=500&auto=format&fit=crop&q=80"
+                  title="Empresario Elegante">
+              </div>
+
+              <details style="margin-top: 0.4rem; font-size: 0.75rem; color: var(--text-dim);">
+                <summary style="cursor: pointer; opacity: 0.7;">🔗 Enlace URL de imagen</summary>
+                <input type="text" id="createAvatarUrl" class="form-control" placeholder="https://..."
+                  value="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80"
+                  style="margin-top: 0.35rem; font-size: 0.8rem;">
+              </details>
+
+              <!-- Editor Interactivo de Foto de Perfil (Drag & Pan + Zoom) -->
+              <div class="avatar-cropper-box">
+                <div class="cropper-header">
+                  <span style="display: flex; align-items: center; gap: 4px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="11" cy="11" r="8"></circle>
+                      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    Ajuste e Inspección de Foto de Perfil
+                  </span>
+                  <button type="button" id="resetAvatarCropBtn" class="btn-text-spark">🔄 Restablecer</button>
+                </div>
+
+                <!-- Visor Interactivo de Encuadre (Drag & Drop Frame) -->
+                <div class="cropper-stage-wrapper">
+                  <div id="cropperViewport" class="cropper-viewport">
+                    <img id="cropperImg"
+                      src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80"
+                      alt="Avatar Crop">
+                    <div class="cropper-guide-overlay"></div>
+                  </div>
+                  <div class="cropper-hint">
+                    🖐️ Arrastra la foto para acomodarla &bull; 🔍 Rueda del mouse o slider para Zoom
+                  </div>
+                </div>
+
+                <!-- Barra de Zoom -->
+                <div class="cropper-zoom-bar">
+                  <span class="zoom-label">🔍 Zoom:</span>
+                  <input type="range" id="avatarZoomSlider" min="1" max="3" step="0.05" value="1" class="slider-control"
+                    style="flex: 1;">
+                  <span id="zoomValBadge" class="zoom-badge">100%</span>
+                </div>
+              </div>
             </div>
 
-            <!-- Compact Avatar Presets Bar with Inline Preview -->
-            <div class="avatar-presets-grid" id="avatarPresetsGrid">
-              <img class="avatar-preset-item active"
-                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80"
-                data-url="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80"
-                title="Chica Cariñosa">
-              <img class="avatar-preset-item"
-                src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&auto=format&fit=crop&q=80"
-                data-url="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&auto=format&fit=crop&q=80"
-                title="Chica Tsundere">
-              <img class="avatar-preset-item"
-                src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=500&auto=format&fit=crop&q=80"
-                data-url="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=500&auto=format&fit=crop&q=80"
-                title="Chica Provocadora">
-              <img class="avatar-preset-item"
-                src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=500&auto=format&fit=crop&q=80"
-                data-url="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=500&auto=format&fit=crop&q=80"
-                title="Chico Gamer">
-              <img class="avatar-preset-item"
-                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=80"
-                data-url="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=80"
-                title="Chico Amigable">
-              <img class="avatar-preset-item"
-                src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=500&auto=format&fit=crop&q=80"
-                data-url="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=500&auto=format&fit=crop&q=80"
-                title="Empresario Elegante">
+            <!-- 3D MODEL SELECTION SECTION -->
+            <div class="form-group" style="margin-top: 0.75rem;">
+              <div class="label-with-spark">
+                <label>2. Modelo 3D Interactivo (.GLB / .GLTF)</label>
+                <label for="model3dFileInput" class="btn-text-spark"
+                  style="cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path
+                      d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+                    </path>
+                  </svg>
+                  <span>Subir Modelo 3D (.glb)</span>
+                </label>
+                <input type="file" id="model3dFileInput" accept=".glb,.gltf,.bin,.png,.jpg,.jpeg,.webp" multiple class="hidden">
+                <input type="hidden" id="createModel3dUrl" value="">
+              </div>
+              <div id="model3dStatusBadge" class="model-status-pill">
+                <span>📦 Modelo 3D: Cyber-Maniquí Procedural (Predeterminado)</span>
+              </div>
+
+              <!-- Manual Texture Assigner Option -->
+              <div style="margin-top: 0.4rem; display: flex; align-items: center; justify-content: space-between;">
+                <label for="textureFileInput" class="btn-text-spark" style="cursor: pointer; font-size: 0.73rem; opacity: 0.85; display: flex; align-items: center; gap: 4px;">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                  <span>🖼️ Cargar / Asignar Texturas Adicionales (.png, .jpg)</span>
+                </label>
+                <input type="file" id="textureFileInput" accept=".png,.jpg,.jpeg,.webp" multiple class="hidden">
+              </div>
+            </div>
+          </div>
+
+          <!-- PASO 3: PERSONALIDAD & ARQUETIPOS -->
+          <div class="wizard-step hidden" id="wizardStep3">
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label>Matiz de Humor & Tono</label>
+                <select id="createMatizHumor" class="form-control">
+                  <option value="Sarcástica & Sagaz">😼 Sarcástica & Sagaz</option>
+                  <option value="Extremadamente Dulce" selected>🌸 Extremadamente Dulce</option>
+                  <option value="Misteriosa & Reservada">✨ Misteriosa & Reservada</option>
+                  <option value="Directa e Imprudente">🔥 Directa e Imprudente</option>
+                </select>
+              </div>
+              <div class="form-group flex-1">
+                <label>Estilo de Mensajería & Escritura</label>
+                <select id="createChatStyle" class="form-control">
+                  <option value="Directa & Frases Cortas" selected>💬 Frases Cortas & Directas (Casual)</option>
+                  <option value="Expresiva con Emojis & Reacciones">✨ Expresiva & Emotiva</option>
+                  <option value="Misteriosa & Mensajes Enigmáticos">🔮 Enigmática & Profunda</option>
+                  <option value="Relajada con Minúsculas">🎧 Relajada & Desenfadada</option>
+                </select>
+              </div>
             </div>
 
-            <details style="margin-top: 0.5rem; font-size: 0.75rem; color: var(--text-dim);">
-              <summary style="cursor: pointer; opacity: 0.7;">🔗 Ingresar enlace web directo de imagen (opcional)
+            <div class="form-group">
+              <label>Elige el Arquetipo de Personalidad:</label>
+              <input type="hidden" id="createArchetype" value="pareja">
+              <div class="archetype-cards-grid">
+                <div class="archetype-select-card selected" data-archetype="pareja">
+                  <div class="arc-icon">💕</div>
+                  <div class="arc-name">Pareja Cariñosa</div>
+                  <div class="arc-desc">Dulce, afectuosa y atenta con química romántica.</div>
+                  <span class="arc-badge">Free</span>
+                </div>
+                <div class="archetype-select-card" data-archetype="amigaToxica">
+                  <div class="arc-icon">😈</div>
+                  <div class="arc-name">Amiga Tóxica</div>
+                  <div class="arc-desc">Provocadora, sarcástica y dramática.</div>
+                  <span class="arc-badge">Free</span>
+                </div>
+                <div class="archetype-select-card" data-archetype="rival">
+                  <div class="arc-icon">⚔️</div>
+                  <div class="arc-name">Rival Competitiva</div>
+                  <div class="arc-desc">Tsundere, orgullosa y jamás admite perder.</div>
+                  <span class="arc-badge">Free</span>
+                </div>
+                <div class="archetype-select-card locked-arc" data-archetype="ex">
+                  <div class="arc-icon">🌧️</div>
+                  <div class="arc-name">Ex que No Supera</div>
+                  <div class="arc-desc">Nostálgica, intensa y llena de recuerdos.</div>
+                  <span class="arc-badge lock">🔒 Premium</span>
+                </div>
+                <div class="archetype-select-card" data-archetype="mejorAmigo">
+                  <div class="arc-icon">🤝</div>
+                  <div class="arc-name">Mejor Amigo/a</div>
+                  <div class="arc-desc">Leal, divertida y dispuesta a apoyarte siempre.</div>
+                  <span class="arc-badge">Free</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Trait Chips Grid -->
+            <div class="form-group">
+              <label>Selecciona Rasgos & Gustos (o Añade los Tuyos):</label>
+              <div class="trait-chips-grid" id="traitChipsGrid">
+                <button type="button" class="trait-chip active" data-trait="Amante del café">☕ Amante del café</button>
+                <button type="button" class="trait-chip" data-trait="Trasnochadora">🌙 Trasnochadora</button>
+                <button type="button" class="trait-chip" data-trait="Fotos análogas">📸 Fotos análogas</button>
+                <button type="button" class="trait-chip" data-trait="Gamer de corazón">🎮 Gamer</button>
+                <button type="button" class="trait-chip" data-trait="Directa sin filtro">💅 Directa sin filtro</button>
+                <button type="button" class="trait-chip" data-trait="Música indie">🎧 Música indie</button>
+                <button type="button" class="trait-chip" data-trait="Fan de la pizza">🍕 Fan de la pizza</button>
+                <button type="button" class="trait-chip" data-trait="Lectora apasionada">📖 Lectora</button>
+              </div>
+
+              <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                <input type="text" id="addCustomTraitInput" class="form-control"
+                  placeholder="Añadir rasgo único (Ej. Le gusta la astronomía...)" style="font-size: 0.8rem; flex: 1;">
+                <button type="button" id="addCustomTraitBtn" class="btn btn-secondary"
+                  style="font-size: 0.78rem; padding: 0.35rem 0.75rem;">+ Añadir</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- PASO 4: DIÁLOGO, PROMPT & CALIBRACIÓN EMOCIONAL -->
+          <div class="wizard-step hidden" id="wizardStep4">
+            <div class="form-group">
+              <label>Secreto o Recuerdo Compartido (Opcional):</label>
+              <input type="text" id="createSharedSecret" class="form-control"
+                placeholder="Ej. Se quedaron atrapados en la lluvia de noche...">
+            </div>
+
+            <div class="form-group">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                <label style="margin:0;">Mensaje de Saludo Inicial *</label>
+                <button type="button" id="randomGreetingBtn" class="btn btn-secondary btn-sm"
+                  style="font-size: 0.72rem; padding: 0.2rem 0.5rem;">
+                  🎲 Generar Frase
+                </button>
+              </div>
+              <textarea id="createFirstMessage" class="form-control" rows="2"
+                placeholder="Ej. ¡Hola mi amor! Te estaba esperando... ¿cómo estuvo tu día?" required></textarea>
+            </div>
+
+            <details class="advanced-prompt-box" style="margin-top: 0.5rem; margin-bottom: 0.75rem;">
+              <summary
+                style="cursor: pointer; font-size: 0.8rem; color: var(--accent-violet); font-weight: 600; padding: 0.3rem 0;">
+                ⚙️ Ver / Editar Prompt Ensamblado (Opcional)
               </summary>
-              <input type="text" id="createAvatarUrl" class="form-control" placeholder="https://images.unsplash.com/..."
-                value="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80"
-                style="margin-top: 0.35rem; font-size: 0.8rem;">
+              <textarea id="createSystemPrompt" class="form-control" rows="3"
+                placeholder="Se genera automáticamente según tus selecciones..."
+                style="margin-top: 0.4rem; font-size: 0.8rem;" required></textarea>
             </details>
+
+            <div class="emotional-diagnosis-box">
+              <div class="diagnosis-label">DIAGNÓSTICO EMOCIONAL EN TIEMPO REAL:</div>
+              <div id="emotionalDiagnosisBadge" class="diagnosis-badge">
+                🔮 Personalidad Cariñosa, Equilibrada y Fiel
+              </div>
+            </div>
+
+            <div class="slider-group">
+              <label>Afinidad Inicial (<span id="valCreateAfinidad">70</span>%)</label>
+              <input type="range" id="createAfinidad" min="0" max="100" value="70" class="slider-control">
+            </div>
+
+            <div class="slider-group">
+              <label>Nivel de Celos Inicial (<span id="valCreateCelos">15</span>%)</label>
+              <input type="range" id="createCelos" min="0" max="100" value="15" class="slider-control">
+            </div>
+
+            <div class="slider-group">
+              <label>Resentimiento (<span id="valCreateResentimiento">0</span>%)</label>
+              <input type="range" id="createResentimiento" min="0" max="100" value="0" class="slider-control">
+            </div>
+
+            <div class="slider-group">
+              <label>Ansiedad (<span id="valCreateAnsiedad">10</span>%)</label>
+              <input type="range" id="createAnsiedad" min="0" max="100" value="10" class="slider-control">
+            </div>
+
+            <div class="form-group hidden">
+              <input type="text" id="createLorebook" class="form-control">
+            </div>
           </div>
+
         </div>
 
-        <!-- Paso 2: Selección Visual de Arquetipos e Historia -->
-        <div class="wizard-step hidden" id="wizardStep2">
-          <div class="form-row">
-            <div class="form-group flex-1">
-              <label>Edad del Personaje</label>
-              <input type="number" id="createAge" class="form-control" value="22" min="18" max="99">
+        <!-- COLUMNA DERECHA: PANEL DE VISTA PREVIA EN VIVO (STICKY) -->
+        <div class="wizard-preview-col">
+          <div class="creator-preview-card">
+            <div class="preview-card-header">
+              <span>👁️ Vista Previa en Tiempo Real</span>
+              <span class="preview-badge-live">LIVE</span>
             </div>
-            <div class="form-group flex-1">
-              <label>Matiz de Humor & Tono</label>
-              <select id="createMatizHumor" class="form-control">
-                <option value="Sarcástica & Sagaz">😼 Sarcástica & Sagaz</option>
-                <option value="Extremadamente Dulce" selected>🌸 Extremadamente Dulce</option>
-                <option value="Misteriosa & Reservada">✨ Misteriosa & Reservada</option>
-                <option value="Directa e Imprudente">🔥 Directa e Imprudente</option>
-              </select>
-            </div>
-          </div>
 
-          <div class="form-group">
-            <label>Estilo de Mensajería & Escritura en Chat</label>
-            <select id="createChatStyle" class="form-control">
-              <option value="Directa & Frases Cortas" selected>💬 Frases Cortas & Directas (Casual)</option>
-              <option value="Expresiva con Emojis & Reacciones">✨ Expresiva & Emotiva</option>
-              <option value="Misteriosa & Mensajes Enigmáticos">🔮 Enigmática & Profunda</option>
-              <option value="Relajada con Minúsculas">🎧 Relajada & Desenfadada</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label>Elige el Arquetipo de Personalidad:</label>
-            <input type="hidden" id="createArchetype" value="pareja">
-            <div class="archetype-cards-grid">
-              <div class="archetype-select-card selected" data-archetype="pareja">
-                <div class="arc-icon">💕</div>
-                <div class="arc-name">Pareja Cariñosa</div>
-                <div class="arc-desc">Dulce, afectuosa y atenta con química romántica.</div>
-                <span class="arc-badge">Free</span>
+            <!-- 2D Avatar Live Preview -->
+            <div class="preview-avatar-section">
+              <div class="preview-avatar-frame">
+                <img id="previewAvatarImg"
+                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80"
+                  alt="Preview Avatar">
+                <div class="preview-avatar-glow"></div>
               </div>
-              <div class="archetype-select-card" data-archetype="amigaToxica">
-                <div class="arc-icon">😈</div>
-                <div class="arc-name">Amiga Tóxica</div>
-                <div class="arc-desc">Provocadora, sarcástica y dramática.</div>
-                <span class="arc-badge">Free</span>
-              </div>
-              <div class="archetype-select-card" data-archetype="rival">
-                <div class="arc-icon">⚔️</div>
-                <div class="arc-name">Rival Competitiva</div>
-                <div class="arc-desc">Tsundere, orgullosa y jamás admite perder.</div>
-                <span class="arc-badge">Free</span>
-              </div>
-              <div class="archetype-select-card locked-arc" data-archetype="ex">
-                <div class="arc-icon">🌧️</div>
-                <div class="arc-name">Ex que No Supera</div>
-                <div class="arc-desc">Nostálgica, intensa y llena de recuerdos.</div>
-                <span class="arc-badge lock">🔒 Premium</span>
-              </div>
-              <div class="archetype-select-card" data-archetype="mejorAmigo">
-                <div class="arc-icon">🤝</div>
-                <div class="arc-name">Mejor Amigo/a</div>
-                <div class="arc-desc">Leal, divertida y dispuesta a apoyarte siempre.</div>
-                <span class="arc-badge">Free</span>
+              <div class="preview-info-box">
+                <h3 id="previewCharacterName">Sofía</h3>
+                <p id="previewCharacterTagline">Tu Pareja Cariñosa</p>
               </div>
             </div>
-          </div>
 
-          <!-- Quick Trait Chips Grid -->
-          <div class="form-group">
-            <label>Selecciona Rasgos & Gustos (o Añade los Tuyos):</label>
-            <div class="trait-chips-grid" id="traitChipsGrid">
-              <button type="button" class="trait-chip active" data-trait="Amante del café">☕ Amante del café</button>
-              <button type="button" class="trait-chip" data-trait="Trasnochadora">🌙 Trasnochadora</button>
-              <button type="button" class="trait-chip" data-trait="Fotos análogas">📸 Fotos análogas</button>
-              <button type="button" class="trait-chip" data-trait="Gamer de corazón">🎮 Gamer</button>
-              <button type="button" class="trait-chip" data-trait="Directa sin filtro">💅 Directa sin filtro</button>
-              <button type="button" class="trait-chip" data-trait="Música indie">🎧 Música indie</button>
-              <button type="button" class="trait-chip" data-trait="Fan de la pizza">🍕 Fan de la pizza</button>
-              <button type="button" class="trait-chip" data-trait="Lectora apasionada">📖 Lectora</button>
+            <!-- 3D Model Mini Viewport -->
+            <div class="preview-3d-section">
+              <div class="preview-3d-header">
+                <span>🎭 Escenario 3D del Bot</span>
+                <span id="preview3dBadge" class="preview-3d-tag">3D Activo</span>
+              </div>
+              <div id="wizard3dPreviewContainer" class="preview-3d-stage"></div>
+
+              <!-- Framing Quick Presets -->
+              <div class="framing-btn-group" style="display: flex; gap: 4px; margin-top: 6px; justify-content: center;">
+                <button type="button" id="btnZoomFace" class="btn-framing-pill" title="Enfocar Rostro">👤 Rostro</button>
+                <button type="button" id="btnZoomTorso" class="btn-framing-pill active" title="Enfocar Torso">👕 Torso</button>
+                <button type="button" id="btnZoomBody" class="btn-framing-pill" title="Cuerpo Entero">🚶 Cuerpo</button>
+                <button type="button" id="btnRecenter3D" class="btn-framing-pill" title="Recentrar 3D">🎯 Centrar</button>
+              </div>
             </div>
-            
-            <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
-              <input type="text" id="addCustomTraitInput" class="form-control" placeholder="Añadir rasgo o manía única (Ej. Le gusta la astronomía...)" style="font-size: 0.8rem; flex: 1;">
-              <button type="button" id="addCustomTraitBtn" class="btn btn-secondary" style="font-size: 0.78rem; padding: 0.35rem 0.75rem;">+ Añadir</button>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label>Secreto o Recuerdo Compartido (Opcional):</label>
-            <input type="text" id="createSharedSecret" class="form-control" placeholder="Ej. Se quedaron atrapados en la lluvia de noche...">
-          </div>
-
-          <div class="form-group">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
-              <label style="margin:0;">Mensaje de Saludo Inicial *</label>
-              <button type="button" id="randomGreetingBtn" class="btn btn-secondary btn-sm"
-                style="font-size: 0.72rem; padding: 0.2rem 0.5rem;">
-                🎲 Generar Frase
-              </button>
-            </div>
-            <textarea id="createFirstMessage" class="form-control" rows="2"
-              placeholder="Ej. ¡Hola mi amor! Te estaba esperando... ¿cómo estuvo tu día?" required></textarea>
-          </div>
-
-          <details class="advanced-prompt-box" style="margin-top: 0.75rem;">
-            <summary
-              style="cursor: pointer; font-size: 0.8rem; color: var(--accent-violet); font-weight: 600; padding: 0.4rem 0;">
-              ⚙️ Ver / Editar Prompt Ensamblado (Opcional)
-            </summary>
-            <textarea id="createSystemPrompt" class="form-control" rows="3"
-              placeholder="Se genera automáticamente según tus selecciones..."
-              style="margin-top: 0.5rem; font-size: 0.8rem;" required></textarea>
-          </details>
-
-          <div class="form-group hidden">
-            <input type="text" id="createLorebook" class="form-control">
           </div>
         </div>
+      </form>
 
-        <!-- Paso 3: Atributos Emocionales & Diagnóstico VIVO -->
-        <div class="wizard-step hidden" id="wizardStep3">
-
-          <div class="emotional-diagnosis-box">
-            <div class="diagnosis-label">DIAGNÓSTICO EMOCIONAL EN TIEMPO REAL:</div>
-            <div id="emotionalDiagnosisBadge" class="diagnosis-badge">
-              🔮 Personalidad Cariñosa, Equilibrada y Fiel
-            </div>
-          </div>
-
-          <div class="slider-group">
-            <label>Afinidad Inicial (<span id="valCreateAfinidad">70</span>%)</label>
-            <input type="range" id="createAfinidad" min="0" max="100" value="70" class="slider-control">
-          </div>
-
-          <div class="slider-group">
-            <label>Nivel de Celos Inicial (<span id="valCreateCelos">15</span>%)</label>
-            <input type="range" id="createCelos" min="0" max="100" value="15" class="slider-control">
-          </div>
-
-          <div class="slider-group">
-            <label>Resentimiento (<span id="valCreateResentimiento">0</span>%)</label>
-            <input type="range" id="createResentimiento" min="0" max="100" value="0" class="slider-control">
-          </div>
-
-          <div class="slider-group">
-            <label>Ansiedad (<span id="valCreateAnsiedad">10</span>%)</label>
-            <input type="range" id="createAnsiedad" min="0" max="100" value="10" class="slider-control">
-          </div>
-        </div>
-
-        <!-- Wizard Navigation -->
-        <div class="wizard-actions">
-          <button type="button" class="btn btn-secondary hidden" id="prevWizardStepBtn">← Anterior</button>
-          <button type="button" class="btn btn-primary" id="nextWizardStepBtn">Siguiente →</button>
-          <button type="button" class="btn btn-primary hidden" id="saveCharacterBtn">✨ Guardar y Comenzar Chat</button>
-        </div>
+      <!-- Wizard Navigation -->
+      <div class="wizard-actions">
+        <button type="button" class="btn btn-secondary hidden" id="prevWizardStepBtn">← Anterior</button>
+        <button type="button" class="btn btn-primary" id="nextWizardStepBtn">Siguiente →</button>
+        <button type="button" class="btn btn-primary hidden" id="saveCharacterBtn">✨ Guardar y Comenzar Chat</button>
+      </div>
       </form>
     </div>
   </div>
@@ -676,7 +818,7 @@
 
         <div class="plan-box obsess">
           <div class="plan-badge" style="background: var(--accent-rose);">Máximo</div>
-          <div class="plan-name" style="color: var(--accent-rose);">Plan OBSESIÓN</div>
+          <div class="plan-name" style="color: var(--accent-rose);">Plan ULTRA</div>
           <div class="plan-price">$9.99 <span class="period">/ mes</span></div>
           <ul class="plan-features">
             <li>✓ Todo lo de Premium</li>
@@ -685,86 +827,166 @@
             <li>✓ Prioridad Alta de Respuesta</li>
           </ul>
           <button class="btn btn-primary upgrade-obsess-btn" data-upgrade-plan="obsesion" id="upgradeObsessionBtn"
-            style="width: 100%; margin-top: 1rem;">Obtener Obsesión</button>
+            style="width: 100%; margin-top: 1rem;">Obtener Plan Ultra</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ========== PANEL: BOND / VÍNCULO ========== -->
+  <!-- ========== PANEL: BOND / VÍNCULO EMOCIONAL ========== -->
   <div id="bond-panel" class="panel hidden">
     <div class="panel-header">
-      <h3>🩷 Vínculo Emocional</h3>
+      <h3 style="display: flex; align-items: center; gap: 8px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-rose)" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+        <span>Vínculo & Estado Emocional</span>
+      </h3>
       <button class="panel-close-btn" data-panel="bond-panel">✕</button>
     </div>
-    <div class="panel-body">
-      <div id="trust-section">
-        <div id="trust-header">
-          <span id="trust-level-icon">🌑</span>
-          <div id="trust-info">
-            <span id="trust-level-name">Extraños</span>
-            <span id="trust-dias">0 días juntos</span>
+
+    <div class="panel-body" style="display: flex; flex-direction: column; gap: 1rem;">
+      <!-- Hero Trust Level Card -->
+      <div class="bond-hero-card" id="bond-hero-card">
+        <div class="bond-trust-header">
+          <span id="trust-level-icon" class="trust-badge-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+          </span>
+          <div style="flex: 1;">
+            <div id="trust-level-name" class="trust-level-title">Conociéndose</div>
+            <div id="trust-dias" class="trust-days-subtitle">1 día compartiendo historias</div>
+          </div>
+          <div class="bond-hero-cta">
+            <span>Ver Hoja de Ruta</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
           </div>
         </div>
-        <div class="progress-bar" style="margin-top: 6px;">
-          <div id="trust-level-bar" style="width:0%;background:linear-gradient(90deg,#8b5cf6,#ec4899);"></div>
+        <div class="bond-progress-track">
+          <div id="trust-level-bar" class="bond-progress-fill" style="width: 20%;"></div>
         </div>
       </div>
 
-      <div id="mood-diagnosis">Estado: Calculando...</div>
-
-      <div class="stat-group">
-        <label>Afinidad (<span id="val-afinidad">50</span>)</label>
-        <div class="progress-bar">
-          <div id="bar-afinidad" style="width:50%;background:#ec4899;"></div>
-        </div>
-      </div>
-      <div class="stat-group">
-        <label>Enojo (<span id="val-enojo">0</span>)</label>
-        <div class="progress-bar">
-          <div id="bar-enojo" style="width:0%;background:#ef4444;"></div>
-        </div>
-      </div>
-      <div class="stat-group">
-        <label>Cansancio (<span id="val-cansancio">0</span>)</label>
-        <div class="progress-bar">
-          <div id="bar-cansancio" style="width:0%;background:#3b82f6;"></div>
-        </div>
-      </div>
-      <div class="stat-group">
-        <label>Ansiedad (<span id="val-ansiedad">0</span>)</label>
-        <div class="progress-bar">
-          <div id="bar-ansiedad" style="width:0%;background:#fbbf24;"></div>
-        </div>
-      </div>
-      <div class="stat-group">
-        <label>Celos (<span id="val-celos">0</span>)</label>
-        <div class="progress-bar">
-          <div id="bar-celos" style="width:0%;background:#a855f7;"></div>
-        </div>
-      </div>
-      <div class="stat-group">
-        <label>Resentimiento (<span id="val-resentimiento">0</span>)</label>
-        <div class="progress-bar">
-          <div id="bar-resentimiento" style="width:0%;background:#991b1b;"></div>
-        </div>
+      <!-- Real-time Mood Diagnosis Badge -->
+      <div class="bond-diagnosis-card">
+        <div class="diagnosis-mini-title">ESTADO EMOCIONAL ACTUAL</div>
+        <div id="mood-diagnosis" class="bond-diagnosis-text">Cálida, atenta y entusiasta...</div>
       </div>
 
-      <button id="open-diary-btn" class="btn btn-secondary" style="margin-top:14px;width:100%;">📖 Diario
-        Secreto</button>
-      <button id="open-ad-btn" class="btn btn-secondary"
-        style="margin-top:8px;width:100%;background:rgba(16,185,129,0.15);border-color:rgba(16,185,129,0.3);color:#10b981;">📺
-        Ganar Mensajes (+5 Gratis)</button>
+      <!-- Emotional Bars Grid -->
+      <div class="bond-stats-container">
+        <div class="bond-stat-item">
+          <div class="stat-label-row">
+            <span>Afinidad</span>
+            <span id="val-afinidad" class="stat-score-badge emerald">50%</span>
+          </div>
+          <div class="bond-bar-track">
+            <div id="bar-afinidad" class="bond-bar-fill emerald" style="width: 50%;"></div>
+          </div>
+        </div>
+
+        <div class="bond-stat-item">
+          <div class="stat-label-row">
+            <span>Celos</span>
+            <span id="val-celos" class="stat-score-badge violet">0%</span>
+          </div>
+          <div class="bond-bar-track">
+            <div id="bar-celos" class="bond-bar-fill violet" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <div class="bond-stat-item">
+          <div class="stat-label-row">
+            <span>Resentimiento</span>
+            <span id="val-resentimiento" class="stat-score-badge rose">0%</span>
+          </div>
+          <div class="bond-bar-track">
+            <div id="bar-resentimiento" class="bond-bar-fill rose" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <div class="bond-stat-item">
+          <div class="stat-label-row">
+            <span>Ansiedad</span>
+            <span id="val-ansiedad" class="stat-score-badge amber">0%</span>
+          </div>
+          <div class="bond-bar-track">
+            <div id="bar-ansiedad" class="bond-bar-fill amber" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <div class="bond-stat-item">
+          <div class="stat-label-row">
+            <span>Enojo</span>
+            <span id="val-enojo" class="stat-score-badge red">0%</span>
+          </div>
+          <div class="bond-bar-track">
+            <div id="bar-enojo" class="bond-bar-fill red" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <div class="bond-stat-item">
+          <div class="stat-label-row">
+            <span>Cansancio</span>
+            <span id="val-cansancio" class="stat-score-badge blue">0%</span>
+          </div>
+          <div class="bond-bar-track">
+            <div id="bar-cansancio" class="bond-bar-fill blue" style="width: 0%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div style="display: flex; flex-direction: column; gap: 0.6rem; margin-top: 0.5rem;">
+        <button id="open-diary-btn" class="btn btn-primary" style="width: 100%; font-size: 0.85rem;">
+          Abrir Diario Secreto
+        </button>
+        <button id="open-ad-btn" class="btn btn-secondary"
+          style="width: 100%; background: rgba(16,185,129,0.12); border-color: rgba(16,185,129,0.25); color: #10b981; font-size: 0.85rem;">
+          Obtener Créditos (+5 Mensajes)
+        </button>
+      </div>
     </div>
   </div>
 
   <!-- ========== PANEL: AJUSTES ========== -->
   <div id="config-panel" class="panel hidden">
     <div class="panel-header">
-      <h3>⚙️ Ajustes y Preferencias</h3>
+      <h3>⚙️ Ajustes & Perfil de Usuario</h3>
       <button class="panel-close-btn" data-panel="config-panel">✕</button>
     </div>
     <div class="panel-body" style="display: flex; flex-direction: column; gap: 1.2rem;">
+
+      <!-- USER PROFILE HEADER CARD (REWORK) -->
+      <div class="user-profile-card">
+        <div class="user-profile-main">
+          <div class="user-avatar-circle-wrapper">
+            <img id="userSettingsAvatar" class="user-avatar-circle"
+              src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&auto=format&fit=crop&q=80" alt="Usuario Avatar">
+            <div class="user-avatar-online-dot"></div>
+          </div>
+          <div class="user-profile-details">
+            <div class="user-profile-name-row">
+              <span id="userSettingsName" class="user-profile-name">Usuario Luma</span>
+              <span id="userSettingsTierBadge" class="user-tier-pill">Plan Free</span>
+            </div>
+            <div id="userSettingsEmail" class="user-profile-email">usuario@lumachat.ai</div>
+          </div>
+        </div>
+
+        <div class="user-profile-stats-grid">
+          <div class="user-stat-chip">
+            <span class="user-stat-val" id="statUserMessages">15/15</span>
+            <span class="user-stat-lbl">Mensajes Hoy</span>
+          </div>
+          <div class="user-stat-chip">
+            <span class="user-stat-val" id="statUserBots">1 Activo</span>
+            <span class="user-stat-lbl">Bots Creados</span>
+          </div>
+          <div class="user-stat-chip">
+            <span class="user-stat-val" id="statUserAffinity">70%</span>
+            <span class="user-stat-lbl">Afinidad Prom.</span>
+          </div>
+        </div>
+      </div>
+
       <div class="settings-section">
         <div
           style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">
@@ -801,6 +1023,11 @@
             <span>⚡ Mensajes Autónomos de IA</span>
             <input type="checkbox" id="settingAutoMessages" checked style="accent-color: var(--accent-violet);">
           </label>
+          <label
+            style="display: flex; align-items: center; justify-content: space-between; font-size: 0.85rem; cursor: pointer; padding-top: 0.25rem;">
+            <span>🛠️ Modo Desarrollador / Telemetría</span>
+            <input type="checkbox" id="settingDevMode" style="accent-color: var(--accent-violet);">
+          </label>
         </div>
       </div>
 
@@ -823,19 +1050,24 @@
     </div>
   </div>
 
-  <!-- ========== DIARY MODAL (PHYSICAL REALISTIC BOOK) ========== -->
-  <div id="diary-modal" class="modal-overlay hidden" style="backdrop-filter: blur(14px); background: rgba(5, 6, 12, 0.85);">
-    <div class="diary-book-wrapper">
-      <button class="diary-close-btn" id="diary-close-btn">✕</button>
-      
-      <div class="diary-leather-cover">
-        <div class="diary-ribbon"></div>
-        
+  <!-- ========== DIARY MODAL (DARK GLASS JOURNAL) ========== -->
+  <div id="diary-modal" class="modal-overlay hidden"
+    style="backdrop-filter: blur(14px); background: rgba(5, 6, 12, 0.85);">
+    <div class="diary-book-wrapper glass-journal-wrapper">
+      <div class="modal-header diary-glass-header">
+        <h2 style="display: flex; align-items: center; gap: 8px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-violet)" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+          <span>Diario de Confesiones & Reflexiones</span>
+        </h2>
+        <button class="diary-close-btn" id="diary-close-btn">✕</button>
+      </div>
+
+      <div class="diary-leather-cover glass-journal-body">
         <div class="diary-open-pages">
           <!-- Left Page -->
           <div class="diary-page diary-left-page">
             <div class="diary-page-header">
-              <span class="diary-book-title">📖 Cuaderno Intimo</span>
+              <span class="diary-book-title">Bitácora Personal</span>
               <span class="diary-page-num" id="diaryPageLeftNum">Pág. 1</span>
             </div>
             <div class="diary-page-content" id="diaryPageLeftContent">
@@ -843,8 +1075,8 @@
             </div>
           </div>
 
-          <!-- Middle Spine Fold -->
-          <div class="diary-spine"></div>
+          <!-- Middle Divider -->
+          <div class="diary-spine glass-spine"></div>
 
           <!-- Right Page -->
           <div class="diary-page diary-right-page">
@@ -860,11 +1092,11 @@
 
         <!-- Book Toolbar Controls -->
         <div class="diary-book-toolbar">
-          <button type="button" id="prevPageBtn" class="diary-nav-btn">◀ Pág. Anterior</button>
+          <button type="button" id="prevPageBtn" class="diary-nav-btn">Anterior</button>
           <button type="button" id="generateDiaryBtn" class="diary-ink-btn">
-            ✍️ Escribir Nueva Confesión (Reflexión de Hoy)
+            Escribir Reflexión de Hoy
           </button>
-          <button type="button" id="nextPageBtn" class="diary-nav-btn">Pág. Siguiente ▶</button>
+          <button type="button" id="nextPageBtn" class="diary-nav-btn">Siguiente</button>
         </div>
       </div>
     </div>
@@ -873,17 +1105,125 @@
   <!-- ========== REWARDED AD MODAL ========== -->
   <div id="reward-modal" class="hidden">
     <div id="reward-content"
-      style="background:rgba(15,23,42,0.95);border:1px solid var(--border-color);border-radius:20px;padding:30px;max-width:400px;width:90%;text-align:center;position:fixed;inset:0;margin:auto;height:fit-content;z-index:10001;backdrop-filter:blur(16px);">
-      <div style="font-size:3rem;margin-bottom:12px;">📺</div>
-      <h2 style="font-size:1.3rem;margin-bottom:8px;">Obtener +5 Mensajes Gratis</h2>
-      <p style="font-size:0.88rem;color:var(--text-muted);margin-bottom:20px;">Mira una breve demostración patrocinada
-        de 5 segundos para recargar tu saldo.</p>
-      <div id="ad-video-sim" class="hidden"
-        style="background:#000;border-radius:12px;padding:30px;margin-bottom:15px;color:#10b981;font-weight:600;">
-        ▶️ Reproduciendo anuncio... (<span id="ad-timer">5</span>s)
+      style="background:rgba(15,23,42,0.96);border:1px solid rgba(139,92,246,0.3);border-radius:24px;padding:24px;max-width:480px;width:92%;text-align:center;position:fixed;inset:0;margin:auto;height:fit-content;z-index:10001;backdrop-filter:blur(20px);box-shadow:0 20px 50px rgba(0,0,0,0.6);">
+
+      <!-- Modal Header -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:1.5rem;">📺</span>
+          <div style="text-align:left;">
+            <h3 id="ad-sponsor-title" style="font-size:1rem;margin:0;font-weight:700;color:#fff;">Anuncio Patrocinado
+            </h3>
+            <span id="ad-sponsor-subtitle" style="font-size:0.75rem;color:var(--text-muted);">Luma Rewards
+              Network</span>
+          </div>
+        </div>
+        <button type="button" id="close-ad-btn"
+          style="background:none;border:none;color:var(--text-muted);font-size:1.2rem;cursor:pointer;padding:4px 8px;border-radius:8px;">✕</button>
       </div>
-      <button id="start-ad-btn" class="btn btn-primary" style="width:100%;">Ver Anuncio (5s)</button>
-      <button id="close-ad-btn" class="btn btn-secondary" style="margin-top:8px;width:100%;">Cancelar</button>
+
+      <!-- Player Container -->
+      <div id="ad-video-container"
+        style="position:relative;width:100%;border-radius:16px;overflow:hidden;background:#000;aspect-ratio:16/9;margin-bottom:16px;border:1px solid rgba(255,255,255,0.1);">
+        <!-- Real Video Element for VAST / Direct Video -->
+        <video id="ad-video-player" style="width:100%;height:100%;object-fit:cover;" playsinline muted></video>
+
+        <!-- Google IMA SDK Ad Display Container -->
+        <div id="ad-ima-container"
+          style="position:absolute;inset:0;width:100%;height:100%;z-index:10;pointer-events:auto;" class="hidden"></div>
+
+        <!-- Video Overlay Controls & Badges -->
+        <div id="ad-overlay-badge"
+          style="position:absolute;top:12px;left:12px;background:rgba(0,0,0,0.7);padding:4px 10px;border-radius:20px;font-size:0.75rem;color:#10b981;font-weight:600;display:flex;align-items:center;gap:6px;backdrop-filter:blur(8px);">
+          <span>▶️</span> <span id="ad-status-text">Visualizando anuncio...</span>
+        </div>
+
+        <div id="ad-countdown-badge"
+          style="position:absolute;top:12px;right:12px;background:rgba(139,92,246,0.85);padding:4px 12px;border-radius:20px;font-size:0.8rem;color:#fff;font-weight:700;backdrop-filter:blur(8px);">
+          Recompensa en <span id="ad-timer">5</span>s
+        </div>
+
+        <button type="button" id="ad-mute-btn"
+          style="position:absolute;bottom:12px;right:12px;background:rgba(0,0,0,0.6);border:none;color:#fff;padding:6px 12px;border-radius:12px;font-size:0.8rem;cursor:pointer;backdrop-filter:blur(8px);">
+          🔊 Con sonido
+        </button>
+
+        <!-- Progress Bar Overlay -->
+        <div style="position:absolute;bottom:0;left:0;width:100%;height:4px;background:rgba(255,255,255,0.2);">
+          <div id="ad-progress-bar"
+            style="width:0%;height:100%;background:linear-gradient(90deg, #8b5cf6, #10b981);transition:width 0.3s ease;">
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Footer -->
+      <p id="ad-description-text" style="font-size:0.85rem;color:var(--text-muted);margin-bottom:16px;">Mira el video
+        publicitario para recargar tu cuota diaria de mensajes inmediatamente.</p>
+
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <button id="start-ad-btn" class="btn btn-primary"
+          style="width:100%;padding:12px;font-weight:600;font-size:0.95rem;border-radius:12px;">▶ Ver Anuncio
+          Ahora</button>
+      </div>
+    </div>
+  <!-- ========== ROADMAP DE CONFIANZA & INSIGNIAS MODAL ========== -->
+  <div id="bond-journey-modal" class="hidden">
+    <div class="bond-journey-dialog">
+      <!-- Modal Header -->
+      <div class="bond-journey-header">
+        <div class="journey-header-title-group">
+          <div class="journey-header-icon">✨</div>
+          <div>
+            <h3 class="journey-modal-title">Hoja de Ruta de Confianza</h3>
+            <p class="journey-modal-subtitle">Progreso de vínculo & insignias de empatía</p>
+          </div>
+        </div>
+        <button type="button" id="close-bond-journey-btn" class="modal-close-icon" title="Cerrar">✕</button>
+      </div>
+
+      <div class="bond-journey-body">
+        <!-- Status Hero Banner -->
+        <div class="journey-hero-banner">
+          <div class="journey-level-badge-large">
+            <span id="journey-level-emoji" class="journey-emoji">🌒</span>
+          </div>
+          <div class="journey-hero-info">
+            <div class="journey-pills-row">
+              <span id="journey-level-name" class="journey-pill-level">Nivel: Conocidos</span>
+              <span id="journey-days-badge" class="journey-pill-days">2 días compartidos</span>
+            </div>
+            <h4 id="journey-next-milestone-text" class="journey-next-milestone">Próximo hito: Amigos en 3 días</h4>
+            <div class="journey-progress-container">
+              <div class="journey-progress-track">
+                <div id="journey-progress-fill" class="journey-progress-fill" style="width: 40%;"></div>
+              </div>
+              <span id="journey-progress-percent" class="journey-progress-percent">40%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 1: Timeline de 5 Niveles -->
+        <div class="journey-section">
+          <h4 class="journey-section-heading">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-violet)" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            Línea de Tiempo de Confianza (5 Niveles)
+          </h4>
+          <div id="roadmap-timeline-list" class="roadmap-timeline">
+            <!-- Injected via JavaScript -->
+          </div>
+        </div>
+
+        <!-- Section 2: Insignias de Empatía Grid -->
+        <div class="journey-section">
+          <h4 class="journey-section-heading">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-rose)" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+            Insignias de Empatía (Empathy Badges)
+          </h4>
+          <div id="empathy-badge-grid" class="empathy-badge-grid">
+            <!-- Injected via JavaScript -->
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 

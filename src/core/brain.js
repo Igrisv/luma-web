@@ -169,13 +169,48 @@ export class ChatBrain {
     updateBrainUI() {
         const elAfinidad = document.getElementById('val-afinidad');
         const elEnojo = document.getElementById('val-enojo');
+        const elCelos = document.getElementById('val-celos');
+        const elResentimiento = document.getElementById('val-resentimiento');
+        const elAnsiedad = document.getElementById('val-ansiedad');
+
         const barAfinidad = document.getElementById('bar-afinidad');
         const barEnojo = document.getElementById('bar-enojo');
+        const barCelos = document.getElementById('bar-celos');
+        const barResentimiento = document.getElementById('bar-resentimiento');
+        const barAnsiedad = document.getElementById('bar-ansiedad');
 
-        if (elAfinidad) elAfinidad.textContent = this.afinidad;
-        if (elEnojo) elEnojo.textContent = this.enojo;
+        if (elAfinidad) elAfinidad.textContent = `${this.afinidad}%`;
+        if (elEnojo) elEnojo.textContent = `${this.enojo}%`;
+        if (elCelos) elCelos.textContent = `${this.celos}%`;
+        if (elResentimiento) elResentimiento.textContent = `${this.resentimiento}%`;
+        if (elAnsiedad) elAnsiedad.textContent = `${this.ansiedad}%`;
+
         if (barAfinidad) barAfinidad.style.width = `${Math.min(100, Math.max(0, this.afinidad))}%`;
         if (barEnojo) barEnojo.style.width = `${Math.min(100, Math.max(0, this.enojo))}%`;
+        if (barCelos) barCelos.style.width = `${Math.min(100, Math.max(0, this.celos))}%`;
+        if (barResentimiento) barResentimiento.style.width = `${Math.min(100, Math.max(0, this.resentimiento))}%`;
+        if (barAnsiedad) barAnsiedad.style.width = `${Math.min(100, Math.max(0, this.ansiedad))}%`;
+
+        const trustLevelName = document.getElementById('trust-level-name');
+        const trustDias = document.getElementById('trust-dias');
+        const trustLevelBar = document.getElementById('trust-level-bar');
+        const trustIcon = document.getElementById('trust-level-icon');
+
+        const nivelInfo = this.getNivelInfo();
+        if (trustLevelName) trustLevelName.textContent = nivelInfo.nombre;
+        if (trustDias) trustDias.textContent = `${nivelInfo.diasActivos} ${nivelInfo.diasActivos === 1 ? 'día' : 'días'} compartiendo historias`;
+        if (trustIcon && nivelInfo.icono) trustIcon.textContent = nivelInfo.icono;
+
+        if (trustLevelBar) {
+            let pct = 100;
+            if (nivelInfo.siguiente) {
+                const currentMin = nivelInfo.minDias;
+                const nextMin = nivelInfo.siguiente.minDias;
+                pct = Math.round(((nivelInfo.diasActivos - currentMin) / (nextMin - currentMin)) * 100);
+                pct = Math.min(100, Math.max(10, pct));
+            }
+            trustLevelBar.style.width = `${pct}%`;
+        }
     }
 
     parseAIResponse(fullResponse) {
@@ -208,9 +243,14 @@ export class ChatBrain {
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
-                if (response.status === 429 && errorData.upgrade) {
-                    const billingModal = document.getElementById('billingModal') || document.getElementById('billing-modal');
-                    if (billingModal) billingModal.classList.remove('hidden');
+                if (response.status === 429) {
+                    const rewardModal = document.getElementById('reward-modal');
+                    if (rewardModal) {
+                        rewardModal.classList.remove('hidden');
+                    } else {
+                        const billingModal = document.getElementById('billingModal') || document.getElementById('billing-modal');
+                        if (billingModal) billingModal.classList.remove('hidden');
+                    }
                 }
                 throw new Error(errorData.message || errorData.error || `Error ${response.status}`);
             }

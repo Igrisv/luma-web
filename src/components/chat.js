@@ -16,36 +16,14 @@ export async function initChat() {
     let charactersData = {
         official: [
             {
-                id: 'pareja',
-                arquetipo_id: 'pareja',
+                id: 'sofia',
+                arquetipo_id: 'mejorAmigo',
                 name: 'Sofía',
-                tagline: 'Tu Pareja Cariñosa',
-                description: 'Dulce, empática y atenta, pero con un toque territorial y apasionado.',
+                tagline: 'Tu Mejor Amiga',
+                description: 'Leal, divertida, atenta y dispuesta a escucharte y apoyarte siempre.',
                 avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80',
-                first_message: '¡Hola mi amor! 💕 Te estaba esperando... ¿cómo estuvo tu día?',
-                system_prompt: 'Eres Sofía, su pareja cariñosa. Tienes química real y afecto genuino, pero también ego y personalidad propia.',
-                is_official: true
-            },
-            {
-                id: 'rival',
-                arquetipo_id: 'rival',
-                name: 'Elena',
-                tagline: 'Tu Competitiva Rival',
-                description: 'Inteligente, mordaz y sarcástica. Odia perder y jamás admitirá que te extraña.',
-                avatar_url: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&auto=format&fit=crop&q=80',
-                first_message: 'Vaya... Mira quién se digna a aparecer. No creas que ganaste nuestra última discusión.',
-                system_prompt: 'Eres Elena, su rival de infancia tsundere. Competidora feroz con orgullo gigante.',
-                is_official: true
-            },
-            {
-                id: 'amigaToxica',
-                arquetipo_id: 'amigaToxica',
-                name: 'Clara',
-                tagline: 'Tu Amiga Tóxica',
-                description: 'Sarcástica, provocadora y directa. Se burla de ti pero te cuida a su manera.',
-                avatar_url: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=500&auto=format&fit=crop&q=80',
-                first_message: '¿Por qué me ignoras? 😂 En fin, adivina el drama que me acaba de pasar...',
-                system_prompt: 'Eres Clara, su amiga tóxica, picante y sarcástica.',
+                first_message: '¡Hola! 🤝 Me alegra mucho hablar contigo. ¿Cómo va tu día?',
+                system_prompt: 'Eres Sofía, su mejor amiga. Leal, atenta, empática y divertida. Escuchas activamente y das buenos consejos.',
                 is_official: true
             }
         ],
@@ -76,19 +54,77 @@ export async function initChat() {
     if (currentCharacter.system_prompt) brain.systemPrompt = currentCharacter.system_prompt;
     if (currentCharacter.sensitivities) brain.sensitivities = currentCharacter.sensitivities;
 
-    const starterPromptsMap = {
-        pareja: ["💕 ¿Qué tal tu día, mi amor?", "✨ Cuéntame algo lindo sobre ti", "🍽️ ¿Qué cenamos hoy?", "🩷 ¿Cómo te sientes ahora mismo?"],
-        rival: ["⚡ Apuesto a que no puedes ganarme hoy", "😏 ¿Sigues pensando en nuestra discusión?", "🔥 Cuéntame tu mayor secreto"],
-        amigaToxica: ["😈 ¿Qué drama me vas a contar hoy?", "😂 No me digas que sigues triste...", "☕ ¡Cuéntame el chisme completo!"],
-        ex: ["🌧️ ¿Aún guardas recuerdos míos?", "💔 ¿Alguna vez piensas en lo que tuvimos?", "🍷 ¿Cómo has estado últimamente?"],
-        mejorAmigo: ["🤝 ¿Qué hay de nuevo hoy, amigo?", "🎮 ¿Jugamos o charlamos un rato?", "🍿 Cuéntame tu mejor historia"]
-    };
+    function getAdaptiveSuggestions(brainRef, archetypeId) {
+        const hour = new Date().getHours();
+        const suggestions = [];
+
+        // 1. Contexto de hora del día
+        if (hour >= 5 && hour < 12) {
+            suggestions.push("¡Buenos días! ¿Cómo amaneciste?");
+        } else if (hour >= 12 && hour < 19) {
+            suggestions.push("¿Qué tal va tu tarde?");
+        } else {
+            suggestions.push("¿Cómo estuvo tu día hoy?");
+        }
+
+        // 2. Contexto predictivo según último mensaje del bot
+        const lastMsg = brainRef && brainRef.history && brainRef.history.length > 0 
+            ? brainRef.history[brainRef.history.length - 1] 
+            : null;
+
+        if (lastMsg && lastMsg.role === 'assistant') {
+            const content = lastMsg.content || '';
+            if (content.includes('?') || content.includes('¿')) {
+                suggestions.push("Sí, totalmente de acuerdo");
+                suggestions.push("En verdad no tanto...");
+            } else if (content.match(/triste|mal|difícil|estrés|cansad/i)) {
+                suggestions.push("Te entiendo perfectamente...");
+                suggestions.push("¿Cómo puedo ayudarte?");
+            } else {
+                suggestions.push("¡Cuéntame más sobre eso!");
+                suggestions.push("No me lo esperaba...");
+            }
+        } else {
+            const defaultsMap = {
+                pareja: ["Cuéntame en qué piensas...", "¿Qué planes tienes hoy?"],
+                rival: ["¿Pones a prueba tu argumento?", "Veamos quién tiene la razón"],
+                amigaToxica: ["¿Qué novedad me tienes?", "No me digas que sigues en lo mismo..."],
+                ex: ["Hace tiempo no hablábamos así", "¿Cómo han ido las cosas?"],
+                mejorAmigo: ["¿Qué hay de nuevo hoy?", "¿En qué andas trabajando?"]
+            };
+            const archetypeDefaults = defaultsMap[archetypeId] || defaultsMap.pareja;
+            archetypeDefaults.forEach(p => suggestions.push(p));
+        }
+
+        // 3. Frases aprendidas habitualmente por el usuario
+        try {
+            const learned = JSON.parse(localStorage.getItem('lumaUserLearnedPhrases') || '[]');
+            if (learned.length > 0) {
+                learned.slice(-2).reverse().forEach(phrase => {
+                    if (!suggestions.includes(phrase)) suggestions.push(phrase);
+                });
+            }
+        } catch (e) {}
+
+        return Array.from(new Set(suggestions)).slice(0, 4);
+    }
+
+    function recordUserPhrase(text) {
+        if (!text || text.length < 4 || text.length > 55) return;
+        try {
+            let learned = JSON.parse(localStorage.getItem('lumaUserLearnedPhrases') || '[]');
+            learned = learned.filter(p => p.toLowerCase() !== text.toLowerCase());
+            learned.push(text);
+            if (learned.length > 15) learned = learned.slice(-15);
+            localStorage.setItem('lumaUserLearnedPhrases', JSON.stringify(learned));
+        } catch (e) {}
+    }
 
     function renderQuickStarters(archetypeId) {
         const startersContainer = document.getElementById('quickStartersContainer');
         if (!startersContainer) return;
 
-        const prompts = starterPromptsMap[archetypeId] || starterPromptsMap.pareja;
+        const prompts = getAdaptiveSuggestions(brain, archetypeId);
         startersContainer.innerHTML = prompts.map(p => `
             <button class="starter-chip" data-prompt="${p}">${p}</button>
         `).join('');
@@ -121,6 +157,11 @@ export async function initChat() {
         currentCharacter = char;
         activeCharId = char.id || char.arquetipo_id;
         localStorage.setItem('lumaActiveCharacter', activeCharId);
+
+        // Sync 3D model with main stage
+        window.dispatchEvent(new CustomEvent('loadCharacterModel', {
+            detail: { model3d_url: char.model3d_url || '' }
+        }));
 
         brain = new ChatBrain(char.id, char.arquetipo_id);
         if (char.system_prompt) brain.systemPrompt = char.system_prompt;
@@ -155,14 +196,14 @@ export async function initChat() {
         if (heroTagline) heroTagline.textContent = char.description || char.tagline || '';
         
         const archetypeNames = {
-            pareja: '💕 Pareja Cariñosa',
-            rival: '⚔️ Rival Competitiva',
-            amigaToxica: '😈 Amiga Tóxica',
-            ex: '🌧️ Ex que No Supera',
-            mejorAmigo: '🤝 Mejor Amigo/a'
+            pareja: 'Pareja Cariñosa',
+            rival: 'Rival Competitiva',
+            amigaToxica: 'Amiga Tóxica',
+            ex: 'Historial Compartido',
+            mejorAmigo: 'Mejor Amigo/a'
         };
-        if (heroArchetype) heroArchetype.textContent = archetypeNames[char.arquetipo_id] || '🎭 Acompañante';
-        if (heroAffinity) heroAffinity.textContent = `💚 ${brain.afinidad}% Afinidad`;
+        if (heroArchetype) heroArchetype.textContent = archetypeNames[char.arquetipo_id] || 'Acompañante';
+        if (heroAffinity) heroAffinity.textContent = `${brain.afinidad}% Afinidad`;
 
         const messagesArea = document.getElementById('messagesArea');
         const messagesList = document.getElementById('messagesList') || messagesArea;
@@ -179,12 +220,12 @@ export async function initChat() {
         }
 
         renderQuickStarters(char.arquetipo_id);
-        renderSidebarChatList(charactersData, activeCharId, selectCharacter);
+        renderSidebarChatList(charactersData, activeCharId, selectCharacter, deleteCharacter);
         switchView('chat');
     }
 
     renderGallery(charactersData, 'all', '', selectCharacter);
-    renderSidebarChatList(charactersData, activeCharId, selectCharacter);
+    renderSidebarChatList(charactersData, activeCharId, selectCharacter, deleteCharacter);
 
     // Top Segmented Switcher & Navigation
     const navSegmentGallery = document.getElementById('navSegmentGallery');
@@ -354,6 +395,31 @@ export async function initChat() {
         const text = chatInput.value.trim();
         if (!text) return;
 
+        // Tier Gate Validation 1: Archetype availability check
+        const currentTier = getTier();
+        if (currentCharacter && !canUseArchetype(currentCharacter.arquetipo_id) && currentTier === 'free') {
+            playClickDropSound();
+            const billingModal = document.getElementById('billingModal') || document.getElementById('billing-modal');
+            if (billingModal) billingModal.classList.remove('hidden');
+            if (showToast) {
+                showToast(`No puedes chatear con "${currentCharacter.name}". El arquetipo "${currentCharacter.arquetipo_id}" requiere Plan Premium.`, 'warning');
+            }
+            return;
+        }
+
+        // Tier Gate Validation 2: Daily message limit check for Free Plan
+        if (currentTier === 'free' && window.lumaDailyCount >= 15) {
+            playClickDropSound();
+            const billingModal = document.getElementById('billingModal') || document.getElementById('billing-modal');
+            if (billingModal) billingModal.classList.remove('hidden');
+            if (showToast) {
+                showToast('Has alcanzado el límite diario de 15 mensajes en Plan Free. Mejora a Premium para mensajes ilimitados.', 'warning');
+            }
+            return;
+        }
+
+        recordUserPhrase(text);
+
         chatInput.value = '';
         if (tokenIndicator) tokenIndicator.textContent = '0 / 500 tokens';
 
@@ -404,9 +470,58 @@ export async function initChat() {
                 emotionalDot.style.boxShadow = `0 0 6px ${badgeInfo.color}`;
             }
 
-            renderSidebarChatList(charactersData, activeCharId, selectCharacter);
+            renderQuickStarters(currentCharacter.arquetipo_id);
+            renderSidebarChatList(charactersData, activeCharId, selectCharacter, deleteCharacter);
         } catch (err) {
             if (bubble) bubble.textContent = 'Error al recibir respuesta del servidor.';
         }
+    }
+
+    function deleteCharacter(charId) {
+        if (!charId) return;
+
+        let customChars = JSON.parse(localStorage.getItem('lumaCustomCharacters') || '[]');
+        const targetChar = customChars.find(c => c.id === charId || c.arquetipo_id === charId);
+
+        if (!targetChar) {
+            const confirmClear = window.confirm(`¿Estás seguro de borrar el historial de chat con esta IA?`);
+            if (!confirmClear) return;
+
+            localStorage.removeItem(`chatHistory_${charId}`);
+            localStorage.removeItem(`chatConfig_${charId}`);
+            if (brain) brain.history = [];
+            const messagesArea = document.getElementById('messagesArea');
+            if (messagesArea) messagesArea.innerHTML = '';
+            if (showToast) showToast('Historial de chat limpiado correctamente.', 'success');
+        } else {
+            const confirmDelete = window.confirm(`¿Estás seguro de eliminar el personaje "${targetChar.name}" y toda su conversación?`);
+            if (!confirmDelete) return;
+
+            customChars = customChars.filter(c => c.id !== charId && c.arquetipo_id !== charId);
+            localStorage.setItem('lumaCustomCharacters', JSON.stringify(customChars));
+            localStorage.removeItem(`chatHistory_${charId}`);
+            localStorage.removeItem(`chatConfig_${charId}`);
+
+            if (showToast) showToast(`Personaje "${targetChar.name}" eliminado.`, 'success');
+        }
+
+        const updatedCustom = JSON.parse(localStorage.getItem('lumaCustomCharacters') || '[]');
+        charactersData.custom = updatedCustom;
+        const defaultChar = charactersData.official[0];
+        selectCharacter(defaultChar);
+
+        renderSidebarChatList(
+            { official: charactersData.official, custom: updatedCustom },
+            defaultChar.id,
+            selectCharacter,
+            deleteCharacter
+        );
+    }
+
+    const deleteChatBtn = document.getElementById('deleteChatBtn');
+    if (deleteChatBtn) {
+        deleteChatBtn.addEventListener('click', () => {
+            deleteCharacter(activeCharId);
+        });
     }
 }

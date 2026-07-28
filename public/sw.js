@@ -1,4 +1,4 @@
-const CACHE_NAME = 'luma-pwa-v2';
+const CACHE_NAME = 'luma-pwa-v3';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
@@ -16,22 +16,30 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Pass API calls directly to network
-  if (event.request.url.includes('/api/')) {
+  const url = new URL(event.request.url);
+
+  // Ignore non-GET, API calls, and third-party ad network domains
+  if (
+    event.request.method !== 'GET' ||
+    url.pathname.startsWith('/api/') ||
+    url.origin !== self.location.origin
+  ) {
     return;
   }
-  // Network-First for HTML/JS/CSS assets to prevent stale hash 404s
+
+  // Network-First for HTML/JS/CSS assets with cache fallback
   event.respondWith(
     fetch(event.request)
       .then((networkResponse) => {
-        if (networkResponse && networkResponse.status === 200 && event.request.method === 'GET') {
+        if (networkResponse && networkResponse.status === 200) {
           const responseClone = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
         }
         return networkResponse;
       })
-      .catch(() => {
-        return caches.match(event.request);
+      .catch(async () => {
+        const cached = await caches.match(event.request);
+        return cached || new Response('Offline', { status: 503, statusText: 'Service Unavailable' });
       })
   );
 });

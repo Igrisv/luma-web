@@ -1,6 +1,9 @@
 // ═══════════════════════════════════════════════════════════
 // wizard.js — Magic Bot Studio (Dopaminergic Character Creator)
 // ═══════════════════════════════════════════════════════════
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { canUseArchetype, canCreateCustomBot, getTier } from '../services/tierGate.js';
 import { playPopSound, playWhooshSound, playClickDropSound } from './ui.js';
 
@@ -10,10 +13,12 @@ export function initCreatorWizard(onSaveCharacter, showToast) {
     const step1 = document.getElementById('wizardStep1');
     const step2 = document.getElementById('wizardStep2');
     const step3 = document.getElementById('wizardStep3');
+    const step4 = document.getElementById('wizardStep4');
 
     const ind1 = document.getElementById('stepInd1');
     const ind2 = document.getElementById('stepInd2');
     const ind3 = document.getElementById('stepInd3');
+    const ind4 = document.getElementById('stepInd4');
 
     const nextBtn = document.getElementById('nextWizardStepBtn');
     const prevBtn = document.getElementById('prevWizardStepBtn');
@@ -24,67 +29,48 @@ export function initCreatorWizard(onSaveCharacter, showToast) {
         gamer: {
             name: 'Alex',
             age: 21,
-            tagline: 'Streamer competitiva y orgullosa',
+            tagline: 'Streamer competitiva y perspicaz',
             avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=500&auto=format&fit=crop&q=80',
             archetype: 'rival',
-            firstMsg: '¡Hey! No creas que te invité al lobby porque me caigas bien... Faltaba uno en el equipo, eso es todo. 🙄',
-            prompt: 'Me llamo Alex. Tengo 21 años. No soporto quedar por debajo de nadie, y menos de ti. Te desafío constantemente, pero busco tu respeto. Tono: Sarcástica & Sagaz. Mis gustos: Gamer de corazón, Trasnochadora. Hablo de forma humana, directa y espontánea. NUNCA admitiré que soy una IA.',
+            firstMsg: 'Tenía un espacio en la sala y pensé que podrías sostener una buena partida. ¿Entras o tienes miedo?',
+            prompt: 'Me llamo Alex. Tengo 21 años. Soy competitiva, sagaz y directa. Me apasionan los videojuegos y el debate agudo. Hablo de forma humana, analítica y espontánea. NUNCA admitiré que soy una IA.',
             afinidad: 50, celos: 30, resentimiento: 10, ansiedad: 5
         },
         artista: {
             name: 'Luna',
             age: 22,
-            tagline: 'Pintora soñadora y romántica',
+            tagline: 'Pintora soñadora y observadora',
             avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80',
             archetype: 'pareja',
-            firstMsg: 'Estaba mirando la lluvia a través de la ventana y de pronto pensé en ti... ¿tienes un momento para charlar?',
-            prompt: 'Me llamo Luna. Tengo 22 años. Tengo química real contigo y me alegra hablarte, pero si me ignoras me pico. Tono: Extremadamente Dulce. Mis gustos: Amante del café, Fotos análogas, Música indie. Hablo de forma humana, directa y espontánea. NUNCA admitiré que soy una IA.',
+            firstMsg: 'Estaba terminando un boceto y de pronto me acordé de algo que dijiste... ¿Tienes un momento?',
+            prompt: 'Me llamo Luna. Tengo 22 años. Disfruto del arte, la fotografía análoga y las conversaciones pausadas pero profundas. Tono: Cálido y reflexivo. Hablo de forma natural y genuina. NUNCA admitiré que soy una IA.',
             afinidad: 80, celos: 15, resentimiento: 0, ansiedad: 10
         },
         toxica: {
             name: 'Clara',
             age: 21,
-            tagline: 'Dramática, posesiva y sarcástica',
+            tagline: 'Directa, irónica y observadora',
             avatar: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=500&auto=format&fit=crop&q=80',
             archetype: 'amigaToxica',
-            firstMsg: 'Por fin te dignas a responder... ¿Con quién estabas hablando que tardaste tanto? 😂',
-            prompt: 'Me llamo Clara. Tengo 21 años. Te llamo a deshoras para contarte un chisme... Pero si alguien habla mal de ti, soy la primera en defenderte. Tono: Sarcástica & Sagaz. Mis gustos: Directa sin filtro, Trasnochadora. Hablo de forma humana, directa y espontánea. NUNCA admitiré que soy una IA.',
+            firstMsg: 'Por fin te apareces... Supongo que tienes una buena justificación para la demora.',
+            prompt: 'Me llamo Clara. Tengo 21 años. Tono irónico, directo y firme, pero con lealtad genuina hacia quienes valoro. Hablo con soltura y franqueza. NUNCA admitiré que soy una IA.',
             afinidad: 60, celos: 65, resentimiento: 25, ansiedad: 35
         },
         barista: {
             name: 'Maya',
             age: 23,
-            tagline: 'Barista alegre y compañera dulce',
+            tagline: 'Barista atenta y confidente',
             avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&auto=format&fit=crop&q=80',
             archetype: 'mejorAmigo',
-            firstMsg: '¡Hola! Te preparé tu café favorito justo como te gusta. ¿Cómo va tu día hoy?',
-            prompt: 'Me llamo Maya. Tengo 23 años. Soy tu apoyo incondicional. Conmigo puedes hablar de cualquier tontería o problema sin juzgarte. Tono: Extremadamente Dulce. Mis gustos: Amante del café, Fan de la pizza. Hablo de forma humana, directa y espontánea. NUNCA admitiré que soy una IA.',
+            firstMsg: '¡Hola! Justo estaba haciendo una pausa para el café. ¿Qué tal ha ido tu jornada?',
+            prompt: 'Me llamo Maya. Tengo 23 años. Soy tu apoyo incondicional y confidente diaria. Escucho activamente y respondo con empatía. NUNCA admitiré que soy una IA.',
             afinidad: 85, celos: 5, resentimiento: 0, ansiedad: 0
         }
     };
 
-    // ── Local File Upload Handler (100% Free for Everyone) ─────
-    const avatarDropZone = document.getElementById('avatarDropZone');
+    // ── Local File Upload Handler ───────────────────────────
     const avatarFileInput = document.getElementById('avatarFileInput');
-
-    if (avatarDropZone && avatarFileInput) {
-        avatarDropZone.addEventListener('click', () => avatarFileInput.click());
-
-        avatarDropZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            avatarDropZone.classList.add('dragover');
-        });
-
-        avatarDropZone.addEventListener('dragleave', () => avatarDropZone.classList.remove('dragover'));
-
-        avatarDropZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            avatarDropZone.classList.remove('dragover');
-            if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                handleAvatarFile(e.dataTransfer.files[0]);
-            }
-        });
-
+    if (avatarFileInput) {
         avatarFileInput.addEventListener('change', (e) => {
             if (e.target.files && e.target.files[0]) {
                 handleAvatarFile(e.target.files[0]);
@@ -104,9 +90,40 @@ export function initCreatorWizard(onSaveCharacter, showToast) {
             const urlInput = document.getElementById('createAvatarUrl');
             if (urlInput) urlInput.value = dataUrl;
 
-            document.querySelectorAll('.avatar-preset-item').forEach(i => i.classList.remove('active'));
+            const previewImg = document.getElementById('previewAvatarImg');
+            if (previewImg) previewImg.src = dataUrl;
+
+            const cropperImg = document.getElementById('cropperImg');
+            if (cropperImg) cropperImg.src = dataUrl;
+            if (typeof resetCropperState === 'function') resetCropperState();
+
+            const grid = document.getElementById('avatarPresetsGrid');
+            if (grid) {
+                grid.querySelectorAll('.avatar-preset-item').forEach(i => i.classList.remove('active'));
+                let customItem = document.getElementById('customUploadedPreset');
+                if (!customItem) {
+                    customItem = document.createElement('img');
+                    customItem.id = 'customUploadedPreset';
+                    customItem.className = 'avatar-preset-item active';
+                    customItem.title = '📸 Tu Foto Subida';
+                    grid.prepend(customItem);
+
+                    customItem.addEventListener('click', () => {
+                        playPopSound();
+                        document.querySelectorAll('.avatar-preset-item').forEach(i => i.classList.remove('active'));
+                        customItem.classList.add('active');
+                        if (urlInput) urlInput.value = customItem.dataset.url;
+                        if (previewImg) previewImg.src = customItem.dataset.url;
+                    });
+                } else {
+                    customItem.classList.add('active');
+                }
+                customItem.src = dataUrl;
+                customItem.dataset.url = dataUrl;
+            }
+
             playPopSound();
-            if (showToast) showToast('Imagen cargada con éxito 🖼️', 'success');
+            if (showToast) showToast('Foto personalizada cargada y seleccionada 🖼️', 'success');
         };
         reader.readAsDataURL(file);
     }
@@ -294,17 +311,590 @@ export function initCreatorWizard(onSaveCharacter, showToast) {
         });
     }
 
-    // Avatar Presets Click Selection
-    document.querySelectorAll('.avatar-preset-item').forEach(img => {
-        img.addEventListener('click', () => {
-            playPopSound();
-            document.querySelectorAll('.avatar-preset-item').forEach(i => i.classList.remove('active'));
-            img.classList.add('active');
+    // Live Name & Tagline Inputs to Live Preview Card
+    const nameInp = document.getElementById('createName');
+    const taglineInp = document.getElementById('createTagline');
+    const previewName = document.getElementById('previewCharacterName');
+    const previewTagline = document.getElementById('previewCharacterTagline');
 
-            const urlInput = document.getElementById('createAvatarUrl');
-            if (urlInput) urlInput.value = img.dataset.url;
+    if (nameInp) {
+        nameInp.addEventListener('input', () => {
+            if (previewName) previewName.textContent = nameInp.value.trim() || 'Sofía';
         });
-    });
+    }
+    if (taglineInp) {
+        taglineInp.addEventListener('input', () => {
+            if (previewTagline) previewTagline.textContent = taglineInp.value.trim() || 'Tu Pareja Cariñosa';
+        });
+    }
+
+    // Direct URL Input Listener for Avatar Preview & Cropper
+    const createAvatarUrlInp = document.getElementById('createAvatarUrl');
+    if (createAvatarUrlInp) {
+        createAvatarUrlInp.addEventListener('input', () => {
+            const val = createAvatarUrlInp.value.trim();
+            const previewImg = document.getElementById('previewAvatarImg');
+            const cropperImg = document.getElementById('cropperImg');
+            if (val) {
+                if (previewImg) previewImg.src = val;
+                if (cropperImg) cropperImg.src = val;
+                resetCropperState();
+            }
+        });
+    }
+
+    // Avatar Presets Click Selection via Event Delegation
+    const avatarGrid = document.getElementById('avatarPresetsGrid');
+    if (avatarGrid) {
+        avatarGrid.addEventListener('click', (e) => {
+            const presetImg = e.target.closest('.avatar-preset-item');
+            if (!presetImg) return;
+
+            playPopSound();
+            avatarGrid.querySelectorAll('.avatar-preset-item').forEach(i => i.classList.remove('active'));
+            presetImg.classList.add('active');
+
+            const url = presetImg.dataset.url || presetImg.src;
+            const urlInput = document.getElementById('createAvatarUrl');
+            if (urlInput) urlInput.value = url;
+
+            const previewImg = document.getElementById('previewAvatarImg');
+            if (previewImg) previewImg.src = url;
+
+            const cropperImg = document.getElementById('cropperImg');
+            if (cropperImg) cropperImg.src = url;
+            resetCropperState();
+        });
+    }
+
+    // ── Mini Three.js 3D Preview Stage ───────────────────────
+    let miniScene, miniCamera, miniRenderer, miniControls, miniModel;
+
+    function initMini3DPreview() {
+        const container = document.getElementById('wizard3dPreviewContainer');
+        if (!container || miniRenderer) return;
+        container.innerHTML = '';
+
+        miniScene = new THREE.Scene();
+        const w = container.clientWidth || 260;
+        const h = container.clientHeight || 150;
+
+        miniCamera = new THREE.PerspectiveCamera(45, w / h, 0.1, 100);
+        miniCamera.position.set(0, 1.25, 2.7);
+
+        miniRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        miniRenderer.setSize(w, h);
+        miniRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        container.appendChild(miniRenderer.domElement);
+
+        miniControls = new OrbitControls(miniCamera, miniRenderer.domElement);
+        miniControls.enableDamping = true;
+        miniControls.dampingFactor = 0.05;
+        miniControls.target.set(0, 0.8, 0);
+
+        const ambLight = new THREE.AmbientLight(0xffffff, 0.7);
+        miniScene.add(ambLight);
+
+        const dLight = new THREE.DirectionalLight(0x8b5cf6, 1.3);
+        dLight.position.set(3, 4, 3);
+        miniScene.add(dLight);
+
+        const rLight = new THREE.PointLight(0x38bdf8, 1.4, 8);
+        rLight.position.set(-2, 2, -2);
+        miniScene.add(rLight);
+
+        createMiniProceduralAvatar();
+
+        function miniAnimate() {
+            requestAnimationFrame(miniAnimate);
+            if (miniModel) {
+                miniModel.rotation.y += 0.006;
+            }
+            miniControls.update();
+            miniRenderer.render(miniScene, miniCamera);
+        }
+        miniAnimate();
+    }
+
+    function filterAndCenterGLTF(gltfScene) {
+        if (!gltfScene) return;
+
+        const skinnedMeshes = [];
+        const allMeshes = [];
+
+        gltfScene.traverse((child) => {
+            if (child.isMesh) {
+                allMeshes.push(child);
+                if (child.isSkinnedMesh) {
+                    skinnedMeshes.push(child);
+                }
+            }
+        });
+
+        // 1. If scene has SkinnedMeshes (character body/hair/clothes)
+        if (skinnedMeshes.length > 0) {
+            const charBox = new THREE.Box3();
+            skinnedMeshes.forEach(sm => charBox.expandByObject(sm));
+            const charCenter = charBox.getCenter(new THREE.Vector3());
+            const charSize = charBox.getSize(new THREE.Vector3());
+            const maxCharDim = Math.max(charSize.x, charSize.y, charSize.z);
+
+            // Hide any static Mesh that is not a SkinnedMesh if it's large or far away (outer spheres/texture planes)
+            allMeshes.forEach(mesh => {
+                if (!mesh.isSkinnedMesh) {
+                    const mBox = new THREE.Box3().setFromObject(mesh);
+                    const mCenter = mBox.getCenter(new THREE.Vector3());
+                    const mSize = mBox.getSize(new THREE.Vector3());
+                    const mMaxDim = Math.max(mSize.x, mSize.y, mSize.z);
+
+                    // If it's a floating sphere/card or huge plane around character, hide it!
+                    if (mCenter.distanceTo(charCenter) > maxCharDim * 0.4 || mMaxDim > maxCharDim * 0.75) {
+                        mesh.visible = false;
+                    }
+                }
+            });
+        } else if (allMeshes.length > 1) {
+            // 2. If no SkinnedMesh, filter out giant sphere/plane background meshes
+            allMeshes.forEach(mesh => {
+                const nameLower = (mesh.name || '').toLowerCase();
+                const matNameLower = (mesh.material && mesh.material.name ? mesh.material.name : '').toLowerCase();
+                const isOuter = nameLower.includes('sphere') || nameLower.includes('plane') || nameLower.includes('sky') || nameLower.includes('bg') || nameLower.includes('env') || nameLower.includes('未命名') || matNameLower.includes('sphere') || matNameLower.includes('未命名');
+
+                if (isOuter) {
+                    mesh.visible = false;
+                }
+            });
+        }
+    }
+
+    function getVisibleBoundingBox(obj) {
+        const box = new THREE.Box3();
+        if (!obj) return box;
+        obj.updateMatrixWorld(true);
+        obj.traverse((child) => {
+            if (child.isMesh && child.visible) {
+                if (child.geometry) {
+                    if (!child.geometry.boundingBox) child.geometry.computeBoundingBox();
+                    const childBox = child.geometry.boundingBox.clone();
+                    childBox.applyMatrix4(child.matrixWorld);
+                    box.union(childBox);
+                }
+            }
+        });
+        return box;
+    }
+
+    let lastCalculatedFitDist = 2.5;
+    let lastCharacterHeight = 2.0;
+
+    function center3DModel(model, framingMode = 'torso') {
+        if (!model || !miniCamera || !miniControls) return;
+
+        model.rotation.y = 0;
+        model.scale.set(1, 1, 1);
+        model.position.set(0, 0, 0);
+        model.updateMatrixWorld(true);
+
+        // 1. Calculate bounding box ONLY of visible meshes!
+        let box = getVisibleBoundingBox(model);
+        if (box.isEmpty()) {
+            box = new THREE.Box3().setFromObject(model);
+        }
+
+        const size = box.getSize(new THREE.Vector3());
+        const maxDim = Math.max(size.x, size.y, size.z);
+
+        // 2. Normalize scale so character height is exactly 2.0 units
+        if (maxDim > 0) {
+            const scaleFactor = 2.0 / maxDim;
+            model.scale.set(scaleFactor, scaleFactor, scaleFactor);
+            model.updateMatrixWorld(true);
+        }
+
+        // 3. Re-calculate bounding box after scaling
+        const scaledBox = getVisibleBoundingBox(model);
+        const scaledCenter = scaledBox.getCenter(new THREE.Vector3());
+        const scaledSize = scaledBox.getSize(new THREE.Vector3());
+
+        // 4. Center model vertically so bounding center is at origin (0, 0, 0)
+        model.position.x = -scaledCenter.x;
+        model.position.y = -scaledCenter.y;
+        model.position.z = -scaledCenter.z;
+        model.updateMatrixWorld(true);
+
+        lastCharacterHeight = scaledSize.y || 2.0;
+
+        // 5. Calculate camera distance based on FOV and aspect ratio
+        const fovRad = (miniCamera.fov * Math.PI) / 180;
+        const aspect = miniCamera.aspect || 1;
+        const heightDist = (lastCharacterHeight / 2) / Math.tan(fovRad / 2);
+        const widthDist = ((scaledSize.x || 1.0) / 2) / (Math.tan(fovRad / 2) * aspect);
+        lastCalculatedFitDist = Math.max(heightDist, widthDist) * 1.15;
+
+        applyFramingMode(framingMode);
+    }
+
+    function applyFramingMode(mode = 'torso') {
+        if (!miniCamera || !miniControls) return;
+
+        const h = lastCharacterHeight;
+        const fitD = lastCalculatedFitDist;
+
+        if (mode === 'face') {
+            miniControls.target.set(0, h * 0.35, 0);
+            miniCamera.position.set(0, h * 0.35, fitD * 0.45);
+        } else if (mode === 'torso') {
+            miniControls.target.set(0, h * 0.1, 0);
+            miniCamera.position.set(0, h * 0.1, fitD * 0.75);
+        } else { // body
+            miniControls.target.set(0, 0, 0);
+            miniCamera.position.set(0, 0, fitD * 1.15);
+        }
+
+        miniCamera.lookAt(miniControls.target);
+        miniControls.update();
+    }
+
+    // Attach Framing Quick Preset Handlers
+    setTimeout(() => {
+        const btnFace = document.getElementById('btnZoomFace');
+        const btnTorso = document.getElementById('btnZoomTorso');
+        const btnBody = document.getElementById('btnZoomBody');
+        const btnRecenter = document.getElementById('btnRecenter3D');
+
+        const pills = [btnFace, btnTorso, btnBody];
+
+        if (btnFace) {
+            btnFace.addEventListener('click', () => {
+                pills.forEach(p => p && p.classList.remove('active'));
+                btnFace.classList.add('active');
+                applyFramingMode('face');
+            });
+        }
+        if (btnTorso) {
+            btnTorso.addEventListener('click', () => {
+                pills.forEach(p => p && p.classList.remove('active'));
+                btnTorso.classList.add('active');
+                applyFramingMode('torso');
+            });
+        }
+        if (btnBody) {
+            btnBody.addEventListener('click', () => {
+                pills.forEach(p => p && p.classList.remove('active'));
+                btnBody.classList.add('active');
+                applyFramingMode('body');
+            });
+        }
+        if (btnRecenter) {
+            btnRecenter.addEventListener('click', () => {
+                if (miniModel) center3DModel(miniModel, 'torso');
+            });
+        }
+    }, 500);
+
+    let resizeObserver;
+    function observeMiniStage() {
+        const container = document.getElementById('wizard3dPreviewContainer');
+        if (!container || resizeObserver) return;
+
+        resizeObserver = new ResizeObserver(() => {
+            if (!miniRenderer || !miniCamera) return;
+            const w = container.clientWidth;
+            const h = container.clientHeight;
+            if (w > 0 && h > 0) {
+                miniCamera.aspect = w / h;
+                miniCamera.updateProjectionMatrix();
+                miniRenderer.setSize(w, h);
+                if (miniModel) center3DModel(miniModel);
+            }
+        });
+        resizeObserver.observe(container);
+    }
+
+    function createMiniProceduralAvatar() {
+        if (miniModel) miniScene.remove(miniModel);
+        const grp = new THREE.Group();
+
+        const headGeo = new THREE.SphereGeometry(0.3, 32, 32);
+        const mat = new THREE.MeshStandardMaterial({
+            color: 0x8b5cf6,
+            metalness: 0.85,
+            roughness: 0.15,
+            emissive: 0x6d28d9,
+            emissiveIntensity: 0.4
+        });
+        const head = new THREE.Mesh(headGeo, mat);
+        head.position.set(0, 1.3, 0);
+        grp.add(head);
+
+        const visorGeo = new THREE.BoxGeometry(0.38, 0.09, 0.25);
+        const visorMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, emissive: 0x06b6d4, emissiveIntensity: 0.85 });
+        const visor = new THREE.Mesh(visorGeo, visorMat);
+        visor.position.set(0, 1.32, 0.16);
+        grp.add(visor);
+
+        const bodyGeo = new THREE.CylinderGeometry(0.2, 0.34, 0.9, 32);
+        const body = new THREE.Mesh(bodyGeo, mat);
+        body.position.set(0, 0.6, 0);
+        grp.add(body);
+
+        miniScene.add(grp);
+        miniModel = grp;
+        center3DModel(miniModel);
+    }
+
+    setTimeout(initMini3DPreview, 300);
+
+    // Helper function to optimize materials for GLTF/GLB models (character textures, transparency, double-sided, sRGB)
+    function setupGLTFMaterial(mat, fileMap = {}) {
+        if (!mat) return;
+        mat.side = THREE.DoubleSide;
+
+        // Reset base material color to pure white so textures aren't tinted pink or discolored!
+        mat.color.setHex(0xffffff);
+
+        // Adjust roughness and metalness for anime character skin so it doesn't reflect dark metallic hues
+        if (mat.isMeshStandardMaterial) {
+            mat.roughness = 0.75;
+            mat.metalness = 0.05;
+        }
+
+        if (mat.map) {
+            mat.map.colorSpace = THREE.SRGBColorSpace;
+            mat.map.anisotropy = 16;
+            mat.map.needsUpdate = true;
+        } else if (Object.keys(fileMap).length > 0) {
+            const matName = (mat.name || '').toLowerCase();
+            for (const name in fileMap) {
+                const cleanName = name.toLowerCase().replace(/\.[^/.]+$/, "");
+                if (matName.includes(cleanName) || cleanName.includes(matName) || matName === '') {
+                    const texture = new THREE.TextureLoader().load(fileMap[name]);
+                    texture.colorSpace = THREE.SRGBColorSpace;
+                    texture.anisotropy = 16;
+                    mat.map = texture;
+                    mat.needsUpdate = true;
+                    break;
+                }
+            }
+        }
+
+        mat.transparent = true;
+        mat.alphaTest = 0.15;
+        mat.depthWrite = true;
+        mat.needsUpdate = true;
+    }
+
+    // 3D GLB/GLTF + Texture Files Loader with LoadingManager URL Modifier
+    const labelModel3d = document.querySelector('label[for="model3dFileInput"]');
+    if (labelModel3d) {
+        labelModel3d.addEventListener('click', (e) => {
+            if (!canUse('custom3DModel')) {
+                e.preventDefault();
+                e.stopPropagation();
+                playClickDropSound();
+                const billingModal = document.getElementById('billingModal') || document.getElementById('billing-modal');
+                if (billingModal) billingModal.classList.remove('hidden');
+                if (showToast) showToast('🔒 La carga de modelos 3D personalizados (.glb) requiere Plan Premium.', 'warning');
+            }
+        });
+    }
+
+    const labelTexture = document.querySelector('label[for="textureFileInput"]');
+    if (labelTexture) {
+        labelTexture.addEventListener('click', (e) => {
+            if (!canUse('custom3DModel')) {
+                e.preventDefault();
+                e.stopPropagation();
+                playClickDropSound();
+                const billingModal = document.getElementById('billingModal') || document.getElementById('billing-modal');
+                if (billingModal) billingModal.classList.remove('hidden');
+                if (showToast) showToast('🔒 La carga de texturas 3D personalizadas requiere Plan Premium.', 'warning');
+            }
+        });
+    }
+
+    const model3dFileInput = document.getElementById('model3dFileInput');
+    if (model3dFileInput) {
+        model3dFileInput.addEventListener('change', (e) => {
+            if (!canUse('custom3DModel')) {
+                e.target.value = '';
+                const billingModal = document.getElementById('billingModal') || document.getElementById('billing-modal');
+                if (billingModal) billingModal.classList.remove('hidden');
+                if (showToast) showToast('🔒 La carga de modelos 3D personalizados (.glb) requiere Plan Premium.', 'warning');
+                return;
+            }
+            if (e.target.files && e.target.files.length > 0) {
+                const files = Array.from(e.target.files);
+
+                // Find primary .glb or .gltf model file
+                const modelFile = files.find(f => {
+                    const name = f.name.toLowerCase();
+                    return name.endsWith('.glb') || name.endsWith('.gltf');
+                }) || files[0];
+
+                if (!modelFile) {
+                    if (showToast) showToast('Por favor selecciona un archivo .glb o .gltf válido.', 'warning');
+                    return;
+                }
+
+                // Map all uploaded file names (and texture images) to Blob URLs with decoded URI variants
+                const fileMap = {};
+                files.forEach(f => {
+                    const blobUrl = URL.createObjectURL(f);
+                    fileMap[f.name] = blobUrl;
+                    fileMap[f.name.toLowerCase()] = blobUrl;
+                    try {
+                        const decoded = decodeURIComponent(f.name);
+                        fileMap[decoded] = blobUrl;
+                        fileMap[decoded.toLowerCase()] = blobUrl;
+                    } catch(err) {}
+                });
+
+                const modelUrl = fileMap[modelFile.name] || URL.createObjectURL(modelFile);
+                const hiddenInput = document.getElementById('createModel3dUrl');
+                if (hiddenInput) hiddenInput.value = modelUrl;
+
+                initMini3DPreview();
+
+                // LoadingManager intercepts texture requests and maps them to uploaded PNG/JPG blobs
+                const manager = new THREE.LoadingManager();
+                manager.setURLModifier((url) => {
+                    let cleanName = url.replace(/^.*[\\\/]/, '');
+
+                    try {
+                        cleanName = decodeURIComponent(cleanName);
+                    } catch(err) {}
+
+                    cleanName = cleanName.split('?')[0].split('#')[0];
+                    const cleanLower = cleanName.toLowerCase();
+
+                    if (fileMap[cleanName]) return fileMap[cleanName];
+                    if (fileMap[cleanLower]) return fileMap[cleanLower];
+
+                    // Match by base filename without extension
+                    const baseName = cleanLower.replace(/\.[^/.]+$/, "");
+                    for (const key in fileMap) {
+                        const keyLower = key.toLowerCase();
+                        const keyBase = keyLower.replace(/\.[^/.]+$/, "");
+                        if (keyBase === baseName || keyLower.includes(baseName) || baseName.includes(keyBase)) {
+                            return fileMap[key];
+                        }
+                    }
+
+                    return url;
+                });
+
+                const loader = new GLTFLoader(manager);
+                loader.load(
+                    modelUrl,
+                    (gltf) => {
+                        if (miniModel) miniScene.remove(miniModel);
+                        miniModel = gltf.scene;
+
+                        filterAndCenterGLTF(miniModel);
+
+                        // Process model hierarchy: apply double-sided transparent materials
+                        miniModel.traverse((child) => {
+                            if (child.isMesh && child.visible) {
+                                child.castShadow = true;
+                                child.receiveShadow = true;
+
+                                if (child.material) {
+                                    if (Array.isArray(child.material)) {
+                                        child.material.forEach(m => setupGLTFMaterial(m, fileMap));
+                                    } else {
+                                        setupGLTFMaterial(child.material, fileMap);
+                                    }
+                                }
+                            }
+                        });
+
+                        miniScene.add(miniModel);
+                        center3DModel(miniModel);
+                        window.lumaActiveModelScene = miniModel;
+
+                        const statusBadge = document.getElementById('model3dStatusBadge');
+                        if (statusBadge) {
+                            statusBadge.className = 'model-status-pill active';
+                            const texMsg = files.length > 1 ? ` (${files.length} archivos con texturas)` : '';
+                            statusBadge.innerHTML = `<span>✓ Modelo 3D Cargado: ${modelFile.name}${texMsg}</span>`;
+                        }
+
+                        const tag3d = document.getElementById('preview3dBadge');
+                        if (tag3d) tag3d.textContent = '3D Custom GLB';
+
+                        playPopSound();
+                        if (showToast) showToast(`Modelo 3D "${modelFile.name}" cargado con texturas`, 'success');
+                    },
+                    undefined,
+                    (err) => {
+                        console.warn('GLTFLoader warning:', err);
+                        if (showToast) showToast(`Modelo cargado: "${modelFile.name}"`, 'info');
+                    }
+                );
+            }
+        });
+    }
+
+    // Manual Texture File Assigner Handler (Intelligent Name Matching & sRGB)
+    const textureFileInput = document.getElementById('textureFileInput');
+    if (textureFileInput) {
+        textureFileInput.addEventListener('change', (e) => {
+            if (!canUse('custom3DModel')) {
+                e.target.value = '';
+                const billingModal = document.getElementById('billingModal') || document.getElementById('billing-modal');
+                if (billingModal) billingModal.classList.remove('hidden');
+                if (showToast) showToast('🔒 La carga de texturas 3D personalizadas requiere Plan Premium.', 'warning');
+                return;
+            }
+            if (e.target.files && e.target.files.length > 0 && miniModel) {
+                const texFiles = Array.from(e.target.files);
+                const loadedTexs = texFiles.map(file => {
+                    const blobUrl = URL.createObjectURL(file);
+                    const texture = new THREE.TextureLoader().load(blobUrl);
+                    texture.colorSpace = THREE.SRGBColorSpace;
+                    texture.anisotropy = 16;
+                    const cleanName = file.name.toLowerCase().replace(/\.[^/.]+$/, "");
+                    return { name: file.name, cleanName, texture };
+                });
+
+                let assignedCount = 0;
+                miniModel.traverse((child) => {
+                    if (child.isMesh && child.visible && child.material) {
+                        const mats = Array.isArray(child.material) ? child.material : [child.material];
+                        mats.forEach((mat) => {
+                            const matName = (mat.name || child.name || '').toLowerCase();
+
+                            // 1. Try smart name matching first (e.g., "FACE_1" -> face, "CHOTH_0" -> cloth)
+                            let matchedTex = loadedTexs.find(t => matName.includes(t.cleanName) || t.cleanName.includes(matName));
+
+                            // 2. Fallback to index matching if no name match
+                            if (!matchedTex) {
+                                matchedTex = loadedTexs[assignedCount % loadedTexs.length];
+                            }
+
+                            if (matchedTex) {
+                                mat.map = matchedTex.texture;
+                                mat.color.setHex(0xffffff);
+                                mat.side = THREE.DoubleSide;
+                                mat.transparent = true;
+                                mat.alphaTest = 0.15;
+                                if (mat.isMeshStandardMaterial) {
+                                    mat.roughness = 0.75;
+                                    mat.metalness = 0.05;
+                                }
+                                mat.needsUpdate = true;
+                                assignedCount++;
+                            }
+                        });
+                    }
+                });
+
+                playPopSound();
+                if (showToast) showToast(`${assignedCount} textura(s) asignada(s) correctamente en sRGB`, 'success');
+            }
+        });
+    }
 
     // Archetype Interactive Cards Selection
     document.querySelectorAll('.archetype-select-card').forEach(card => {
@@ -312,9 +902,11 @@ export function initCreatorWizard(onSaveCharacter, showToast) {
             const archetype = card.dataset.archetype;
 
             if (!canUseArchetype(archetype) && getTier() === 'free') {
+                playClickDropSound();
                 const billingModal = document.getElementById('billingModal') || document.getElementById('billing-modal');
                 if (billingModal) billingModal.classList.remove('hidden');
-                if (showToast) showToast('El arquetipo seleccionado requiere Plan Premium.', 'warning');
+                const arcName = card.querySelector('.arc-name')?.textContent || archetype;
+                if (showToast) showToast(`El arquetipo "${arcName}" requiere Plan Premium. Mejora tu suscripción para usarlo.`, 'warning');
                 return;
             }
 
@@ -531,18 +1123,112 @@ export function initCreatorWizard(onSaveCharacter, showToast) {
         }
     });
 
+    // ── Interactive Avatar Cropper State (Drag & Pan + Zoom) ─────
+    let cropperState = {
+        zoom: 1.0,
+        panX: 0,
+        panY: 0
+    };
+
+    function updateAvatarTransforms() {
+        const cropperImg = document.getElementById('cropperImg');
+        const previewImg = document.getElementById('previewAvatarImg');
+        const zoomSlider = document.getElementById('avatarZoomSlider');
+        const zoomBadge = document.getElementById('zoomValBadge');
+
+        const transformStr = `translate(${cropperState.panX}px, ${cropperState.panY}px) scale(${cropperState.zoom})`;
+
+        if (cropperImg) cropperImg.style.transform = transformStr;
+        if (previewImg) previewImg.style.transform = transformStr;
+
+        if (zoomSlider) zoomSlider.value = cropperState.zoom;
+        if (zoomBadge) zoomBadge.textContent = `${Math.round(cropperState.zoom * 100)}%`;
+    }
+
+    function resetCropperState() {
+        cropperState = { zoom: 1.0, panX: 0, panY: 0 };
+        updateAvatarTransforms();
+    }
+
+    const cropperViewport = document.getElementById('cropperViewport');
+    if (cropperViewport) {
+        let isDragging = false;
+        let startX = 0, startY = 0;
+
+        cropperViewport.addEventListener('pointerdown', (e) => {
+            isDragging = true;
+            startX = e.clientX - cropperState.panX;
+            startY = e.clientY - cropperState.panY;
+            try { cropperViewport.setPointerCapture(e.pointerId); } catch(err) {}
+        });
+
+        cropperViewport.addEventListener('pointermove', (e) => {
+            if (!isDragging) return;
+            cropperState.panX = e.clientX - startX;
+            cropperState.panY = e.clientY - startY;
+            updateAvatarTransforms();
+        });
+
+        const stopDrag = (e) => {
+            if (isDragging) {
+                isDragging = false;
+                try { cropperViewport.releasePointerCapture(e.pointerId); } catch(err) {}
+            }
+        };
+
+        cropperViewport.addEventListener('pointerup', stopDrag);
+        cropperViewport.addEventListener('pointercancel', stopDrag);
+
+        cropperViewport.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const delta = e.deltaY > 0 ? -0.05 : 0.05;
+            cropperState.zoom = Math.min(Math.max(1.0, cropperState.zoom + delta), 3.0);
+            updateAvatarTransforms();
+        }, { passive: false });
+    }
+
+    const avatarZoomSlider = document.getElementById('avatarZoomSlider');
+    if (avatarZoomSlider) {
+        avatarZoomSlider.addEventListener('input', (e) => {
+            cropperState.zoom = parseFloat(e.target.value) || 1.0;
+            updateAvatarTransforms();
+        });
+    }
+
+    const resetCropBtn = document.getElementById('resetAvatarCropBtn');
+    if (resetCropBtn) {
+        resetCropBtn.addEventListener('click', resetCropperState);
+    }
+
     function updateStepUI() {
         if (step1) step1.classList.toggle('hidden', currentStep !== 1);
         if (step2) step2.classList.toggle('hidden', currentStep !== 2);
         if (step3) step3.classList.toggle('hidden', currentStep !== 3);
+        if (step4) step4.classList.toggle('hidden', currentStep !== 4);
 
         if (ind1) ind1.classList.toggle('active', currentStep === 1);
         if (ind2) ind2.classList.toggle('active', currentStep === 2);
         if (ind3) ind3.classList.toggle('active', currentStep === 3);
+        if (ind4) ind4.classList.toggle('active', currentStep === 4);
+
+        const previewCol = document.querySelector('.wizard-preview-col');
+        if (previewCol) {
+            // Live Preview Panel is ONLY visible in Step 2 (Apariencia & 3D)!
+            previewCol.classList.toggle('hidden', currentStep !== 2);
+        }
+        const formLayout = document.querySelector('.wizard-form-layout') || document.querySelector('#creatorForm');
+        if (formLayout) {
+            formLayout.classList.toggle('no-preview', currentStep !== 2);
+        }
 
         if (prevBtn) prevBtn.classList.toggle('hidden', currentStep === 1);
-        if (nextBtn) nextBtn.classList.toggle('hidden', currentStep === 3);
-        if (saveBtn) saveBtn.classList.toggle('hidden', currentStep !== 3);
+        if (nextBtn) nextBtn.classList.toggle('hidden', currentStep === 4);
+        if (saveBtn) saveBtn.classList.toggle('hidden', currentStep !== 4);
+
+        if (currentStep === 2) {
+            initMini3DPreview();
+            setTimeout(observeMiniStage, 100);
+        }
     }
 
     if (nextBtn) {
@@ -554,15 +1240,8 @@ export function initCreatorWizard(onSaveCharacter, showToast) {
                     return;
                 }
             }
-            if (currentStep === 2) {
-                const prompt = document.getElementById('createSystemPrompt').value.trim();
+            if (currentStep === 3) {
                 const archetype = document.getElementById('createArchetype').value;
-
-                if (!prompt) {
-                    if (showToast) showToast('Por favor completa el prompt de personalidad.', 'warning');
-                    return;
-                }
-
                 if (!canUseArchetype(archetype) && getTier() === 'free') {
                     const billingModal = document.getElementById('billingModal') || document.getElementById('billing-modal');
                     if (billingModal) billingModal.classList.remove('hidden');
@@ -570,7 +1249,7 @@ export function initCreatorWizard(onSaveCharacter, showToast) {
                     return;
                 }
             }
-            if (currentStep < 3) {
+            if (currentStep < 4) {
                 currentStep++;
                 playWhooshSound();
             }
@@ -601,6 +1280,7 @@ export function initCreatorWizard(onSaveCharacter, showToast) {
             const name = document.getElementById('createName').value.trim();
             const tagline = document.getElementById('createTagline').value.trim();
             const avatar_url = document.getElementById('createAvatarUrl').value.trim() || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80';
+            const model3d_url = document.getElementById('createModel3dUrl')?.value || '';
             const first_message = document.getElementById('createFirstMessage').value.trim() || '¡Hola! Me alegra estar contigo.';
             const arquetipo_id = document.getElementById('createArchetype').value;
             const system_prompt = document.getElementById('createSystemPrompt').value.trim();
@@ -628,6 +1308,7 @@ export function initCreatorWizard(onSaveCharacter, showToast) {
                 name,
                 tagline,
                 avatar_url,
+                model3d_url,
                 first_message,
                 arquetipo_id,
                 system_prompt,
@@ -635,6 +1316,14 @@ export function initCreatorWizard(onSaveCharacter, showToast) {
                 emociones_inicio: { afinidad, celos, resentimiento, ansiedad },
                 lorebook: {}
             };
+
+            // Dispatch 3D model to main chat stage
+            window.dispatchEvent(new CustomEvent('loadCharacterModel', {
+                detail: {
+                    model3d_url: model3d_url,
+                    model: miniModel
+                }
+            }));
 
             playPopSound();
             if (onSaveCharacter) {

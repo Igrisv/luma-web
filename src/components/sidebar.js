@@ -4,7 +4,7 @@
 import { getEmotionalBadge } from '../services/cardParser.js';
 import { canUseArchetype, getTier } from '../services/tierGate.js';
 
-export function renderSidebarChatList(charactersData, activeCharId, onSelectCharacter) {
+export function renderSidebarChatList(charactersData, activeCharId, onSelectCharacter, onDeleteCharacter) {
     const chatList = document.getElementById('chatList');
     if (!chatList) return;
 
@@ -26,6 +26,7 @@ export function renderSidebarChatList(charactersData, activeCharId, onSelectChar
                          (c.tier_required === 'obsesion' && currentTier !== 'obsesion') ||
                          (!canUseArchetype(c.arquetipo_id) && currentTier === 'free');
 
+        const isCustom = !c.is_official;
         const badgeInfo = getEmotionalBadge(savedConfig);
 
         return `
@@ -37,7 +38,10 @@ export function renderSidebarChatList(charactersData, activeCharId, onSelectChar
                 <div class="chat-item-info">
                     <div class="chat-item-name" style="display:flex; align-items:center; justify-content:space-between;">
                         <span>${c.name}</span>
-                        ${isLocked ? `<span style="font-size:0.7rem; color:var(--accent-rose);">🔒</span>` : ''}
+                        <div style="display:flex; align-items:center; gap:4px;">
+                            ${isLocked ? `<span style="font-size:0.7rem; color:var(--accent-rose);">🔒</span>` : ''}
+                            ${isCustom ? `<button class="btn-delete-chat-item" data-id="${c.id}" title="Eliminar Chat">🗑️</button>` : ''}
+                        </div>
                     </div>
                     <div class="chat-item-sub">
                         <span>Afinidad: ${afinidad}%</span>
@@ -47,8 +51,17 @@ export function renderSidebarChatList(charactersData, activeCharId, onSelectChar
         `;
     }).join('');
 
+    chatList.querySelectorAll('.btn-delete-chat-item').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const charId = btn.dataset.id;
+            if (onDeleteCharacter) onDeleteCharacter(charId);
+        });
+    });
+
     chatList.querySelectorAll('.chat-item').forEach(item => {
-        item.addEventListener('click', () => {
+        item.addEventListener('click', (e) => {
+            if (e.target.closest('.btn-delete-chat-item')) return;
             const charId = item.dataset.id;
             const targetChar = allChars.find(c => c.id === charId);
             if (targetChar && onSelectCharacter) {

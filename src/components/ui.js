@@ -8,6 +8,8 @@ import { renderGallery } from './gallery.js';
 import { renderSidebarChatList } from './sidebar.js';
 import { initCreatorWizard } from './wizard.js';
 import { initCardImporter } from './importer.js';
+import { adManager } from '../services/adService.js';
+import { getTier } from '../services/tierGate.js';
 
 export {
     parseCharacterCardPNG,
@@ -210,6 +212,56 @@ export function initPanels(brain) {
         });
     }
 
+    const bondHeroCard = document.getElementById('bond-hero-card') || document.querySelector('.bond-hero-card');
+    if (bondHeroCard) {
+        bondHeroCard.addEventListener('click', () => {
+            renderBondJourneyUI(brain);
+            const journeyModal = document.getElementById('bond-journey-modal');
+            if (journeyModal) journeyModal.classList.remove('hidden');
+        });
+    }
+
+    const closeJourneyBtn = document.getElementById('close-bond-journey-btn');
+    if (closeJourneyBtn) {
+        closeJourneyBtn.addEventListener('click', () => {
+            const journeyModal = document.getElementById('bond-journey-modal');
+            if (journeyModal) journeyModal.classList.add('hidden');
+        });
+    }
+
+    // Click-Outside Listener for Side Panels (config-panel, bond-panel)
+    document.addEventListener('click', (e) => {
+        const configPanel = document.getElementById('config-panel');
+        const bondPanel = document.getElementById('bond-panel');
+
+        const isClickInsideConfig = configPanel && configPanel.contains(e.target);
+        const isClickInsideBond = bondPanel && bondPanel.contains(e.target);
+
+        const isConfigTrigger = e.target.closest('#configBtn, #dockConfigBtn');
+        const isBondTrigger = e.target.closest('#bondBtn, #dockBondBtn, #chatBondToggleBtn');
+
+        if (configPanel && !configPanel.classList.contains('hidden') && !isClickInsideConfig && !isConfigTrigger) {
+            closeAllPanels();
+        }
+        if (bondPanel && !bondPanel.classList.contains('hidden') && !isClickInsideBond && !isBondTrigger) {
+            closeAllPanels();
+        }
+    });
+
+    // Click-Outside Listener for Modal Backdrops (reward-modal, billing-modal, diary-modal, bond-journey-modal, etc.)
+    const modalIds = ['reward-modal', 'billingModal', 'billing-modal', 'diary-modal', 'creator-wizard-modal', 'card-importer-modal', 'bond-journey-modal'];
+    modalIds.forEach(id => {
+        const modalEl = document.getElementById(id);
+        if (modalEl) {
+            modalEl.addEventListener('click', (e) => {
+                // If user clicks directly on the backdrop container, close the modal
+                if (e.target === modalEl || e.target.classList.contains('modal-overlay')) {
+                    modalEl.classList.add('hidden');
+                }
+            });
+        }
+    });
+
     return { closeAllPanels, togglePanel };
 }
 
@@ -222,6 +274,33 @@ export function initConfigPanel(brain, closeAllPanels, messagesBox) {
             if (billingModal) billingModal.classList.remove('hidden');
         });
     }
+
+    function updateUserSettingsProfile() {
+        const currentTier = getTier();
+        const settingsTierLabel = document.getElementById('settingsTierLabel');
+        const userSettingsTierBadge = document.getElementById('userSettingsTierBadge');
+        const statUserMessages = document.getElementById('statUserMessages');
+        const statUserBots = document.getElementById('statUserBots');
+        const statUserAffinity = document.getElementById('statUserAffinity');
+
+        if (settingsTierLabel) settingsTierLabel.textContent = `Plan ${currentTier.toUpperCase()}`;
+        if (userSettingsTierBadge) userSettingsTierBadge.textContent = `Plan ${currentTier.toUpperCase()}`;
+
+        const customCount = JSON.parse(localStorage.getItem('lumaCustomCharacters') || '[]').length;
+        if (statUserBots) statUserBots.textContent = `${customCount + 1} Bots`;
+
+        const usedToday = window.lumaDailyCount || 0;
+        const maxMsgs = currentTier === 'free' ? 15 : '∞';
+        if (statUserMessages) statUserMessages.textContent = `${usedToday}/${maxMsgs}`;
+        if (statUserAffinity) statUserAffinity.textContent = `${brain ? brain.afinidad : 70}%`;
+    }
+
+    updateUserSettingsProfile();
+
+    const configBtn = document.getElementById('configBtn');
+    const dockConfigBtn = document.getElementById('dockConfigBtn');
+    if (configBtn) configBtn.addEventListener('click', updateUserSettingsProfile);
+    if (dockConfigBtn) dockConfigBtn.addEventListener('click', updateUserSettingsProfile);
 
     const soundToggle = document.getElementById('settingSoundEffects');
     if (soundToggle) {
@@ -247,6 +326,20 @@ export function initConfigPanel(brain, closeAllPanels, messagesBox) {
         autoToggle.addEventListener('change', () => {
             localStorage.setItem('lumaAutoMessagesEnabled', autoToggle.checked);
             showToast(autoToggle.checked ? 'Mensajes autónomos activados ⚡' : 'Mensajes autónomos pausados', 'info');
+        });
+    }
+
+    const devToggle = document.getElementById('settingDevMode');
+    const inspectorLog = document.getElementById('inspector-log');
+    if (devToggle) {
+        const isDev = localStorage.getItem('lumaDevModeEnabled') === 'true';
+        devToggle.checked = isDev;
+        if (inspectorLog) inspectorLog.style.display = isDev ? 'block' : 'none';
+
+        devToggle.addEventListener('change', () => {
+            localStorage.setItem('lumaDevModeEnabled', devToggle.checked);
+            if (inspectorLog) inspectorLog.style.display = devToggle.checked ? 'block' : 'none';
+            showToast(devToggle.checked ? '🛠️ Modo Desarrollador y Telemetría Activados' : 'Modo Desarrollador Desactivado', 'info');
         });
     }
 
@@ -321,7 +414,7 @@ export function initDiaryUI(brain) {
 
     function renderBookPages() {
         const entries = brain.memoryState ? (brain.memoryState.diario_entries || []) : [];
-        
+
         if (entries.length === 0) {
             if (leftContent) leftContent.innerHTML = `<div class="diary-handwritten-text" style="color:var(--text-muted);font-style:italic;">Querido diario... aún no he escrito mis pensamientos sobre esta persona.</div>`;
             if (rightContent) rightContent.innerHTML = `<div class="diary-handwritten-text" style="color:var(--text-muted);font-style:italic;">Haz clic abajo en "✍️ Escribir Nueva Confesión" para redactar mi primer pensamiento de hoy.</div>`;
@@ -403,33 +496,270 @@ export function initRewardedAdUI(brain) {
     const openBtn = document.getElementById('open-ad-btn');
     const closeBtn = document.getElementById('close-ad-btn');
     const startBtn = document.getElementById('start-ad-btn');
-    const videoSim = document.getElementById('ad-video-sim');
+    const videoPlayer = document.getElementById('ad-video-player');
+    const imaContainer = document.getElementById('ad-ima-container');
+    const progressBar = document.getElementById('ad-progress-bar');
     const timerSpan = document.getElementById('ad-timer');
+    const muteBtn = document.getElementById('ad-mute-btn');
+    const sponsorTitle = document.getElementById('ad-sponsor-title');
+    const sponsorSubtitle = document.getElementById('ad-sponsor-subtitle');
+    const statusText = document.getElementById('ad-status-text');
 
-    if (openBtn && modal) openBtn.addEventListener('click', () => modal.classList.remove('hidden'));
-    if (closeBtn && modal) closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
+    const descText = document.getElementById('ad-description-text');
+    let isAdBlockActiveState = false;
+
+    const openAdModal = async () => {
+        if (!modal) return;
+        modal.classList.remove('hidden');
+        if (sponsorTitle) sponsorTitle.textContent = 'Verificando red publicitaria...';
+
+        const ad = await adManager.loadAd();
+        if (ad && ad.isAdBlocker) {
+            isAdBlockActiveState = true;
+            if (sponsorTitle) sponsorTitle.textContent = '🛡️ Bloqueador Detectado';
+            if (sponsorSubtitle) sponsorSubtitle.textContent = 'Desactiva AdBlock';
+            if (descText) descText.textContent = ad.message;
+            if (statusText) statusText.textContent = 'AdBlocker detectado';
+            if (startBtn) {
+                startBtn.disabled = false;
+                startBtn.textContent = '🔄 Reprobar / Reintentar Anuncio';
+                startBtn.classList.remove('hidden');
+            }
+            return;
+        }
+
+        isAdBlockActiveState = false;
+        if (descText) descText.textContent = 'Mira el video publicitario para recargar tu cuota diaria de mensajes inmediatamente.';
+        if (ad) {
+            if (sponsorTitle) sponsorTitle.textContent = ad.title || 'Anuncio Patrocinado';
+            if (sponsorSubtitle) sponsorSubtitle.textContent = `Patrocinado por ${ad.sponsor || 'Red Publicitaria'}`;
+        }
+        if (startBtn) {
+            startBtn.disabled = false;
+            startBtn.textContent = '▶ Ver Anuncio Ahora';
+            startBtn.classList.remove('hidden');
+        }
+        if (progressBar) progressBar.style.width = '0%';
+        if (timerSpan) timerSpan.textContent = adManager.requiredSeconds;
+    };
+
+    const closeAdModal = () => {
+        if (!modal) return;
+        adManager.cancelAd();
+        if (videoPlayer) {
+            videoPlayer.pause();
+            videoPlayer.src = '';
+        }
+        if (imaContainer) imaContainer.classList.add('hidden');
+        modal.classList.add('hidden');
+    };
+
+    if (openBtn) openBtn.addEventListener('click', openAdModal);
+    if (closeBtn) closeBtn.addEventListener('click', closeAdModal);
+
+    if (muteBtn && videoPlayer) {
+        muteBtn.addEventListener('click', () => {
+            videoPlayer.muted = !videoPlayer.muted;
+            muteBtn.textContent = videoPlayer.muted ? '🔇 En silencio' : '🔊 Con sonido';
+        });
+    }
 
     if (startBtn) {
-        startBtn.addEventListener('click', () => {
-            startBtn.classList.add('hidden');
-            if (videoSim) videoSim.classList.remove('hidden');
-            let timeLeft = 5;
-            if (timerSpan) timerSpan.textContent = timeLeft;
-
-            const interval = setInterval(() => {
-                timeLeft--;
-                if (timerSpan) timerSpan.textContent = timeLeft;
-                if (timeLeft <= 0) {
-                    clearInterval(interval);
-                    if (videoSim) videoSim.classList.add('hidden');
-                    startBtn.classList.remove('hidden');
-                    if (modal) modal.classList.add('hidden');
-                    brain.dailyMessageCount = 0;
-                    brain.saveState();
-                    brain.updateBrainUI();
-                    showToast('¡Premio otorgado! Tu saldo de mensajes ha sido recargado 🎉', 'success');
+        startBtn.addEventListener('click', async () => {
+            if (isAdBlockActiveState) {
+                showToast('Comprobando si el bloqueador de anuncios fue desactivado...', 'info');
+                await openAdModal();
+                if (isAdBlockActiveState) {
+                    showToast('El bloqueador sigue activo. Por favor desactívalo para continuar.', 'warning');
+                    return;
                 }
-            }, 1000);
+            }
+
+            startBtn.disabled = true;
+            startBtn.textContent = '⏳ Reproduciendo anuncio...';
+
+            adManager.startAdPlayback({
+                videoElement: videoPlayer,
+                imaContainerElement: imaContainer,
+                onProgress: ({ remaining, percent }) => {
+                    if (timerSpan) timerSpan.textContent = remaining;
+                    if (progressBar) progressBar.style.width = `${percent}%`;
+                    if (statusText) statusText.textContent = remaining > 0 ? `Visualizando anuncio (${remaining}s)...` : '¡Completado!';
+                },
+                onComplete: (data) => {
+                    showToast('🎉 ¡Recompensa otorgada! Tu cuota de mensajes ha sido recargada.', 'success');
+                    if (brain) {
+                        brain.dailyMessageCount = 0;
+                        window.lumaDailyCount = 0;
+                        brain.saveState();
+                        brain.updateBrainUI();
+                    }
+                    setTimeout(() => {
+                        closeAdModal();
+                    }, 1000);
+                },
+                onError: (err) => {
+                    showToast('Error al procesar la recompensa. Inténtalo de nuevo.', 'error');
+                    startBtn.disabled = false;
+                    startBtn.textContent = '▶ Reintentar Anuncio';
+                }
+            });
         });
+    }
+}
+
+// Global Escape key listener to close active modal overlays
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        const modals = document.querySelectorAll('.modal-overlay:not(.hidden), #bond-journey-modal:not(.hidden), #reward-modal:not(.hidden)');
+        if (modals.length > 0) {
+            playClickDropSound();
+            modals.forEach(modal => modal.classList.add('hidden'));
+        }
+    }
+});
+
+// ── Bond Journey & Empathy Badges Renderer ────────────────────
+export function renderBondJourneyUI(brain) {
+    if (!brain) return;
+
+    const modal = document.getElementById('bond-journey-modal');
+    if (!modal) return;
+
+    const nivelInfo = brain.getNivelInfo();
+    const dias = brain.diasActivos ? brain.diasActivos.length : 1;
+
+    // 1. Header & Banner Updates
+    const emojiEl = document.getElementById('journey-level-emoji');
+    const nameEl = document.getElementById('journey-level-name');
+    const daysEl = document.getElementById('journey-days-badge');
+    const nextMilestoneEl = document.getElementById('journey-next-milestone-text');
+    const progressFill = document.getElementById('journey-progress-fill');
+    const progressPercent = document.getElementById('journey-progress-percent');
+
+    if (emojiEl) emojiEl.textContent = nivelInfo.icono || '🌒';
+    if (nameEl) nameEl.textContent = `Nivel: ${nivelInfo.nombre}`;
+    if (daysEl) daysEl.textContent = `${dias} ${dias === 1 ? 'día compartido' : 'días compartidos'}`;
+
+    let pct = 100;
+    if (nivelInfo.siguiente) {
+        const currentMin = nivelInfo.minDias;
+        const nextMin = nivelInfo.siguiente.minDias;
+        const remaining = nextMin - dias;
+        pct = Math.round(((dias - currentMin) / (nextMin - currentMin)) * 100);
+        pct = Math.min(100, Math.max(10, pct));
+        if (nextMilestoneEl) {
+            nextMilestoneEl.textContent = `Próximo hito: ${nivelInfo.siguiente.nombre} en ${remaining} ${remaining === 1 ? 'día' : 'días'}`;
+        }
+    } else {
+        if (nextMilestoneEl) {
+            nextMilestoneEl.textContent = '¡Has alcanzado el máximo vínculo de confianza!';
+        }
+    }
+
+    if (progressFill) progressFill.style.width = `${pct}%`;
+    if (progressPercent) progressPercent.textContent = `${pct}%`;
+
+    // 2. Render Timeline (5 Levels)
+    const timelineList = document.getElementById('roadmap-timeline-list');
+    if (timelineList) {
+        const levelsBenefits = [
+            { level: 0, title: 'Extraños', minDias: 0, icon: '🌑', benefit: 'Inicio del viaje emocional. Conversación respetuosa descubriendo tus primeros gustos.' },
+            { level: 1, title: 'Conocidos', minDias: 2, icon: '🌒', benefit: 'Mayor fluidez y calidez. Se interesa proactivamente por tus rutinas diarias.' },
+            { level: 2, title: 'Amigos', minDias: 5, icon: '🌓', benefit: 'Uso de apodos afectuosos, humor compartido y recuerdos episódicos de pláticas pasadas.' },
+            { level: 3, title: 'Cercanos', minDias: 10, icon: '🌔', benefit: 'Revelaciones personales profundas, empatía activa ante tu estado de ánimo y consejos íntimos.' },
+            { level: 4, title: 'Íntimos', minDias: 20, icon: '🌕', benefit: 'Vínculo inquebrantable, complicidad total, confidencias secretas y máxima lealtad afectiva.' }
+        ];
+
+        timelineList.innerHTML = levelsBenefits.map(lvl => {
+            const isCompleted = dias >= lvl.minDias;
+            const isCurrent = nivelInfo.nivel === lvl.level;
+            const statusClass = isCurrent ? 'current' : (isCompleted ? 'completed' : 'locked');
+            const iconSymbol = isCurrent ? lvl.icon : (isCompleted ? '✓' : '🔒');
+
+            return `
+                <div class="roadmap-step-item ${statusClass}">
+                    <div class="step-status-indicator">${iconSymbol}</div>
+                    <div class="step-details">
+                        <div class="step-header-row">
+                            <span class="step-title">${lvl.title}</span>
+                            <span class="step-days-badge">${lvl.minDias === 0 ? 'Día 1' : `${lvl.minDias}+ días`}</span>
+                        </div>
+                        <p class="step-benefit-text">${lvl.benefit}</p>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // 3. Render Empathy Badges Grid
+    const badgeGrid = document.getElementById('empathy-badge-grid');
+    if (badgeGrid) {
+        const historyLen = brain.history ? brain.history.length : 0;
+        const afinidad = brain.afinidad || 50;
+        const episodiosCount = (brain.memoryState && brain.memoryState.episodios) ? brain.memoryState.episodios.length : 0;
+
+        const badges = [
+            {
+                id: 'first_contact',
+                icon: '⚡',
+                name: 'Primer Encuentro',
+                desc: 'Iniciar tus primeras conversaciones y dar el primer paso en la relación.',
+                unlocked: historyLen > 0 || dias >= 1
+            },
+            {
+                id: 'true_chemistry',
+                icon: '💖',
+                name: 'Química Real',
+                desc: 'Lograr una afinidad igual o superior al 70% a través de empatía recíproca.',
+                unlocked: afinidad >= 70
+            },
+            {
+                id: 'morning_buddy',
+                icon: '☕',
+                name: 'Compañero de Mañanas',
+                desc: 'Compartir charlas al comenzar el día y mantener una rutina activa.',
+                unlocked: dias >= 2
+            },
+            {
+                id: 'night_owl',
+                icon: '🌙',
+                name: 'Noctámbulo',
+                desc: 'Tener conversaciones íntimas durante la madrugada o altas horas de la noche.',
+                unlocked: dias >= 3 || historyLen >= 15
+            },
+            {
+                id: 'intimate_reader',
+                icon: '📖',
+                name: 'Lector Íntimo',
+                desc: 'Construir una memoria compartida con anécdotas y episodios en el diario.',
+                unlocked: episodiosCount > 0 || historyLen >= 20
+            },
+            {
+                id: 'unbreakable_bond',
+                icon: '🛡️',
+                name: 'Vínculo Inquebrantable',
+                desc: 'Alcanzar los niveles más altos de confianza y cercanía emocional.',
+                unlocked: nivelInfo.nivel >= 3
+            }
+        ];
+
+        badgeGrid.innerHTML = badges.map(b => {
+            const statusClass = b.unlocked ? 'unlocked' : 'locked';
+            const statusText = b.unlocked ? 'Desbloqueada' : 'Bloqueada';
+
+            return `
+                <div class="empathy-badge-card ${statusClass}">
+                    <div class="badge-icon-box">${b.icon}</div>
+                    <div class="badge-info">
+                        <div class="badge-name-row">
+                            <span class="badge-name">${b.name}</span>
+                            <span class="badge-status-tag ${statusClass}">${statusText}</span>
+                        </div>
+                        <p class="badge-desc">${b.desc}</p>
+                    </div>
+                </div>
+            `;
+        }).join('');
     }
 }

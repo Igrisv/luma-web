@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="melora-grad-main" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c084fc"/>
+      <stop offset="50%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#38bdf8"/>
+    </linearGradient>
+    <linearGradient id="melora-grad-accent" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f43f5e"/>
+      <stop offset="100%" stop-color="#a855f7"/>
+    </linearGradient>
+    <radialGradient id="melora-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9"/>
+      <stop offset="40%" stop-color="#8b5cf6" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="melora-filter-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="16" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Ambient Backdrop Aura Glow -->
+  <circle cx="256" cy="256" r="180" fill="url(#melora-glow)" opacity="0.3"/>
+
+  <!-- Geometric Interlocking Orbit / Infinity Arc Loop -->
+  <path d="M 160 330 C 120 250 140 160 220 140 C 300 120 370 170 380 250 C 390 330 310 390 230 370 C 170 355 140 300 160 250" 
+        stroke="url(#melora-grad-accent)" stroke-width="20" stroke-linecap="round" opacity="0.5" />
+
+  <!-- Outer Glass Ring Aperture -->
+  <circle cx="256" cy="256" r="200" stroke="url(#melora-grad-main)" stroke-width="12" stroke-opacity="0.3" stroke-dasharray="280 40 120 40"/>
+
+  <!-- Minimalist Celestial Sparkle Star (Core Emblem) -->
+  <path d="M 256 72 C 256 172 340 256 440 256 C 340 256 256 340 256 440 C 256 340 172 256 72 256 C 172 256 256 172 256 72 Z" 
+        fill="url(#melora-grad-main)" filter="url(#melora-filter-glow)"/>
+
+  <!-- Central Diamond Highlight Spark -->
+  <path d="M 256 160 C 256 212 300 256 352 256 C 300 256 256 300 256 352 C 256 300 212 256 160 256 C 212 256 256 212 256 160 Z" 
+        fill="#FFFFFF" opacity="0.95"/>
+
+  <!-- Orbiting Companion Sparkle (Top-Right) -->
+  <path d="M 390 90 C 390 115 410 135 435 135 C 410 135 390 155 390 180 C 390 155 370 135 345 135 C 370 135 390 115 390 90 Z" 
+        fill="#38bdf8" opacity="0.85"/>
+</svg>

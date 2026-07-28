@@ -47,7 +47,7 @@ export function renderGallery(charactersData, activeCategory = 'all', searchQuer
                     <img class="card-img" src="${c.avatar_url}" alt="${c.name}">
                     ${isLockedByTier ? `<span class="lock-overlay-badge">🔒 Premium</span>` : ''}
                     <span class="card-badge ${c.is_official ? 'tier-premium' : 'tier-free'}">
-                        ${c.is_official ? '🎭 Oficial' : '🎨 Creado'}
+                        ${c.is_official ? 'Oficial' : 'Creado'}
                     </span>
                 </div>
                 <div class="card-body">
@@ -56,7 +56,7 @@ export function renderGallery(charactersData, activeCategory = 'all', searchQuer
                     <div class="card-desc">${c.description || c.first_message || ''}</div>
                     <div class="card-footer">
                         <button class="btn ${isLockedByTier ? 'btn-secondary' : 'btn-primary'} start-chat-btn" style="width: 100%; font-size: 0.8rem; padding: 0.45rem;">
-                            ${isLockedByTier ? '🔒 Desbloquear con Premium' : '💬 Chatear Ahora'}
+                            ${isLockedByTier ? 'Desbloquear con Premium' : 'Iniciar Chat'}
                         </button>
                     </div>
                 </div>

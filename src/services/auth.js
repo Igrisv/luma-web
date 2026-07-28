@@ -162,14 +162,17 @@ export function initAuthUI() {
     });
   }
 
-  if (googleBtn) {
-    googleBtn.addEventListener('click', async () => {
-      hideError();
-      try {
-        await signInWithGoogle();
-      } catch (err) {
-        showError(err.message || 'Error con Google');
-      }
-    });
-  }
+  const googleRegisterBtn = document.getElementById('auth-google-register-btn');
+
+  const handleGoogleSignIn = async () => {
+    hideError();
+    try {
+      await signInWithGoogle();
+    } catch (err) {
+      showError(err.message || 'Error con Google');
+    }
+  };
+
+  if (googleBtn) googleBtn.addEventListener('click', handleGoogleSignIn);
+  if (googleRegisterBtn) googleRegisterBtn.addEventListener('click', handleGoogleSignIn);
 }

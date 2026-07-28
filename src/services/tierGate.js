@@ -1,7 +1,8 @@
 const TIER_FEATURES = {
   free: {
     maxMessagesPerDay: 15,
-    arquetipos: ['pareja', 'rival', 'amigaToxica', 'mejorAmigo'],
+    arquetipos: ['mejorAmigo'], // Mejor Amigo/a is the free archetype for Free plan
+    custom3DModel: false, // 🔒 Custom 3D GLB models locked for Free plan
     autonomousMessages: false,
     evolution: false,
     multipleCharacters: true,
@@ -11,7 +12,8 @@ const TIER_FEATURES = {
   },
   premium: {
     maxMessagesPerDay: Infinity,
-    arquetipos: ['pareja', 'amigaToxica', 'rival', 'ex', 'mejorAmigo'],
+    arquetipos: ['pareja', 'rival', 'amigaToxica', 'ex', 'mejorAmigo'],
+    custom3DModel: true, // ✓ Custom 3D GLB models unlocked for Premium
     autonomousMessages: true,
     evolution: true,
     multipleCharacters: true,
@@ -21,7 +23,8 @@ const TIER_FEATURES = {
   },
   obsesion: {
     maxMessagesPerDay: Infinity,
-    arquetipos: ['pareja', 'amigaToxica', 'rival', 'ex', 'mejorAmigo'],
+    arquetipos: ['pareja', 'rival', 'amigaToxica', 'ex', 'mejorAmigo'],
+    custom3DModel: true, // ✓ Custom 3D GLB models unlocked for Obsesión
     autonomousMessages: true,
     evolution: true,
     multipleCharacters: true,
@@ -70,6 +73,7 @@ export function getRemainingMessages(usedToday) {
 export function applyTierGating() {
   const features = getFeatures();
 
+  // 1. Gallery Character Cards
   document.querySelectorAll('.character-card').forEach(card => {
     const id = card.dataset.id;
     if (id && !features.arquetipos.includes(id)) {
@@ -77,7 +81,7 @@ export function applyTierGating() {
       if (!card.querySelector('.lock-overlay')) {
         const overlay = document.createElement('div');
         overlay.className = 'lock-overlay';
-        overlay.innerHTML = '🔒 Premium';
+        overlay.innerHTML = '🔒 Plan Premium Requerido';
         overlay.addEventListener('click', (e) => {
           e.stopPropagation();
           const billingModal = document.getElementById('billingModal') || document.getElementById('billing-modal');
@@ -91,6 +95,41 @@ export function applyTierGating() {
       if (overlay) overlay.remove();
     }
   });
+
+  // 2. Creator Wizard Archetype Selection Grid Cards
+  document.querySelectorAll('.archetype-select-card').forEach(card => {
+    const archetype = card.dataset.archetype;
+    const isAllowed = canUseArchetype(archetype);
+    const badge = card.querySelector('.arc-badge');
+
+    if (isAllowed) {
+      card.classList.remove('locked-arc');
+      if (badge) {
+        badge.className = 'arc-badge free';
+        badge.innerHTML = `✓ Disponible (${currentTier.toUpperCase()})`;
+      }
+    } else {
+      card.classList.add('locked-arc');
+      if (badge) {
+        badge.className = 'arc-badge lock';
+        badge.innerHTML = `🔒 Requiere Premium`;
+      }
+    }
+  });
+
+  // 3. Custom 3D Model Upload Controls Gating
+  const canCustom3D = canUse('custom3DModel');
+  const labelModel3d = document.querySelector('label[for="model3dFileInput"]');
+  const labelTexture = document.querySelector('label[for="textureFileInput"]');
+
+  if (labelModel3d) {
+    labelModel3d.classList.toggle('locked-action-pill', !canCustom3D);
+    labelModel3d.title = canCustom3D ? 'Subir Modelo 3D (.glb)' : '🔒 La carga de modelos 3D personalizados requiere Plan Premium';
+  }
+  if (labelTexture) {
+    labelTexture.classList.toggle('locked-action-pill', !canCustom3D);
+    labelTexture.title = canCustom3D ? 'Cargar / Asignar Texturas' : '🔒 La carga de texturas 3D personalizadas requiere Plan Premium';
+  }
 }
 
 export { TIER_FEATURES };
