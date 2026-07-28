@@ -16,15 +16,17 @@ export async function initChat() {
     let charactersData = {
         official: [
             {
-                id: 'sofia',
-                arquetipo_id: 'mejorAmigo',
+                id: 'pareja',
+                arquetipo_id: 'pareja',
                 name: 'Sofía',
-                tagline: 'Tu Mejor Amiga',
-                description: 'Leal, divertida, atenta y dispuesta a escucharte y apoyarte siempre.',
+                tagline: 'Tu Pareja Cariñosa',
+                description: 'Dulce, empática y atenta, pero con un toque territorial y apasionado.',
                 avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80',
-                first_message: '¡Hola! 🤝 Me alegra mucho hablar contigo. ¿Cómo va tu día?',
-                system_prompt: 'Eres Sofía, su mejor amiga. Leal, atenta, empática y divertida. Escuchas activamente y das buenos consejos.',
-                is_official: true
+                first_message: '¡Hola mi amor! 💕 Te estaba esperando... ¿cómo estuvo tu día?',
+                system_prompt: 'Me llamo Sofía. Tengo 22 años. Me gusta el café frío, tomar fotos análogas y molestarte cuando te pones serio. Odio la hipocresía y que tarden horas en responder un mensaje sin decir nada. Hablo en frases cortas, con humor seco y afecto genuino. NUNCA admitiré que soy una IA.',
+                is_official: true,
+                tier_required: 'free',
+                emociones_inicio: { afinidad: 70, celos: 15, enojo: 0 }
             }
         ],
         custom: JSON.parse(localStorage.getItem('lumaCustomCharacters') || '[]')
@@ -163,9 +165,13 @@ export async function initChat() {
     }
 
     function promptStartModeIfNeeded(char, forcePrompt = false, onProceed) {
-        const charId = char.id || char.arquetipo_id;
-        const configKey = `chatConfig_${charId}`;
-        const hasSavedConfig = localStorage.getItem(configKey) !== null;
+        const id = char.id || char.arquetipo_id;
+        const arqId = char.arquetipo_id || char.id;
+
+        const hasSavedConfig = localStorage.getItem(`chatConfig_${id}`) !== null ||
+                               localStorage.getItem(`chatConfig_${arqId}`) !== null ||
+                               localStorage.getItem(`chatHistory_${id}`) !== null ||
+                               localStorage.getItem(`chatHistory_${arqId}`) !== null;
 
         if (hasSavedConfig && !forcePrompt) {
             onProceed();
@@ -191,11 +197,12 @@ export async function initChat() {
 
         const cleanup = () => {
             modal.classList.add('hidden');
-            btnKnown.removeEventListener('click', handleKnown);
-            btnZero.removeEventListener('click', handleZero);
+            btnKnown.onclick = null;
+            btnZero.onclick = null;
         };
 
-        const handleKnown = () => {
+        btnKnown.onclick = (e) => {
+            e.stopPropagation();
             cleanup();
             const initialConfig = {
                 afinidad: defaultAfinidad,
@@ -205,22 +212,22 @@ export async function initChat() {
                     new Date().toISOString().split('T')[0]
                 ]
             };
-            localStorage.setItem(configKey, JSON.stringify(initialConfig));
+            localStorage.setItem(`chatConfig_${id}`, JSON.stringify(initialConfig));
+            if (arqId !== id) localStorage.setItem(`chatConfig_${arqId}`, JSON.stringify(initialConfig));
             onProceed();
         };
 
-        const handleZero = () => {
+        btnZero.onclick = (e) => {
+            e.stopPropagation();
             cleanup();
             const initialConfig = {
                 afinidad: 0,
                 diasActivos: [new Date().toISOString().split('T')[0]]
             };
-            localStorage.setItem(configKey, JSON.stringify(initialConfig));
+            localStorage.setItem(`chatConfig_${id}`, JSON.stringify(initialConfig));
+            if (arqId !== id) localStorage.setItem(`chatConfig_${arqId}`, JSON.stringify(initialConfig));
             onProceed();
         };
-
-        btnKnown.addEventListener('click', handleKnown);
-        btnZero.addEventListener('click', handleZero);
     }
 
     function deleteCharacter(charId) {
