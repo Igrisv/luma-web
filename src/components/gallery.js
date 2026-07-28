@@ -37,9 +37,10 @@ export function renderGallery(charactersData, activeCategory = 'all', searchQuer
 
     grid.innerHTML = filtered.map(c => {
         const isLockedByTier = isCharacterLocked(c);
+        const charKey = c.id || c.arquetipo_id;
 
         return `
-            <div class="character-card ${isLockedByTier ? 'locked' : ''}" data-id="${c.id}" data-locked="${isLockedByTier}">
+            <div class="character-card ${isLockedByTier ? 'locked' : ''}" data-id="${charKey}" data-locked="${isLockedByTier}">
                 <div class="card-img-wrapper">
                     <img class="card-img" src="${c.avatar_url}" alt="${c.name}">
                     ${isLockedByTier ? `<span class="lock-overlay-badge">🔒 Premium</span>` : ''}
@@ -66,7 +67,7 @@ export function renderGallery(charactersData, activeCategory = 'all', searchQuer
         card.addEventListener('click', () => {
             const charId = card.dataset.id;
             const isLocked = card.dataset.locked === 'true';
-            const targetChar = allChars.find(c => c.id === charId);
+            const targetChar = allChars.find(c => (c.id || c.arquetipo_id) === charId || c.id === charId || c.arquetipo_id === charId);
 
             if (isLocked) {
                 const billingModal = document.getElementById('billingModal') || document.getElementById('billing-modal');

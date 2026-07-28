@@ -14,8 +14,9 @@ export function renderSidebarChatList(activeCharacters, activeCharId, onSelectCh
     }
 
     chatList.innerHTML = activeCharacters.map(c => {
-        const isActive = c.id === activeCharId || c.arquetipo_id === activeCharId;
-        const configKey = `chatConfig_${c.id || c.arquetipo_id}`;
+        const charKey = c.id || c.arquetipo_id;
+        const isActive = charKey === activeCharId || c.id === activeCharId || c.arquetipo_id === activeCharId;
+        const configKey = `chatConfig_${charKey}`;
         const savedConfig = JSON.parse(localStorage.getItem(configKey) || '{}');
         const afinidad = savedConfig.afinidad !== undefined ? savedConfig.afinidad : (c.emociones_inicio ? c.emociones_inicio.afinidad : 50);
 
@@ -24,7 +25,7 @@ export function renderSidebarChatList(activeCharacters, activeCharId, onSelectCh
         const badgeInfo = getEmotionalBadge(savedConfig);
 
         return `
-            <div class="chat-item ${isActive ? 'active' : ''} ${isLocked ? 'locked' : ''}" data-id="${c.id}">
+            <div class="chat-item ${isActive ? 'active' : ''} ${isLocked ? 'locked' : ''}" data-id="${charKey}">
                 <div class="avatar-wrapper">
                     <img class="avatar-sm" src="${c.avatar_url}" alt="${c.name}">
                     <span class="status-dot" style="background:${badgeInfo.color}; box-shadow: 0 0 6px ${badgeInfo.color}"></span>
@@ -34,7 +35,7 @@ export function renderSidebarChatList(activeCharacters, activeCharId, onSelectCh
                         <span>${c.name}</span>
                         <div style="display:flex; align-items:center; gap:4px;">
                             ${isLocked ? `<span style="font-size:0.7rem; color:var(--accent-rose);">🔒</span>` : ''}
-                            <button class="btn-delete-chat-item" data-id="${c.id}" title="Eliminar conversación">🗑️</button>
+                            <button class="btn-delete-chat-item" data-id="${charKey}" title="Eliminar conversación">🗑️</button>
                         </div>
                     </div>
                     <div class="chat-item-sub">
@@ -49,7 +50,7 @@ export function renderSidebarChatList(activeCharacters, activeCharId, onSelectCh
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
             const charId = btn.dataset.id;
-            if (onDeleteCharacter) onDeleteCharacter(charId);
+            if (onDeleteCharacter && charId) onDeleteCharacter(charId);
         });
     });
 
@@ -57,7 +58,7 @@ export function renderSidebarChatList(activeCharacters, activeCharId, onSelectCh
         item.addEventListener('click', (e) => {
             if (e.target.closest('.btn-delete-chat-item')) return;
             const charId = item.dataset.id;
-            const targetChar = activeCharacters.find(c => c.id === charId);
+            const targetChar = activeCharacters.find(c => (c.id || c.arquetipo_id) === charId || c.id === charId || c.arquetipo_id === charId);
             if (targetChar && onSelectCharacter) {
                 onSelectCharacter(targetChar);
             }

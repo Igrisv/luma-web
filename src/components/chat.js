@@ -237,34 +237,42 @@ export async function initChat() {
     }
 
     function deleteCharacter(charId) {
+        if (!charId) return;
         const all = [...charactersData.official, ...charactersData.custom];
-        const targetChar = all.find(c => c.id === charId || c.arquetipo_id === charId);
+        const targetChar = all.find(c => (c.id || c.arquetipo_id) === charId || c.id === charId || c.arquetipo_id === charId);
         const name = targetChar ? targetChar.name : 'este personaje';
 
         if (!confirm(`¿Eliminar la conversación con ${name}?`)) return;
 
         const targetKey = targetChar ? (targetChar.id || targetChar.arquetipo_id) : charId;
-        activeChatIds = activeChatIds.filter(id => id !== charId && id !== targetKey && id !== (targetChar ? targetChar.arquetipo_id : ''));
+        const targetArq = targetChar ? targetChar.arquetipo_id : null;
+        const targetId = targetChar ? targetChar.id : null;
+
+        activeChatIds = activeChatIds.filter(id => id !== charId && id !== targetKey && id !== targetArq && id !== targetId);
         saveActiveChatIds();
 
         localStorage.removeItem(`chatConfig_${charId}`);
         localStorage.removeItem(`chatHistory_${charId}`);
-        if (targetChar && targetChar.arquetipo_id) {
-            localStorage.removeItem(`chatConfig_${targetChar.arquetipo_id}`);
-            localStorage.removeItem(`chatHistory_${targetChar.arquetipo_id}`);
+        if (targetKey) {
+            localStorage.removeItem(`chatConfig_${targetKey}`);
+            localStorage.removeItem(`chatHistory_${targetKey}`);
+        }
+        if (targetArq) {
+            localStorage.removeItem(`chatConfig_${targetArq}`);
+            localStorage.removeItem(`chatHistory_${targetArq}`);
         }
 
         if (targetChar && !targetChar.is_official) {
-            charactersData.custom = charactersData.custom.filter(c => c.id !== charId);
+            charactersData.custom = charactersData.custom.filter(c => (c.id || c.arquetipo_id) !== targetKey);
             localStorage.setItem('lumaCustomCharacters', JSON.stringify(charactersData.custom));
-            apiFetch(`/api/characters/${charId}`, { method: 'DELETE' }).catch(() => {});
+            apiFetch(`/api/characters/${targetKey}`, { method: 'DELETE' }).catch(() => {});
         }
 
         showToast(`Conversación con ${name} eliminada.`, 'info');
 
         const remainingActive = getActiveCharacters();
 
-        if (activeCharId === charId || (targetChar && activeCharId === targetChar.arquetipo_id)) {
+        if (activeCharId === charId || activeCharId === targetKey || activeCharId === targetArq || activeCharId === targetId) {
             if (remainingActive.length > 0) {
                 selectCharacter(remainingActive[0]);
             } else {
