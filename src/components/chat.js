@@ -141,7 +141,68 @@ export async function initChat() {
         });
     }
 
-    function selectCharacter(char) {
+    function promptStartModeIfNeeded(char, forcePrompt = false, onProceed) {
+        const charId = char.id || char.arquetipo_id;
+        const configKey = `chatConfig_${charId}`;
+        const hasSavedConfig = localStorage.getItem(configKey) !== null;
+
+        if (hasSavedConfig && !forcePrompt) {
+            onProceed();
+            return;
+        }
+
+        const modal = document.getElementById('start-mode-modal');
+        const titleEl = document.getElementById('start-mode-char-name');
+        const affinityTag = document.getElementById('start-mode-affinity-tag');
+        const btnKnown = document.getElementById('btn-start-known');
+        const btnZero = document.getElementById('btn-start-zero');
+
+        if (!modal || !btnKnown || !btnZero) {
+            onProceed();
+            return;
+        }
+
+        const defaultAfinidad = char.emociones_inicio?.afinidad !== undefined ? char.emociones_inicio.afinidad : 70;
+        if (titleEl) titleEl.textContent = `Iniciar Historia con ${char.name}`;
+        if (affinityTag) affinityTag.textContent = `Afinidad ${defaultAfinidad}%`;
+
+        modal.classList.remove('hidden');
+
+        const cleanup = () => {
+            modal.classList.add('hidden');
+            btnKnown.removeEventListener('click', handleKnown);
+            btnZero.removeEventListener('click', handleZero);
+        };
+
+        const handleKnown = () => {
+            cleanup();
+            const initialConfig = {
+                afinidad: defaultAfinidad,
+                diasActivos: [
+                    new Date(Date.now() - 2 * 86400000).toISOString().split('T')[0],
+                    new Date(Date.now() - 1 * 86400000).toISOString().split('T')[0],
+                    new Date().toISOString().split('T')[0]
+                ]
+            };
+            localStorage.setItem(configKey, JSON.stringify(initialConfig));
+            onProceed();
+        };
+
+        const handleZero = () => {
+            cleanup();
+            const initialConfig = {
+                afinidad: 0,
+                diasActivos: [new Date().toISOString().split('T')[0]]
+            };
+            localStorage.setItem(configKey, JSON.stringify(initialConfig));
+            onProceed();
+        };
+
+        btnKnown.addEventListener('click', handleKnown);
+        btnZero.addEventListener('click', handleZero);
+    }
+
+    function selectCharacter(char, forcePrompt = false) {
         const currentTier = getTier();
         const isLockedByTier = (char.tier_required === 'premium' && currentTier === 'free') ||
                                (char.tier_required === 'obsesion' && currentTier !== 'obsesion') ||
@@ -154,74 +215,76 @@ export async function initChat() {
             return;
         }
 
-        currentCharacter = char;
-        activeCharId = char.id || char.arquetipo_id;
-        localStorage.setItem('lumaActiveCharacter', activeCharId);
+        promptStartModeIfNeeded(char, forcePrompt, () => {
+            currentCharacter = char;
+            activeCharId = char.id || char.arquetipo_id;
+            localStorage.setItem('lumaActiveCharacter', activeCharId);
 
-        // Sync 3D model with main stage
-        window.dispatchEvent(new CustomEvent('loadCharacterModel', {
-            detail: { model3d_url: char.model3d_url || '' }
-        }));
+            // Sync 3D model with main stage
+            window.dispatchEvent(new CustomEvent('loadCharacterModel', {
+                detail: { model3d_url: char.model3d_url || '' }
+            }));
 
-        brain = new ChatBrain(char.id, char.arquetipo_id);
-        if (char.system_prompt) brain.systemPrompt = char.system_prompt;
-        if (char.sensitivities) brain.sensitivities = char.sensitivities;
+            brain = new ChatBrain(char.id, char.arquetipo_id);
+            if (char.system_prompt) brain.systemPrompt = char.system_prompt;
+            if (char.sensitivities) brain.sensitivities = char.sensitivities;
 
-        const headerAvatar = document.getElementById('chatHeaderAvatar');
-        const headerName = document.getElementById('chatHeaderName');
-        const headerTagline = document.getElementById('chatHeaderTagline');
-        const affinityScore = document.getElementById('affinityScore');
-        const emotionalDot = document.getElementById('chatEmotionalDot');
+            const headerAvatar = document.getElementById('chatHeaderAvatar');
+            const headerName = document.getElementById('chatHeaderName');
+            const headerTagline = document.getElementById('chatHeaderTagline');
+            const affinityScore = document.getElementById('affinityScore');
+            const emotionalDot = document.getElementById('chatEmotionalDot');
 
-        if (headerAvatar) headerAvatar.src = char.avatar_url;
-        if (headerName) headerName.textContent = char.name;
-        if (headerTagline) headerTagline.textContent = char.tagline || 'Acompañante AI';
+            if (headerAvatar) headerAvatar.src = char.avatar_url;
+            if (headerName) headerName.textContent = char.name;
+            if (headerTagline) headerTagline.textContent = char.tagline || 'Acompañante AI';
 
-        const badgeInfo = getEmotionalBadge(brain);
-        if (affinityScore) affinityScore.textContent = `${brain.afinidad}%`;
-        if (emotionalDot) {
-            emotionalDot.style.background = badgeInfo.color;
-            emotionalDot.style.boxShadow = `0 0 6px ${badgeInfo.color}`;
-        }
-
-        // Populate Chat Hero Card
-        const heroAvatar = document.getElementById('heroCardAvatar');
-        const heroName = document.getElementById('heroCardName');
-        const heroTagline = document.getElementById('heroCardTagline');
-        const heroArchetype = document.getElementById('heroCardArchetype');
-        const heroAffinity = document.getElementById('heroCardAffinity');
-
-        if (heroAvatar) heroAvatar.src = char.avatar_url;
-        if (heroName) heroName.textContent = char.name;
-        if (heroTagline) heroTagline.textContent = char.description || char.tagline || '';
-        
-        const archetypeNames = {
-            pareja: 'Pareja Cariñosa',
-            rival: 'Rival Competitiva',
-            amigaToxica: 'Amiga Tóxica',
-            ex: 'Historial Compartido',
-            mejorAmigo: 'Mejor Amigo/a'
-        };
-        if (heroArchetype) heroArchetype.textContent = archetypeNames[char.arquetipo_id] || 'Acompañante';
-        if (heroAffinity) heroAffinity.textContent = `${brain.afinidad}% Afinidad`;
-
-        const messagesArea = document.getElementById('messagesArea');
-        const messagesList = document.getElementById('messagesList') || messagesArea;
-        
-        if (messagesArea && messagesList) {
-            if (brain.history && brain.history.length > 0) {
-                renderHistory(brain, messagesArea);
-            } else {
-                messagesList.innerHTML = '';
-                const initialMsg = char.first_message || '¡Hola! Me alegra hablar contigo.';
-                brain.addMessage('assistant', `<respuesta>${initialMsg}</respuesta>`);
-                renderHistory(brain, messagesArea);
+            const badgeInfo = getEmotionalBadge(brain);
+            if (affinityScore) affinityScore.textContent = `${brain.afinidad}%`;
+            if (emotionalDot) {
+                emotionalDot.style.background = badgeInfo.color;
+                emotionalDot.style.boxShadow = `0 0 6px ${badgeInfo.color}`;
             }
-        }
 
-        renderQuickStarters(char.arquetipo_id);
-        renderSidebarChatList(charactersData, activeCharId, selectCharacter, deleteCharacter);
-        switchView('chat');
+            // Populate Chat Hero Card
+            const heroAvatar = document.getElementById('heroCardAvatar');
+            const heroName = document.getElementById('heroCardName');
+            const heroTagline = document.getElementById('heroCardTagline');
+            const heroArchetype = document.getElementById('heroCardArchetype');
+            const heroAffinity = document.getElementById('heroCardAffinity');
+
+            if (heroAvatar) heroAvatar.src = char.avatar_url;
+            if (heroName) heroName.textContent = char.name;
+            if (heroTagline) heroTagline.textContent = char.description || char.tagline || '';
+
+            const archetypeNames = {
+                pareja: 'Pareja Cariñosa',
+                rival: 'Rival Competitiva',
+                amigaToxica: 'Amiga Tóxica',
+                ex: 'Historial Compartido',
+                mejorAmigo: 'Mejor Amigo/a'
+            };
+            if (heroArchetype) heroArchetype.textContent = archetypeNames[char.arquetipo_id] || 'Acompañante';
+            if (heroAffinity) heroAffinity.textContent = `${brain.afinidad}% Afinidad`;
+
+            const messagesArea = document.getElementById('messagesArea');
+            const messagesList = document.getElementById('messagesList') || messagesArea;
+            
+            if (messagesArea && messagesList) {
+                if (brain.history && brain.history.length > 0) {
+                    renderHistory(brain, messagesArea);
+                } else {
+                    messagesList.innerHTML = '';
+                    const initialMsg = char.first_message || '¡Hola! Me alegra hablar contigo.';
+                    brain.addMessage('assistant', `<respuesta>${initialMsg}</respuesta>`);
+                    renderHistory(brain, messagesArea);
+                }
+            }
+
+            renderQuickStarters(char.arquetipo_id);
+            renderSidebarChatList(charactersData, activeCharId, selectCharacter, deleteCharacter);
+            switchView('chat');
+        });
     }
 
     renderGallery(charactersData, 'all', '', selectCharacter);

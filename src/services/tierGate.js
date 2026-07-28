@@ -1,7 +1,7 @@
 const TIER_FEATURES = {
   free: {
     maxMessagesPerDay: 15,
-    arquetipos: ['mejorAmigo'], // Mejor Amigo/a is the free archetype for Free plan
+    arquetipos: ['pareja', 'rival', 'amigaToxica', 'ex', 'mejorAmigo'], // All official archetypes available for Free tier
     custom3DModel: false, // 🔒 Custom 3D GLB models locked for Free plan
     autonomousMessages: false,
     evolution: false,

@@ -346,13 +346,15 @@ export function initConfigPanel(brain, closeAllPanels, messagesBox) {
     const clearConfigBtn = document.getElementById('clear-config-btn');
     if (clearConfigBtn) {
         clearConfigBtn.addEventListener('click', () => {
-            if (confirm('¿Estás seguro de borrar el historial de conversación con este personaje?')) {
+            if (confirm('¿Estás seguro de reiniciar la historia con este personaje? Se borrará la memoria y podrás elegir el modo de relación inicial nuevamente.')) {
+                const charId = brain.characterId;
+                localStorage.removeItem(`chatConfig_${charId}`);
+                localStorage.removeItem(`chatHistory_${charId}`);
                 brain.history = [];
-                brain.saveState();
                 if (messagesBox) messagesBox.innerHTML = '';
                 closeAllPanels();
-                brain.updateBrainUI();
-                showToast('Historial del personaje reiniciado.', 'info');
+                showToast('Historial y memoria borrados.', 'info');
+                window.location.reload();
             }
         });
     }

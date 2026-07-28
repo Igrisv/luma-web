@@ -1225,6 +1225,42 @@
         </div>
       </div>
     </div>
+  <!-- ========== MODAL MODOS DE INICIO DE RELACIÓN ========== -->
+  <div id="start-mode-modal" class="hidden">
+    <div class="start-mode-dialog">
+      <div class="start-mode-header">
+        <div class="start-mode-icon">🤝</div>
+        <div>
+          <h3 class="start-mode-title" id="start-mode-char-name">Iniciar Historia con Personaje</h3>
+          <p class="start-mode-subtitle">Elige cómo quieres que comience su relación</p>
+        </div>
+      </div>
+      <div class="start-mode-options">
+        <!-- Option A: Ya nos conocemos -->
+        <button type="button" class="start-mode-card" id="btn-start-known">
+          <div class="mode-card-icon">✨</div>
+          <div class="mode-card-text">
+            <div class="mode-card-title-row">
+              <span class="mode-card-title">Ya nos conocemos</span>
+              <span class="mode-badge-pill known" id="start-mode-affinity-tag">Afinidad 70%</span>
+            </div>
+            <p class="mode-card-desc">Comienzan con historia compartida, tono afectuoso y confianza inicial previa.</p>
+          </div>
+        </button>
+
+        <!-- Option B: Desde cero -->
+        <button type="button" class="start-mode-card" id="btn-start-zero">
+          <div class="mode-card-icon">🍃</div>
+          <div class="mode-card-text">
+            <div class="mode-card-title-row">
+              <span class="mode-card-title">Conocernos desde 0</span>
+              <span class="mode-badge-pill zero">Afinidad 0%</span>
+            </div>
+            <p class="mode-card-desc">Comienzan como completos extraños. Deberás ganarte su confianza paso a paso desde el primer mensaje.</p>
+          </div>
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- Script Modules -->
