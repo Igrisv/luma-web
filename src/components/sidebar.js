@@ -2,13 +2,11 @@
 // sidebar.js — Sidebar Multi-Chat List Component with Lock Badges
 // ═══════════════════════════════════════════════════════════
 import { getEmotionalBadge } from '../services/cardParser.js';
-import { canUseArchetype, getTier } from '../services/tierGate.js';
+import { isCharacterLocked } from '../services/tierGate.js';
 
 export function renderSidebarChatList(activeCharacters, activeCharId, onSelectCharacter, onDeleteCharacter) {
     const chatList = document.getElementById('chatList');
     if (!chatList) return;
-
-    const currentTier = getTier();
 
     if (!activeCharacters || activeCharacters.length === 0) {
         chatList.innerHTML = '<div style="font-size: 0.78rem; color: var(--text-muted); padding: 0.75rem; text-align: center;">Sin conversaciones activas.</div>';
@@ -21,9 +19,7 @@ export function renderSidebarChatList(activeCharacters, activeCharId, onSelectCh
         const savedConfig = JSON.parse(localStorage.getItem(configKey) || '{}');
         const afinidad = savedConfig.afinidad !== undefined ? savedConfig.afinidad : (c.emociones_inicio ? c.emociones_inicio.afinidad : 50);
 
-        const isLocked = (c.tier_required === 'premium' && currentTier === 'free') ||
-                         (c.tier_required === 'obsesion' && currentTier !== 'obsesion') ||
-                         (!canUseArchetype(c.arquetipo_id) && currentTier === 'free');
+        const isLocked = isCharacterLocked(c);
 
         const badgeInfo = getEmotionalBadge(savedConfig);
 

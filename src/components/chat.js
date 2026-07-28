@@ -10,7 +10,7 @@ import {
     renderHistory, createMessageElement, showToast, playPopSound
 } from './ui.js';
 import { apiFetch } from '../services/auth.js';
-import { getTier, canUseArchetype } from '../services/tierGate.js';
+import { getTier, canUseArchetype, isCharacterLocked } from '../services/tierGate.js';
 
 export async function initChat() {
     let charactersData = {
@@ -273,12 +273,9 @@ export async function initChat() {
     }
 
     function selectCharacter(char, forcePrompt = false) {
-        const currentTier = getTier();
-        const isLockedByTier = (char.tier_required === 'premium' && currentTier === 'free') ||
-                               (char.tier_required === 'obsesion' && currentTier !== 'obsesion') ||
-                               (!canUseArchetype(char.arquetipo_id) && currentTier === 'free');
+        if (!char) return;
 
-        if (isLockedByTier) {
+        if (isCharacterLocked(char)) {
             const billingModal = document.getElementById('billingModal') || document.getElementById('billing-modal');
             if (billingModal) billingModal.classList.remove('hidden');
             showToast(`El personaje "${char.name}" requiere Plan Premium. Mejora tu plan para chatear.`, 'warning');
@@ -413,8 +410,14 @@ export async function initChat() {
     const closeBillingModal = document.getElementById('closeBillingModal');
     const billingModal = document.getElementById('billingModal');
 
-    if (tierBadge && billingModal) tierBadge.addEventListener('click', () => billingModal.classList.remove('hidden'));
-    if (closeBillingModal && billingModal) closeBillingModal.addEventListener('click', () => billingModal.classList.add('hidden'));
+    const deleteChatBtn = document.getElementById('deleteChatBtn');
+    if (deleteChatBtn) {
+        deleteChatBtn.addEventListener('click', () => {
+            if (activeCharId) {
+                deleteCharacter(activeCharId);
+            }
+        });
+    }
 
     initCreatorWizard(async (newCharData) => {
         const charId = `custom_${Date.now()}`;
@@ -655,12 +658,5 @@ export async function initChat() {
             selectCharacter,
             deleteCharacter
         );
-    }
-
-    const deleteChatBtn = document.getElementById('deleteChatBtn');
-    if (deleteChatBtn) {
-        deleteChatBtn.addEventListener('click', () => {
-            deleteCharacter(activeCharId);
-        });
     }
 }

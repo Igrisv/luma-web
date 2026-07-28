@@ -55,8 +55,17 @@ export function canUse(feature) {
 }
 
 export function canUseArchetype(archetypeId) {
+  if (!archetypeId) return true;
   const features = getFeatures();
-  return features.arquetipos.includes(archetypeId);
+  return features.arquetipos.includes(archetypeId) || archetypeId === 'custom' || archetypeId.startsWith('custom_') || archetypeId.startsWith('imported_');
+}
+
+export function isCharacterLocked(char) {
+  if (!char) return false;
+  if (!char.is_official) return false;
+  if (currentTier === 'free' && (char.tier_required === 'free' || !char.tier_required)) return false;
+  if (char.tier_required === 'obsesion' && currentTier !== 'obsesion') return true;
+  return false;
 }
 
 export function canCreateCustomBot(currentCustomCount) {

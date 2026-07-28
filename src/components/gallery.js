@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════
 // gallery.js — Hub / Character Gallery Component with Tier Gating
 // ═══════════════════════════════════════════════════════════
-import { canUseArchetype, getTier } from '../services/tierGate.js';
+import { isCharacterLocked } from '../services/tierGate.js';
 import { showToast } from './ui.js';
 
 export function renderGallery(charactersData, activeCategory = 'all', searchQuery = '', onSelectCharacter) {
@@ -11,7 +11,6 @@ export function renderGallery(charactersData, activeCategory = 'all', searchQuer
     const officialList = charactersData.official || [];
     const customList = charactersData.custom || [];
     const allChars = [...officialList, ...customList];
-    const currentTier = getTier();
 
     const q = searchQuery.toLowerCase().trim();
 
@@ -37,9 +36,7 @@ export function renderGallery(charactersData, activeCategory = 'all', searchQuer
     }
 
     grid.innerHTML = filtered.map(c => {
-        const isLockedByTier = (c.tier_required === 'premium' && currentTier === 'free') ||
-                               (c.tier_required === 'obsesion' && currentTier !== 'obsesion') ||
-                               (!canUseArchetype(c.arquetipo_id) && currentTier === 'free');
+        const isLockedByTier = isCharacterLocked(c);
 
         return `
             <div class="character-card ${isLockedByTier ? 'locked' : ''}" data-id="${c.id}" data-locked="${isLockedByTier}">
