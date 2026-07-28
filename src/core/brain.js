@@ -260,6 +260,33 @@ export class ChatBrain {
             let fullResponse = '';
             let buffer = '';
 
+            const processLine = (line) => {
+                const trimmed = line.trim();
+                if (!trimmed || trimmed === 'data: [DONE]') return;
+                let payloadStr = trimmed;
+                if (payloadStr.startsWith('data: ')) {
+                    payloadStr = payloadStr.slice(6).trim();
+                }
+                if (payloadStr === '[DONE]') return;
+
+                try {
+                    const data = JSON.parse(payloadStr);
+                    const content = (data.choices && data.choices[0]?.delta?.content) ||
+                                    (data.choices && data.choices[0]?.text) ||
+                                    data.content ||
+                                    (typeof data === 'string' ? data : '');
+                    if (content) {
+                        fullResponse += content;
+                        if (onChunk) onChunk(content);
+                    }
+                } catch (err) {
+                    if (!payloadStr.startsWith('{') && payloadStr) {
+                        fullResponse += payloadStr;
+                        if (onChunk) onChunk(payloadStr);
+                    }
+                }
+            };
+
             while (true) {
                 const { done, value } = await reader.read();
                 if (done) break;
@@ -268,18 +295,12 @@ export class ChatBrain {
                 buffer = lines.pop() || '';
 
                 for (const line of lines) {
-                    if (line.trim() === '' || line.trim() === 'data: [DONE]') continue;
-                    if (line.startsWith('data: ')) {
-                        try {
-                            const data = JSON.parse(line.slice(6));
-                            const content = data.choices && data.choices[0]?.delta?.content;
-                            if (content) {
-                                fullResponse += content;
-                                if (onChunk) onChunk(content);
-                            }
-                        } catch (err) {}
-                    }
+                    processLine(line);
                 }
+            }
+
+            if (buffer.trim()) {
+                processLine(buffer);
             }
 
             if (!fullResponse.trim()) {
@@ -308,7 +329,7 @@ REGLAS:
 3. Habla desde tu tono actual (Afinidad: ${this.afinidad}%, Celos: ${this.celos}%, Resentimiento: ${this.resentimiento}%).`;
 
         try {
-            const response = await apiFetch('/api/chat', {
+            const response = await apiFetch('/api/chat/completions', {
                 method: 'POST',
                 body: JSON.stringify({
                     messages: [
@@ -328,6 +349,27 @@ REGLAS:
             let diaryText = '';
             let buffer = '';
 
+            const processDiaryLine = (line) => {
+                const trimmed = line.trim();
+                if (!trimmed || trimmed === 'data: [DONE]') return;
+                let payloadStr = trimmed;
+                if (payloadStr.startsWith('data: ')) {
+                    payloadStr = payloadStr.slice(6).trim();
+                }
+                if (payloadStr === '[DONE]') return;
+
+                try {
+                    const data = JSON.parse(payloadStr);
+                    const content = (data.choices && data.choices[0]?.delta?.content) ||
+                                    (data.choices && data.choices[0]?.text) ||
+                                    data.content ||
+                                    (typeof data === 'string' ? data : '');
+                    if (content) diaryText += content;
+                } catch (e) {
+                    if (!payloadStr.startsWith('{') && payloadStr) diaryText += payloadStr;
+                }
+            };
+
             while (true) {
                 const { done, value } = await reader.read();
                 if (done) break;
@@ -335,15 +377,12 @@ REGLAS:
                 const lines = buffer.split('\n');
                 buffer = lines.pop() || '';
                 for (const line of lines) {
-                    if (line.trim() === '' || line.trim() === 'data: [DONE]') continue;
-                    if (line.startsWith('data: ')) {
-                        try {
-                            const data = JSON.parse(line.slice(6));
-                            const content = data.choices && data.choices[0]?.delta?.content;
-                            if (content) diaryText += content;
-                        } catch (e) {}
-                    }
+                    processDiaryLine(line);
                 }
+            }
+
+            if (buffer.trim()) {
+                processDiaryLine(buffer);
             }
 
             const cleanEntry = diaryText.trim() || 'Hoy fue un día extraño. A veces siento que no termino de descifrar qué busca cuando me habla...';
