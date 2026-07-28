@@ -2,7 +2,8 @@
 // core/brain.js — Estado, Memoria, Prompts, Parsing, LLM API
 // ═══════════════════════════════════════════════════════════
 import { apiFetch } from '../services/auth.js';
-import { getRemainingMessages, getFeatures } from '../services/tierGate.js';
+import { getTier, getRemainingMessages, getFeatures } from '../services/tierGate.js';
+import { showToast } from '../components/ui.js';
 import { ARQUETIPOS } from './brain/archetypes.js';
 import { NIVELES_CONFIANZA, getNivelInfoByDays, buildContextString, buildPostHistoryDirective } from './brain/prompts.js';
 import { injectTypos } from './brain/typos.js';
@@ -244,6 +245,7 @@ export class ChatBrain {
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
                 if (response.status === 429) {
+                    showToast('⚠️ Has alcanzado el límite diario de peticiones de mensajes. Mira un anuncio para recargar o suscríbete a Premium.', 'warning', 8000);
                     const rewardModal = document.getElementById('reward-modal');
                     if (rewardModal) {
                         rewardModal.classList.remove('hidden');
@@ -306,6 +308,14 @@ export class ChatBrain {
             if (!fullResponse.trim()) {
                 fullResponse = 'Me quedé pensando... ¿qué decías?';
                 if (onChunk) onChunk(fullResponse);
+            }
+
+            if (getTier() === 'free') {
+                this.dailyMessageCount = (this.dailyMessageCount || 0) + 1;
+                window.lumaDailyCount = this.dailyMessageCount;
+                if (this.dailyMessageCount >= 15) {
+                    showToast('⚠️ Has alcanzado tu límite diario de 15 peticiones de mensajes (Plan Free). Mira un anuncio o suscríbete a Premium para seguir hablando.', 'warning', 8000);
+                }
             }
 
             this.parseAIResponse(fullResponse);
