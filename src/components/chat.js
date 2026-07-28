@@ -71,11 +71,17 @@ export async function initChat() {
     }
 
     let allChars = [...charactersData.official, ...charactersData.custom];
-    let currentCharacter = activeCharId ? (allChars.find(c => c.id === activeCharId || c.arquetipo_id === activeCharId) || activeChars[0]) : null;
+    let currentCharacter = (activeCharId && allChars.find(c => c.id === activeCharId || c.arquetipo_id === activeCharId))
+                          || activeChars[0]
+                          || charactersData.official[0]
+                          || allChars[0];
 
-    let brain = new ChatBrain(currentCharacter.id, currentCharacter.arquetipo_id);
-    if (currentCharacter.system_prompt) brain.systemPrompt = currentCharacter.system_prompt;
-    if (currentCharacter.sensitivities) brain.sensitivities = currentCharacter.sensitivities;
+    const brainCharId = currentCharacter ? (currentCharacter.id || currentCharacter.arquetipo_id) : 'pareja';
+    const brainArqId = currentCharacter ? (currentCharacter.arquetipo_id || currentCharacter.id) : 'pareja';
+
+    let brain = new ChatBrain(brainCharId, brainArqId);
+    if (currentCharacter && currentCharacter.system_prompt) brain.systemPrompt = currentCharacter.system_prompt;
+    if (currentCharacter && currentCharacter.sensitivities) brain.sensitivities = currentCharacter.sensitivities;
 
     function getAdaptiveSuggestions(brainRef, archetypeId) {
         const hour = new Date().getHours();
