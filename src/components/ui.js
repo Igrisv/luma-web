@@ -10,6 +10,7 @@ import { initCreatorWizard } from './wizard.js';
 import { initCardImporter } from './importer.js';
 import { adManager } from '../services/adService.js';
 import { getTier } from '../services/tierGate.js';
+import { secureStorage } from '../core/secureStorage.js';
 
 export {
     parseCharacterCardPNG,
@@ -119,10 +120,13 @@ export function playHoverTickSound() {
 
 // ── View Switcher ───────────────────────────────────────────
 export function switchView(viewName) {
+    console.log('[DEBUG UI] switchView called with:', viewName);
     const galleryView = document.getElementById('galleryView');
     const chatView = document.getElementById('chatView');
     const btnGallery = document.getElementById('navSegmentGallery');
     const btnChat = document.getElementById('navSegmentChat');
+
+    console.log('[DEBUG UI] Elements found:', { galleryView: !!galleryView, chatView: !!chatView });
 
     if (viewName === 'gallery') {
         if (galleryView) galleryView.style.display = 'flex';
@@ -348,8 +352,8 @@ export function initConfigPanel(brain, closeAllPanels, messagesBox) {
         clearConfigBtn.addEventListener('click', () => {
             if (confirm('¿Estás seguro de reiniciar la historia con este personaje? Se borrará la memoria y podrás elegir el modo de relación inicial nuevamente.')) {
                 const charId = brain.characterId;
-                localStorage.removeItem(`chatConfig_${charId}`);
-                localStorage.removeItem(`chatHistory_${charId}`);
+                secureStorage.removeItem(`chatConfig_${charId}`);
+                secureStorage.removeItem(`chatHistory_${charId}`);
                 brain.history = [];
                 if (messagesBox) messagesBox.innerHTML = '';
                 closeAllPanels();
@@ -380,21 +384,23 @@ export function renderHistory(brain, messagesBox) {
     const targetContainer = document.getElementById('messagesList') || messagesBox;
     targetContainer.innerHTML = '';
 
-    brain.history.forEach(msg => {
-        const role = msg.role === 'user' ? 'user' : 'bot';
-        let renderText = msg.content;
+    brain.history
+        .filter(msg => msg && msg.role !== 'system')
+        .forEach(msg => {
+            const role = msg.role === 'user' ? 'user' : 'bot';
+            let renderText = msg.content;
 
-        if (role === 'bot') {
-            let extracted = brain.extractTag ? brain.extractTag(msg.content, 'respuesta') : null;
-            if (!extracted) {
-                extracted = msg.content.replace(/<[^>]+>[\s\S]*?<\/[^>]+>/g, '').replace(/<[^>]+>/g, '').trim();
+            if (role === 'bot') {
+                let extracted = brain.extractTag ? brain.extractTag(msg.content, 'respuesta') : null;
+                if (!extracted) {
+                    extracted = msg.content.replace(/<[^>]+>[\s\S]*?<\/[^>]+>/g, '').replace(/<[^>]+>/g, '').trim();
+                }
+                if (extracted) renderText = extracted;
             }
-            if (extracted) renderText = extracted;
-        }
 
-        const div = createMessageElement(renderText, role);
-        targetContainer.appendChild(div);
-    });
+            const div = createMessageElement(renderText, role);
+            targetContainer.appendChild(div);
+        });
     messagesBox.scrollTop = messagesBox.scrollHeight;
 }
 
@@ -518,13 +524,21 @@ export function initRewardedAdUI(brain) {
         const ad = await adManager.loadAd();
         if (ad && ad.isAdBlocker) {
             isAdBlockActiveState = true;
-            if (sponsorTitle) sponsorTitle.textContent = '🛡️ Bloqueador Detectado';
-            if (sponsorSubtitle) sponsorSubtitle.textContent = 'Desactiva AdBlock';
-            if (descText) descText.textContent = ad.message;
-            if (statusText) statusText.textContent = 'AdBlocker detectado';
+            if (sponsorTitle) sponsorTitle.textContent = '🛡️ Bloqueador de Anuncios Detectado';
+            if (sponsorSubtitle) sponsorSubtitle.textContent = 'Acción Requerida para Recargar Mensajes';
+            if (descText) {
+                descText.innerHTML = `
+                    <div style="background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.35); border-radius: 12px; padding: 0.85rem; color: #fca5a5; font-size: 0.82rem; text-align: left; margin-bottom: 0.85rem; line-height: 1.45;">
+                        <div style="font-weight: 700; font-size: 0.9rem; margin-bottom: 0.35rem; color: #ef4444;">🛡️ AdBlock / Brave Shields Activo</div>
+                        No podemos cargar la red de anuncios porque tu navegador tiene un bloqueador activado.<br><br>
+                        👉 <strong>Cómo resolverlo:</strong> Desactiva el bloqueador de anuncios para <strong>Melora AI</strong> y haz clic en <em>Reintentar Anuncio</em> para recibir tus <strong>+5 Mensajes Gratis</strong>.
+                    </div>
+                `;
+            }
+            if (statusText) statusText.textContent = 'Desactiva tu AdBlocker';
             if (startBtn) {
                 startBtn.disabled = false;
-                startBtn.textContent = '🔄 Reprobar / Reintentar Anuncio';
+                startBtn.textContent = '🔄 Reintentar Anuncio';
                 startBtn.classList.remove('hidden');
             }
             return;

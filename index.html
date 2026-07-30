@@ -18,7 +18,7 @@
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1371507374686222"
     crossorigin="anonymous"></script>
   <script src="https://imasdk.googleapis.com/js/sdk/v3/google_ima.js" async
-    onerror="console.log('[ADS] IMA SDK no disponible (AdBlocker activo o sin conexión)')"></script>
+    onerror="window.isAdBlockerActive = true;"></script>
 </head>
 
 <body>
@@ -352,48 +352,53 @@
   <div class="modal-overlay hidden" id="creatorModal">
     <div class="modal-card wizard-card magic-studio-card">
       <div class="modal-header">
-        <h2>✨ Studio Mágico de Personajes</h2>
+        <h2>✨ Creador de Personajes</h2>
         <button class="btn btn-secondary modal-close-btn" id="closeCreatorModal">✕</button>
       </div>
 
-      <!-- Magic AI Fast Generator Box -->
-      <div class="magic-generator-box">
-        <div class="magic-box-title">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round" style="color: #a78bfa;">
-            <path
-              d="M15 4V2M15 16v-2M8 9h2M20 9h-2M17.8 5.2l-1.4 1.4M17.8 12.8l-1.4-1.4M12.2 5.2l1.4 1.4M12.2 12.8l1.4-1.4M4.5 9a7.5 7.5 0 0 0 10.8 6.7L21 21l-2.3-5.7A7.5 7.5 0 1 0 4.5 9z">
-            </path>
-          </svg>
-          <span>Generar Personaje con IA en 1 Clic</span>
+      <!-- Magic AI Fast Generator Box (Collapsible Accordion) -->
+      <details class="magic-generator-box magic-collapsible-box">
+        <summary class="magic-box-title magic-box-summary">
+          <div class="summary-left">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" style="color: #a78bfa;">
+              <path
+                d="M15 4V2M15 16v-2M8 9h2M20 9h-2M17.8 5.2l-1.4 1.4M17.8 12.8l-1.4-1.4M12.2 5.2l1.4 1.4M12.2 12.8l1.4-1.4M4.5 9a7.5 7.5 0 0 0 10.8 6.7L21 21l-2.3-5.7A7.5 7.5 0 1 0 4.5 9z">
+              </path>
+            </svg>
+            <span>Plantillas y Autocompletado IA</span>
+          </div>
+          <span class="magic-toggle-badge">⚡ Autocompletar ▾</span>
+        </summary>
+        <div class="magic-box-body">
+          <div class="preset-chips-row">
+            <button class="concept-chip" data-concept="gamer">🎮 Estratega Sagaz</button>
+            <button class="concept-chip" data-concept="artista">🎨 Pintora & Creadora</button>
+            <button class="concept-chip" data-concept="toxica">🔮 Analista Crítica</button>
+            <button class="concept-chip" data-concept="barista">☕ Confidente Atenta</button>
+          </div>
+          <div class="magic-input-group">
+            <input type="text" id="magicConceptInput" class="form-control"
+              placeholder="Describe una idea (Ej: Ingeniera espacial apasionada por el rock...)">
+            <button type="button" id="magicGenerateBtn" class="btn btn-primary magic-sparkle-btn">
+              ✨ Auto-Generar
+            </button>
+          </div>
         </div>
-        <div class="preset-chips-row">
-          <button class="concept-chip" data-concept="gamer">🎮 Gamer Tsundere</button>
-          <button class="concept-chip" data-concept="artista">🎨 Artista Soñadora</button>
-          <button class="concept-chip" data-concept="toxica">😈 Tóxica de Universidad</button>
-          <button class="concept-chip" data-concept="barista">☕ Compañera Dulce</button>
-        </div>
-        <div class="magic-input-group">
-          <input type="text" id="magicConceptInput" class="form-control"
-            placeholder="O escribe una idea breve (Ej: Ingeniera espacial apasionada por la música rock...)">
-          <button type="button" id="magicGenerateBtn" class="btn btn-primary magic-sparkle-btn">
-            ✨ Auto-Generar Todo
-          </button>
-        </div>
-      </div>
+      </details>
 
       <!-- Stepper indicator -->
       <div class="stepper-bar">
-        <div class="step-indicator active" id="stepInd1">1. Identidad</div>
+        <div class="step-indicator active" id="stepInd1"><span class="step-num">1</span> Identidad</div>
         <div class="step-line"></div>
-        <div class="step-indicator" id="stepInd2">2. Apariencia & 3D</div>
+        <div class="step-indicator" id="stepInd2"><span class="step-num">2</span> Apariencia</div>
         <div class="step-line"></div>
-        <div class="step-indicator" id="stepInd3">3. Personalidad</div>
+        <div class="step-indicator" id="stepInd3"><span class="step-num">3</span> Personalidad</div>
         <div class="step-line"></div>
-        <div class="step-indicator" id="stepInd4">4. Emociones & Chat</div>
+        <div class="step-indicator" id="stepInd4"><span class="step-num">4</span> Emociones</div>
       </div>
 
-      <form id="creatorForm" onsubmit="return false;" class="wizard-form-layout">
+      <form id="creatorForm" onsubmit="return false;" class="wizard-form-layout full-width">
         <!-- COLUMNA IZQUIERDA: PASOS DEL WIZARD -->
         <div class="wizard-steps-container">
 
@@ -403,7 +408,10 @@
               <div class="form-group flex-1">
                 <div class="label-with-spark">
                   <label>Nombre del Personaje *</label>
-                  <button type="button" id="randomNameBtn" class="btn-text-spark">🎲 Nombre Rápido</button>
+                  <div style="display: flex; gap: 6px;">
+                    <button type="button" id="randomNameBtn" class="btn-text-spark" title="Nombre aleatorio">🎲 Nombre</button>
+                    <button type="button" id="randomFullBotBtn" class="btn-text-spark" title="Generar personaje completo al azar">✨ Personaje Completo</button>
+                  </div>
                 </div>
                 <input type="text" id="createName" class="form-control" placeholder="Ej. Sofía, Alex, Luna..." required>
               </div>
@@ -418,286 +426,378 @@
                 <label>Línea Descriptiva / Tagline</label>
               </div>
               <input type="text" id="createTagline" class="form-control" placeholder="Ej. Tu pareja cariñosa y atenta">
+              <div class="quick-chips-row" id="taglinePresetRow">
+                <button type="button" class="quick-chip tagline-preset-chip" data-text="Tu pareja cariñosa y atenta">💕 Pareja Cariñosa</button>
+                <button type="button" class="quick-chip tagline-preset-chip" data-text="Estratega analítica y sagaz">😼 Estratega Sagaz</button>
+                <button type="button" class="quick-chip tagline-preset-chip" data-text="Confidente de noches largas">☕ Confidente Fiel</button>
+                <button type="button" class="quick-chip tagline-preset-chip" data-text="Artista soñadora e indie">🎨 Artista Libre</button>
+              </div>
             </div>
 
             <div class="section-hint-box" style="margin-top: 0.75rem;">
-              <span>💡 Define la identidad principal. En el siguiente paso podrás personalizar su foto y modelo
-                3D.</span>
+              <span>💡 Define el nombre, edad y descripción principal de tu personaje.</span>
             </div>
           </div>
 
-          <!-- PASO 2: APARIENCIA VISUAL & MODELO 3D -->
+          <!-- PASO 2: APARIENCIA VISUAL & MODELO 3D (PESTAÑAS COMPACTAS) -->
           <div class="wizard-step hidden" id="wizardStep2">
-            <!-- 2D AVATAR SELECTION SECTION -->
-            <div class="form-group">
-              <div class="label-with-spark">
-                <label>1. Imagen de Avatar 2D (Presets o Tu Foto Local)</label>
-                <label for="avatarFileInput" class="btn-text-spark"
-                  style="cursor: pointer; display: flex; align-items: center; gap: 4px;">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                    <polyline points="17 8 12 3 7 8"></polyline>
-                    <line x1="12" y1="3" x2="12" y2="15"></line>
-                  </svg>
-                  <span>Subir Foto Local</span>
-                </label>
-                <input type="file" id="avatarFileInput" accept="image/*" class="hidden">
-              </div>
+            <!-- Navigation Tabs for Step 2 -->
+            <div class="step2-tabs-nav">
+              <button type="button" class="step2-tab-btn active" id="step2Tab2D">👤 Avatar 2D</button>
+              <button type="button" class="step2-tab-btn" id="step2Tab3D">📦 Modelo 3D</button>
+            </div>
 
-              <!-- Presets Grid -->
-              <div class="avatar-presets-grid" id="avatarPresetsGrid">
-                <img class="avatar-preset-item active"
-                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80"
-                  data-url="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80"
-                  title="Chica Cariñosa">
-                <img class="avatar-preset-item"
-                  src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&auto=format&fit=crop&q=80"
-                  data-url="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&auto=format&fit=crop&q=80"
-                  title="Chica Tsundere">
-                <img class="avatar-preset-item"
-                  src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=500&auto=format&fit=crop&q=80"
-                  data-url="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=500&auto=format&fit=crop&q=80"
-                  title="Chica Provocadora">
-                <img class="avatar-preset-item"
-                  src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=500&auto=format&fit=crop&q=80"
-                  data-url="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=500&auto=format&fit=crop&q=80"
-                  title="Chico Gamer">
-                <img class="avatar-preset-item"
-                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=80"
-                  data-url="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=80"
-                  title="Chico Amigable">
-                <img class="avatar-preset-item"
-                  src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=500&auto=format&fit=crop&q=80"
-                  data-url="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=500&auto=format&fit=crop&q=80"
-                  title="Empresario Elegante">
-              </div>
-
-              <details style="margin-top: 0.4rem; font-size: 0.75rem; color: var(--text-dim);">
-                <summary style="cursor: pointer; opacity: 0.7;">🔗 Enlace URL de imagen</summary>
-                <input type="text" id="createAvatarUrl" class="form-control" placeholder="https://..."
-                  value="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80"
-                  style="margin-top: 0.35rem; font-size: 0.8rem;">
-              </details>
-
-              <!-- Editor Interactivo de Foto de Perfil (Drag & Pan + Zoom) -->
-              <div class="avatar-cropper-box">
-                <div class="cropper-header">
-                  <span style="display: flex; align-items: center; gap: 4px;">
+            <!-- TAB CONTENT 1: AVATAR 2D -->
+            <div id="step2Tab2DContent" class="step2-tab-pane">
+              <div class="form-group">
+                <div class="label-with-spark">
+                  <label>Avatar 2D</label>
+                  <label for="avatarFileInput" class="btn-text-spark"
+                    style="cursor: pointer; display: flex; align-items: center; gap: 4px;">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <circle cx="11" cy="11" r="8"></circle>
-                      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="17 8 12 3 7 8"></polyline>
+                      <line x1="12" y1="3" x2="12" y2="15"></line>
                     </svg>
-                    Ajuste e Inspección de Foto de Perfil
-                  </span>
-                  <button type="button" id="resetAvatarCropBtn" class="btn-text-spark">🔄 Restablecer</button>
+                    <span>Subir Foto</span>
+                  </label>
+                  <input type="file" id="avatarFileInput" accept="image/*" class="hidden">
                 </div>
 
-                <!-- Visor Interactivo de Encuadre (Drag & Drop Frame) -->
-                <div class="cropper-stage-wrapper">
-                  <div id="cropperViewport" class="cropper-viewport">
-                    <img id="cropperImg"
-                      src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80"
-                      alt="Avatar Crop">
-                    <div class="cropper-guide-overlay"></div>
-                  </div>
-                  <div class="cropper-hint">
-                    🖐️ Arrastra la foto para acomodarla &bull; 🔍 Rueda del mouse o slider para Zoom
-                  </div>
+                <!-- Presets Grid -->
+                <div class="avatar-presets-grid" id="avatarPresetsGrid">
+                  <img class="avatar-preset-item active"
+                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80"
+                    data-url="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80"
+                    title="Chica Cariñosa">
+                  <img class="avatar-preset-item"
+                    src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&auto=format&fit=crop&q=80"
+                    data-url="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&auto=format&fit=crop&q=80"
+                    title="Chica Tsundere">
+                  <img class="avatar-preset-item"
+                    src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=500&auto=format&fit=crop&q=80"
+                    data-url="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=500&auto=format&fit=crop&q=80"
+                    title="Chica Provocadora">
+                  <img class="avatar-preset-item"
+                    src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=500&auto=format&fit=crop&q=80"
+                    data-url="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=500&auto=format&fit=crop&q=80"
+                    title="Chico Gamer">
+                  <img class="avatar-preset-item"
+                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=80"
+                    data-url="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=80"
+                    title="Chico Amigable">
+                  <img class="avatar-preset-item"
+                    src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=500&auto=format&fit=crop&q=80"
+                    data-url="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=500&auto=format&fit=crop&q=80"
+                    title="Empresario Elegante">
                 </div>
 
-                <!-- Barra de Zoom -->
-                <div class="cropper-zoom-bar">
-                  <span class="zoom-label">🔍 Zoom:</span>
-                  <input type="range" id="avatarZoomSlider" min="1" max="3" step="0.05" value="1" class="slider-control"
-                    style="flex: 1;">
-                  <span id="zoomValBadge" class="zoom-badge">100%</span>
+                <details style="margin-top: 0.4rem; font-size: 0.75rem; color: var(--text-dim);">
+                  <summary style="cursor: pointer; opacity: 0.7;">🔗 Enlace URL de imagen</summary>
+                  <input type="text" id="createAvatarUrl" class="form-control" placeholder="https://..."
+                    value="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80"
+                    style="margin-top: 0.35rem; font-size: 0.8rem;">
+                </details>
+
+                <!-- Editor Interactivo de Foto de Perfil (Drag & Pan + Zoom) -->
+                <div class="avatar-cropper-box">
+                  <div class="cropper-header">
+                    <span style="display: flex; align-items: center; gap: 4px;">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                      </svg>
+                      Encuadre de Foto
+                    </span>
+                    <button type="button" id="resetAvatarCropBtn" class="btn-text-spark">🔄 Restablecer</button>
+                  </div>
+
+                  <div class="cropper-stage-wrapper">
+                    <div id="cropperViewport" class="cropper-viewport">
+                      <img id="cropperImg"
+                        src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80"
+                        alt="Avatar Crop">
+                      <div class="cropper-guide-overlay"></div>
+                    </div>
+                  </div>
+
+                  <div class="cropper-zoom-bar">
+                    <span class="zoom-label">🔍 Zoom:</span>
+                    <input type="range" id="avatarZoomSlider" min="1" max="3" step="0.05" value="1" class="slider-control"
+                      style="flex: 1;">
+                    <span id="zoomValBadge" class="zoom-badge">100%</span>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <!-- 3D MODEL SELECTION SECTION -->
-            <div class="form-group" style="margin-top: 0.75rem;">
-              <div class="label-with-spark">
-                <label>2. Modelo 3D Interactivo (.GLB / .GLTF)</label>
-                <label for="model3dFileInput" class="btn-text-spark"
-                  style="cursor: pointer; display: flex; align-items: center; gap: 4px;">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path
-                      d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
-                    </path>
-                  </svg>
-                  <span>Subir Modelo 3D (.glb)</span>
-                </label>
-                <input type="file" id="model3dFileInput" accept=".glb,.gltf,.bin,.png,.jpg,.jpeg,.webp" multiple class="hidden">
-                <input type="hidden" id="createModel3dUrl" value="">
-              </div>
-              <div id="model3dStatusBadge" class="model-status-pill">
-                <span>📦 Modelo 3D: Cyber-Maniquí Procedural (Predeterminado)</span>
-              </div>
+            <!-- TAB CONTENT 2: MODELO 3D -->
+            <div id="step2Tab3DContent" class="step2-tab-pane hidden">
+              <div class="form-group" style="margin-top: 0.3rem;">
+                <div class="label-with-spark">
+                  <label>Modelo 3D (.GLB / .GLTF)</label>
+                  <label for="model3dFileInput" class="btn-text-spark"
+                    style="cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path
+                        d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+                      </path>
+                    </svg>
+                    <span>Subir Modelo (.glb)</span>
+                  </label>
+                  <input type="file" id="model3dFileInput" accept=".glb,.gltf,.bin,.png,.jpg,.jpeg,.webp" multiple class="hidden">
+                  <input type="hidden" id="createModel3dUrl" value="">
+                </div>
+                <div id="model3dStatusBadge" class="model-status-pill">
+                  <span>📦 Modelo 3D: Cyber-Maniquí Procedural (Predeterminado)</span>
+                </div>
 
-              <!-- Manual Texture Assigner Option -->
-              <div style="margin-top: 0.4rem; display: flex; align-items: center; justify-content: space-between;">
-                <label for="textureFileInput" class="btn-text-spark" style="cursor: pointer; font-size: 0.73rem; opacity: 0.85; display: flex; align-items: center; gap: 4px;">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                  <span>🖼️ Cargar / Asignar Texturas Adicionales (.png, .jpg)</span>
-                </label>
-                <input type="file" id="textureFileInput" accept=".png,.jpg,.jpeg,.webp" multiple class="hidden">
+                <div style="margin-top: 0.6rem; display: flex; align-items: center; justify-content: space-between;">
+                  <label for="textureFileInput" class="btn-text-spark" style="cursor: pointer; font-size: 0.76rem; opacity: 0.9; display: flex; align-items: center; gap: 4px;">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                    <span>🖼️ Texturas Adicionales (.png, .jpg)</span>
+                  </label>
+                  <input type="file" id="textureFileInput" accept=".png,.jpg,.jpeg,.webp" multiple class="hidden">
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- PASO 3: PERSONALIDAD & ARQUETIPOS -->
+          <!-- PASO 3: PERSONALIDAD & ARQUETIPOS (SUB-MENÚS COMPACTOS) -->
           <div class="wizard-step hidden" id="wizardStep3">
-            <div class="form-row">
-              <div class="form-group flex-1">
-                <label>Matiz de Humor & Tono</label>
-                <select id="createMatizHumor" class="form-control">
-                  <option value="Sarcástica & Sagaz">😼 Sarcástica & Sagaz</option>
-                  <option value="Extremadamente Dulce" selected>🌸 Extremadamente Dulce</option>
-                  <option value="Misteriosa & Reservada">✨ Misteriosa & Reservada</option>
-                  <option value="Directa e Imprudente">🔥 Directa e Imprudente</option>
-                </select>
+            <div class="step3-tabs-nav">
+              <button type="button" class="step3-tab-btn active" id="step3TabStyle">🎭 Arquetipo y Tono</button>
+              <button type="button" class="step3-tab-btn" id="step3TabTraits">🏷️ Rasgos</button>
+            </div>
+
+            <!-- SUB TAB 1: ARQUETIPO & ESTILO -->
+            <div id="step3TabStyleContent" class="step3-tab-pane">
+              <div class="form-group">
+                <label>Arquetipo de Personalidad</label>
+                <input type="hidden" id="createArchetype" value="pareja">
+                <div class="archetype-cards-grid">
+                  <div class="archetype-select-card selected" data-archetype="pareja">
+                    <div class="arc-icon">💕</div>
+                    <div class="arc-name">Pareja Cariñosa</div>
+                    <div class="arc-desc">Dulce, afectuosa y atenta con química romántica.</div>
+                    <span class="arc-badge">Free</span>
+                  </div>
+                  <div class="archetype-select-card" data-archetype="amigaToxica">
+                    <div class="arc-icon">😈</div>
+                    <div class="arc-name">Amiga Tóxica</div>
+                    <div class="arc-desc">Provocadora, sarcástica y dramática.</div>
+                    <span class="arc-badge">Free</span>
+                  </div>
+                  <div class="archetype-select-card" data-archetype="rival">
+                    <div class="arc-icon">⚔️</div>
+                    <div class="arc-name">Rival Competitiva</div>
+                    <div class="arc-desc">Tsundere, orgullosa y jamás admite perder.</div>
+                    <span class="arc-badge">Free</span>
+                  </div>
+                  <div class="archetype-select-card locked-arc" data-archetype="ex">
+                    <div class="arc-icon">🌧️</div>
+                    <div class="arc-name">Ex que No Supera</div>
+                    <div class="arc-desc">Nostálgica, intensa y llena de recuerdos.</div>
+                    <span class="arc-badge lock">🔒 Premium</span>
+                  </div>
+                  <div class="archetype-select-card" data-archetype="mejorAmigo">
+                    <div class="arc-icon">🤝</div>
+                    <div class="arc-name">Mejor Amigo/a</div>
+                    <div class="arc-desc">Leal, divertida y dispuesta a apoyarte siempre.</div>
+                    <span class="arc-badge">Free</span>
+                  </div>
+                </div>
               </div>
-              <div class="form-group flex-1">
-                <label>Estilo de Mensajería & Escritura</label>
-                <select id="createChatStyle" class="form-control">
-                  <option value="Directa & Frases Cortas" selected>💬 Frases Cortas & Directas (Casual)</option>
-                  <option value="Expresiva con Emojis & Reacciones">✨ Expresiva & Emotiva</option>
-                  <option value="Misteriosa & Mensajes Enigmáticos">🔮 Enigmática & Profunda</option>
-                  <option value="Relajada con Minúsculas">🎧 Relajada & Desenfadada</option>
-                </select>
+
+              <div class="form-row" style="margin-top: 0.75rem;">
+                <div class="form-group flex-1">
+                  <label>Tono de Humor</label>
+                  <select id="createMatizHumor" class="form-control">
+                    <option value="Sarcástica & Sagaz">😼 Sarcástica & Sagaz</option>
+                    <option value="Extremadamente Dulce" selected>🌸 Extremadamente Dulce</option>
+                    <option value="Misteriosa & Reservada">✨ Misteriosa & Reservada</option>
+                    <option value="Directa e Imprudente">🔥 Directa e Imprudente</option>
+                  </select>
+                </div>
+                <div class="form-group flex-1">
+                  <label>Estilo de Mensajería</label>
+                  <select id="createChatStyle" class="form-control">
+                    <option value="Directa & Frases Cortas" selected>💬 Frases Cortas & Directas (Casual)</option>
+                    <option value="Expresiva con Emojis & Reacciones">✨ Expresiva & Emotiva</option>
+                    <option value="Misteriosa & Mensajes Enigmáticos">🔮 Enigmática & Profunda</option>
+                    <option value="Relajada con Minúsculas">🎧 Relajada & Desenfadada</option>
+                  </select>
+                </div>
               </div>
             </div>
 
-            <div class="form-group">
-              <label>Elige el Arquetipo de Personalidad:</label>
-              <input type="hidden" id="createArchetype" value="pareja">
-              <div class="archetype-cards-grid">
-                <div class="archetype-select-card selected" data-archetype="pareja">
-                  <div class="arc-icon">💕</div>
-                  <div class="arc-name">Pareja Cariñosa</div>
-                  <div class="arc-desc">Dulce, afectuosa y atenta con química romántica.</div>
-                  <span class="arc-badge">Free</span>
+            <!-- SUB TAB 2: RASGOS & GUSTOS -->
+            <div id="step3TabTraitsContent" class="step3-tab-pane hidden">
+              <div class="form-group">
+                <label>Rasgos y Gustos</label>
+                <div class="trait-chips-grid" id="traitChipsGrid">
+                  <button type="button" class="trait-chip active" data-trait="Amante del café">☕ Amante del café</button>
+                  <button type="button" class="trait-chip" data-trait="Trasnochadora">🌙 Trasnochadora</button>
+                  <button type="button" class="trait-chip" data-trait="Fotos análogas">📸 Fotos análogas</button>
+                  <button type="button" class="trait-chip" data-trait="Gamer de corazón">🎮 Gamer</button>
+                  <button type="button" class="trait-chip" data-trait="Directa sin filtro">💅 Directa sin filtro</button>
+                  <button type="button" class="trait-chip" data-trait="Música indie">🎧 Música indie</button>
+                  <button type="button" class="trait-chip" data-trait="Fan de la pizza">🍕 Fan de la pizza</button>
+                  <button type="button" class="trait-chip" data-trait="Lectora apasionada">📖 Lectora</button>
                 </div>
-                <div class="archetype-select-card" data-archetype="amigaToxica">
-                  <div class="arc-icon">😈</div>
-                  <div class="arc-name">Amiga Tóxica</div>
-                  <div class="arc-desc">Provocadora, sarcástica y dramática.</div>
-                  <span class="arc-badge">Free</span>
-                </div>
-                <div class="archetype-select-card" data-archetype="rival">
-                  <div class="arc-icon">⚔️</div>
-                  <div class="arc-name">Rival Competitiva</div>
-                  <div class="arc-desc">Tsundere, orgullosa y jamás admite perder.</div>
-                  <span class="arc-badge">Free</span>
-                </div>
-                <div class="archetype-select-card locked-arc" data-archetype="ex">
-                  <div class="arc-icon">🌧️</div>
-                  <div class="arc-name">Ex que No Supera</div>
-                  <div class="arc-desc">Nostálgica, intensa y llena de recuerdos.</div>
-                  <span class="arc-badge lock">🔒 Premium</span>
-                </div>
-                <div class="archetype-select-card" data-archetype="mejorAmigo">
-                  <div class="arc-icon">🤝</div>
-                  <div class="arc-name">Mejor Amigo/a</div>
-                  <div class="arc-desc">Leal, divertida y dispuesta a apoyarte siempre.</div>
-                  <span class="arc-badge">Free</span>
-                </div>
-              </div>
-            </div>
 
-            <!-- Quick Trait Chips Grid -->
-            <div class="form-group">
-              <label>Selecciona Rasgos & Gustos (o Añade los Tuyos):</label>
-              <div class="trait-chips-grid" id="traitChipsGrid">
-                <button type="button" class="trait-chip active" data-trait="Amante del café">☕ Amante del café</button>
-                <button type="button" class="trait-chip" data-trait="Trasnochadora">🌙 Trasnochadora</button>
-                <button type="button" class="trait-chip" data-trait="Fotos análogas">📸 Fotos análogas</button>
-                <button type="button" class="trait-chip" data-trait="Gamer de corazón">🎮 Gamer</button>
-                <button type="button" class="trait-chip" data-trait="Directa sin filtro">💅 Directa sin filtro</button>
-                <button type="button" class="trait-chip" data-trait="Música indie">🎧 Música indie</button>
-                <button type="button" class="trait-chip" data-trait="Fan de la pizza">🍕 Fan de la pizza</button>
-                <button type="button" class="trait-chip" data-trait="Lectora apasionada">📖 Lectora</button>
-              </div>
-
-              <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
-                <input type="text" id="addCustomTraitInput" class="form-control"
-                  placeholder="Añadir rasgo único (Ej. Le gusta la astronomía...)" style="font-size: 0.8rem; flex: 1;">
-                <button type="button" id="addCustomTraitBtn" class="btn btn-secondary"
-                  style="font-size: 0.78rem; padding: 0.35rem 0.75rem;">+ Añadir</button>
+                <div style="display: flex; gap: 0.5rem; margin-top: 0.75rem;">
+                  <input type="text" id="addCustomTraitInput" class="form-control"
+                    placeholder="Añadir rasgo (Ej: Aficionada a la astronomía...)" style="font-size: 0.8rem; flex: 1;">
+                  <button type="button" id="addCustomTraitBtn" class="btn btn-secondary"
+                    style="font-size: 0.78rem; padding: 0.35rem 0.75rem;">+ Añadir</button>
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- PASO 4: DIÁLOGO, PROMPT & CALIBRACIÓN EMOCIONAL -->
+          <!-- PASO 4: DIÁLOGO, PROMPT & CALIBRACIÓN EMOCIONAL (SUB-MENÚS & SLIDERS PRO) -->
           <div class="wizard-step hidden" id="wizardStep4">
-            <div class="form-group">
-              <label>Secreto o Recuerdo Compartido (Opcional):</label>
-              <input type="text" id="createSharedSecret" class="form-control"
-                placeholder="Ej. Se quedaron atrapados en la lluvia de noche...">
+            <div class="step4-tabs-nav">
+              <button type="button" class="step4-tab-btn active" id="step4TabPrompt">💬 Saludo y Prompt</button>
+              <button type="button" class="step4-tab-btn" id="step4TabSliders">🎛️ Matices Emocionales</button>
             </div>
 
-            <div class="form-group">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
-                <label style="margin:0;">Mensaje de Saludo Inicial *</label>
-                <button type="button" id="randomGreetingBtn" class="btn btn-secondary btn-sm"
-                  style="font-size: 0.72rem; padding: 0.2rem 0.5rem;">
-                  🎲 Generar Frase
-                </button>
+            <!-- SUB TAB 1: SALUDO & PROMPT -->
+            <div id="step4TabPromptContent" class="step4-tab-pane">
+              <div class="form-group">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                  <label style="margin:0;">Mensaje de Saludo *</label>
+                  <button type="button" id="randomGreetingBtn" class="btn btn-secondary btn-sm"
+                    style="font-size: 0.72rem; padding: 0.2rem 0.5rem;">
+                    🎲 Generar Frase
+                  </button>
+                </div>
+                <textarea id="createFirstMessage" class="form-control" rows="2"
+                  placeholder="Ej. ¡Hola mi amor! Te estaba esperando... ¿cómo estuvo tu día?" required></textarea>
+                <div class="quick-chips-row" id="greetingPresetRow">
+                  <button type="button" class="quick-chip greeting-preset-chip" data-text="¡Hola mi vida! 💕 Te pensaba justo ahora... ¿cómo estuvo tu día?">💕 Saludo Cariñoso</button>
+                  <button type="button" class="quick-chip greeting-preset-chip" data-text="Vaya, mira quién aparece... 😏 ¿Vienes a pedir revancha?">😼 Saludo Desafiante</button>
+                  <button type="button" class="quick-chip greeting-preset-chip" data-text="¡Hola! ☕ Hacía una pausa y quería saber cómo iba tu jornada.">☕ Saludo Casual</button>
+                  <button type="button" class="quick-chip greeting-preset-chip" data-text="Hola... 🎧 Me acordé de ti escuchando música. ¿Tienes un momento?">🎧 Saludo Nocturno</button>
+                </div>
               </div>
-              <textarea id="createFirstMessage" class="form-control" rows="2"
-                placeholder="Ej. ¡Hola mi amor! Te estaba esperando... ¿cómo estuvo tu día?" required></textarea>
-            </div>
 
-            <details class="advanced-prompt-box" style="margin-top: 0.5rem; margin-bottom: 0.75rem;">
-              <summary
-                style="cursor: pointer; font-size: 0.8rem; color: var(--accent-violet); font-weight: 600; padding: 0.3rem 0;">
-                ⚙️ Ver / Editar Prompt Ensamblado (Opcional)
-              </summary>
-              <textarea id="createSystemPrompt" class="form-control" rows="3"
-                placeholder="Se genera automáticamente según tus selecciones..."
-                style="margin-top: 0.4rem; font-size: 0.8rem;" required></textarea>
-            </details>
-
-            <div class="emotional-diagnosis-box">
-              <div class="diagnosis-label">DIAGNÓSTICO EMOCIONAL EN TIEMPO REAL:</div>
-              <div id="emotionalDiagnosisBadge" class="diagnosis-badge">
-                🔮 Personalidad Cariñosa, Equilibrada y Fiel
+              <div class="form-group" style="margin-top: 0.6rem;">
+                <label>Secreto o Recuerdo Compartido</label>
+                <input type="text" id="createSharedSecret" class="form-control"
+                  placeholder="Ej. Se quedaron atrapados en la lluvia de noche...">
+                <div class="quick-chips-row" id="secretPresetRow">
+                  <button type="button" class="quick-chip secret-preset-chip" data-text="Se quedaron atrapados bajo la lluvia de noche">🌧️ Lluvia nocturna</button>
+                  <button type="button" class="quick-chip secret-preset-chip" data-text="Noche de café conversando de la vida">☕ Noche de café</button>
+                  <button type="button" class="quick-chip secret-preset-chip" data-text="Mirando las estrellas de madrugada">🌌 Estrellas de madrugada</button>
+                  <button type="button" class="quick-chip secret-preset-chip" data-text="Su primera victoria jugando en equipo">🎮 Victoria en equipo</button>
+                </div>
               </div>
+
+              <details class="advanced-prompt-box" style="margin-top: 0.6rem;">
+                <summary
+                  style="cursor: pointer; font-size: 0.8rem; color: var(--accent-violet); font-weight: 600; padding: 0.3rem 0;">
+                  ⚙️ Ver / Editar Prompt Ensamblado (Opcional)
+                </summary>
+                <textarea id="createSystemPrompt" class="form-control" rows="3"
+                  placeholder="Se genera automáticamente según tus selecciones..."
+                  style="margin-top: 0.4rem; font-size: 0.8rem;" required></textarea>
+              </details>
             </div>
 
-            <div class="slider-group">
-              <label>Afinidad Inicial (<span id="valCreateAfinidad">70</span>%)</label>
-              <input type="range" id="createAfinidad" min="0" max="100" value="70" class="slider-control">
-            </div>
+            <!-- SUB TAB 2: CALIBRACIÓN EMOCIONAL (SLIDERS PRO) -->
+            <div id="step4TabSlidersContent" class="step4-tab-pane hidden">
+              <div class="emotional-diagnosis-box">
+                <div class="diagnosis-label">DIAGNÓSTICO EMOCIONAL:</div>
+                <div id="emotionalDiagnosisBadge" class="diagnosis-badge">
+                  🔮 Personalidad Cariñosa, Equilibrada y Fiel
+                </div>
+              </div>
 
-            <div class="slider-group">
-              <label>Nivel de Celos Inicial (<span id="valCreateCelos">15</span>%)</label>
-              <input type="range" id="createCelos" min="0" max="100" value="15" class="slider-control">
-            </div>
+              <div class="emotions-sliders-grid">
+                <!-- Slider 1: Afinidad -->
+                <div class="emotion-slider-card afinidad-card">
+                  <div class="emotion-card-header">
+                    <span class="emotion-title">
+                      <span class="emotion-icon">💖</span> Afinidad
+                    </span>
+                    <span class="emotion-val-badge afinidad-badge"><span id="valCreateAfinidad">70</span>%</span>
+                  </div>
+                  <div class="slider-track-wrapper">
+                    <input type="range" id="createAfinidad" min="0" max="100" value="70" class="slider-control afinidad">
+                  </div>
+                  <div class="slider-range-labels">
+                    <span>0% Distante</span>
+                    <span>100% Incondicional</span>
+                  </div>
+                </div>
 
-            <div class="slider-group">
-              <label>Resentimiento (<span id="valCreateResentimiento">0</span>%)</label>
-              <input type="range" id="createResentimiento" min="0" max="100" value="0" class="slider-control">
-            </div>
+                <!-- Slider 2: Celos -->
+                <div class="emotion-slider-card celos-card">
+                  <div class="emotion-card-header">
+                    <span class="emotion-title">
+                      <span class="emotion-icon">😈</span> Nivel de Celos
+                    </span>
+                    <span class="emotion-val-badge celos-badge"><span id="valCreateCelos">15</span>%</span>
+                  </div>
+                  <div class="slider-track-wrapper">
+                    <input type="range" id="createCelos" min="0" max="100" value="15" class="slider-control celos">
+                  </div>
+                  <div class="slider-range-labels">
+                    <span>0% Relajada</span>
+                    <span>100% Posesiva</span>
+                  </div>
+                </div>
 
-            <div class="slider-group">
-              <label>Ansiedad (<span id="valCreateAnsiedad">10</span>%)</label>
-              <input type="range" id="createAnsiedad" min="0" max="100" value="10" class="slider-control">
-            </div>
+                <!-- Slider 3: Resentimiento -->
+                <div class="emotion-slider-card resentimiento-card">
+                  <div class="emotion-card-header">
+                    <span class="emotion-title">
+                      <span class="emotion-icon">🌧️</span> Resentimiento
+                    </span>
+                    <span class="emotion-val-badge resentimiento-badge"><span id="valCreateResentimiento">0</span>%</span>
+                  </div>
+                  <div class="slider-track-wrapper">
+                    <input type="range" id="createResentimiento" min="0" max="100" value="0" class="slider-control resentimiento">
+                  </div>
+                  <div class="slider-range-labels">
+                    <span>0% Cero Rencor</span>
+                    <span>100% Distante</span>
+                  </div>
+                </div>
 
-            <div class="form-group hidden">
-              <input type="text" id="createLorebook" class="form-control">
+                <!-- Slider 4: Ansiedad -->
+                <div class="emotion-slider-card ansiedad-card">
+                  <div class="emotion-card-header">
+                    <span class="emotion-title">
+                      <span class="emotion-icon">⚡</span> Ansiedad
+                    </span>
+                    <span class="emotion-val-badge ansiedad-badge"><span id="valCreateAnsiedad">10</span>%</span>
+                  </div>
+                  <div class="slider-track-wrapper">
+                    <input type="range" id="createAnsiedad" min="0" max="100" value="10" class="slider-control ansiedad">
+                  </div>
+                  <div class="slider-range-labels">
+                    <span>0% Tranquila</span>
+                    <span>100% Insegura</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group hidden">
+                <input type="text" id="createLorebook" class="form-control">
+              </div>
             </div>
           </div>
 
         </div>
 
         <!-- COLUMNA DERECHA: PANEL DE VISTA PREVIA EN VIVO (STICKY) -->
-        <div class="wizard-preview-col">
+        <div class="wizard-preview-col hidden">
           <div class="creator-preview-card">
             <div class="preview-card-header">
-              <span>👁️ Vista Previa en Tiempo Real</span>
+              <span>👁️ Vista Previa</span>
               <span class="preview-badge-live">LIVE</span>
             </div>
 
@@ -718,7 +818,7 @@
             <!-- 3D Model Mini Viewport -->
             <div class="preview-3d-section">
               <div class="preview-3d-header">
-                <span>🎭 Escenario 3D del Bot</span>
+                <span>🎭 Escenario 3D</span>
                 <span id="preview3dBadge" class="preview-3d-tag">3D Activo</span>
               </div>
               <div id="wizard3dPreviewContainer" class="preview-3d-stage"></div>
@@ -739,9 +839,8 @@
       <div class="wizard-actions">
         <button type="button" class="btn btn-secondary hidden" id="prevWizardStepBtn">← Anterior</button>
         <button type="button" class="btn btn-primary" id="nextWizardStepBtn">Siguiente →</button>
-        <button type="button" class="btn btn-primary hidden" id="saveCharacterBtn">✨ Guardar y Comenzar Chat</button>
+        <button type="button" class="btn btn-primary hidden" id="saveCharacterBtn">✨ Crear Personaje</button>
       </div>
-      </form>
     </div>
   </div>
 
@@ -1162,10 +1261,11 @@
 
       <div style="display:flex;flex-direction:column;gap:8px;">
         <button id="start-ad-btn" class="btn btn-primary"
-          style="width:100%;padding:12px;font-weight:600;font-size:0.95rem;border-radius:12px;">▶ Ver Anuncio
-          Ahora</button>
+          style="width:100%;padding:12px;font-weight:600;font-size:0.95rem;border-radius:12px;">▶ Ver Anuncio Ahora</button>
       </div>
     </div>
+  </div>
+
   <!-- ========== ROADMAP DE CONFIANZA & INSIGNIAS MODAL ========== -->
   <div id="bond-journey-modal" class="hidden">
     <div class="bond-journey-dialog">
@@ -1225,6 +1325,8 @@
         </div>
       </div>
     </div>
+  </div>
+
   <!-- ========== MODAL MODOS DE INICIO DE RELACIÓN ========== -->
   <div id="start-mode-modal" class="hidden">
     <div class="start-mode-dialog">

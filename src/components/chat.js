@@ -12,6 +12,8 @@ import {
 import { apiFetch } from '../services/auth.js';
 import { getTier, canUseArchetype, isCharacterLocked } from '../services/tierGate.js';
 
+import { secureStorage } from '../core/secureStorage.js';
+
 export async function initChat() {
     let charactersData = {
         official: [
@@ -29,7 +31,7 @@ export async function initChat() {
                 emociones_inicio: { afinidad: 70, celos: 15, enojo: 0 }
             }
         ],
-        custom: JSON.parse(localStorage.getItem('lumaCustomCharacters') || '[]')
+        custom: JSON.parse(secureStorage.getItem('lumaCustomCharacters') || '[]')
     };
 
     try {
@@ -47,10 +49,10 @@ export async function initChat() {
     } catch (e) {
         console.log('Using offline character defaults.');
     }
-    let activeChatIds = JSON.parse(localStorage.getItem('lumaActiveChatIds') || '["pareja"]');
+    let activeChatIds = JSON.parse(secureStorage.getItem('lumaActiveChatIds') || '["pareja"]');
 
     function saveActiveChatIds() {
-        localStorage.setItem('lumaActiveChatIds', JSON.stringify(activeChatIds));
+        secureStorage.setItem('lumaActiveChatIds', JSON.stringify(activeChatIds));
     }
 
     function getActiveCharacters() {
@@ -58,13 +60,13 @@ export async function initChat() {
         return all.filter(c => activeChatIds.includes(c.id) || activeChatIds.includes(c.arquetipo_id));
     }
 
-    let activeCharId = localStorage.getItem('lumaActiveCharacter');
+    let activeCharId = secureStorage.getItem('lumaActiveCharacter');
     let activeChars = getActiveCharacters();
 
     if (!activeCharId || !activeChars.some(c => c.id === activeCharId || c.arquetipo_id === activeCharId)) {
         if (activeChars.length > 0) {
             activeCharId = activeChars[0].id || activeChars[0].arquetipo_id;
-            localStorage.setItem('lumaActiveCharacter', activeCharId);
+            secureStorage.setItem('lumaActiveCharacter', activeCharId);
         } else {
             activeCharId = null;
         }
@@ -174,10 +176,10 @@ export async function initChat() {
         const id = char.id || char.arquetipo_id;
         const arqId = char.arquetipo_id || char.id;
 
-        const hasSavedConfig = localStorage.getItem(`chatConfig_${id}`) !== null ||
-                               localStorage.getItem(`chatConfig_${arqId}`) !== null ||
-                               localStorage.getItem(`chatHistory_${id}`) !== null ||
-                               localStorage.getItem(`chatHistory_${arqId}`) !== null;
+        const hasSavedConfig = secureStorage.getItem(`chatConfig_${id}`) !== null ||
+                               secureStorage.getItem(`chatConfig_${arqId}`) !== null ||
+                               secureStorage.getItem(`chatHistory_${id}`) !== null ||
+                               secureStorage.getItem(`chatHistory_${arqId}`) !== null;
 
         if (hasSavedConfig && !forcePrompt) {
             onProceed();
@@ -218,8 +220,8 @@ export async function initChat() {
                     new Date().toISOString().split('T')[0]
                 ]
             };
-            localStorage.setItem(`chatConfig_${id}`, JSON.stringify(initialConfig));
-            if (arqId !== id) localStorage.setItem(`chatConfig_${arqId}`, JSON.stringify(initialConfig));
+            secureStorage.setItem(`chatConfig_${id}`, JSON.stringify(initialConfig));
+            if (arqId !== id) secureStorage.setItem(`chatConfig_${arqId}`, JSON.stringify(initialConfig));
             onProceed();
         };
 
@@ -230,8 +232,8 @@ export async function initChat() {
                 afinidad: 0,
                 diasActivos: [new Date().toISOString().split('T')[0]]
             };
-            localStorage.setItem(`chatConfig_${id}`, JSON.stringify(initialConfig));
-            if (arqId !== id) localStorage.setItem(`chatConfig_${arqId}`, JSON.stringify(initialConfig));
+            secureStorage.setItem(`chatConfig_${id}`, JSON.stringify(initialConfig));
+            if (arqId !== id) secureStorage.setItem(`chatConfig_${arqId}`, JSON.stringify(initialConfig));
             onProceed();
         };
     }
@@ -251,20 +253,20 @@ export async function initChat() {
         activeChatIds = activeChatIds.filter(id => id !== charId && id !== targetKey && id !== targetArq && id !== targetId);
         saveActiveChatIds();
 
-        localStorage.removeItem(`chatConfig_${charId}`);
-        localStorage.removeItem(`chatHistory_${charId}`);
+        secureStorage.removeItem(`chatConfig_${charId}`);
+        secureStorage.removeItem(`chatHistory_${charId}`);
         if (targetKey) {
-            localStorage.removeItem(`chatConfig_${targetKey}`);
-            localStorage.removeItem(`chatHistory_${targetKey}`);
+            secureStorage.removeItem(`chatConfig_${targetKey}`);
+            secureStorage.removeItem(`chatHistory_${targetKey}`);
         }
         if (targetArq) {
-            localStorage.removeItem(`chatConfig_${targetArq}`);
-            localStorage.removeItem(`chatHistory_${targetArq}`);
+            secureStorage.removeItem(`chatConfig_${targetArq}`);
+            secureStorage.removeItem(`chatHistory_${targetArq}`);
         }
 
         if (targetChar && !targetChar.is_official) {
             charactersData.custom = charactersData.custom.filter(c => (c.id || c.arquetipo_id) !== targetKey);
-            localStorage.setItem('lumaCustomCharacters', JSON.stringify(charactersData.custom));
+            secureStorage.setItem('lumaCustomCharacters', JSON.stringify(charactersData.custom));
             apiFetch(`/api/characters/${targetKey}`, { method: 'DELETE' }).catch(() => {});
         }
 
@@ -277,7 +279,7 @@ export async function initChat() {
                 selectCharacter(remainingActive[0]);
             } else {
                 activeCharId = null;
-                localStorage.removeItem('lumaActiveCharacter');
+                secureStorage.removeItem('lumaActiveCharacter');
                 renderSidebarChatList([], null, selectCharacter, deleteCharacter);
                 switchView('gallery');
             }
@@ -305,9 +307,8 @@ export async function initChat() {
         promptStartModeIfNeeded(char, forcePrompt, () => {
             currentCharacter = char;
             activeCharId = char.id || char.arquetipo_id;
-            localStorage.setItem('lumaActiveCharacter', activeCharId);
+            secureStorage.setItem('lumaActiveCharacter', activeCharId);
 
-            // Sync 3D model with main stage
             window.dispatchEvent(new CustomEvent('loadCharacterModel', {
                 detail: { model3d_url: char.model3d_url || '' }
             }));
@@ -442,7 +443,7 @@ export async function initChat() {
         };
 
         charactersData.custom.unshift(fullChar);
-        localStorage.setItem('lumaCustomCharacters', JSON.stringify(charactersData.custom));
+        secureStorage.setItem('lumaCustomCharacters', JSON.stringify(charactersData.custom));
 
         try {
             await apiFetch('/api/characters', {
@@ -467,7 +468,7 @@ export async function initChat() {
         };
 
         charactersData.custom.unshift(fullChar);
-        localStorage.setItem('lumaCustomCharacters', JSON.stringify(charactersData.custom));
+        secureStorage.setItem('lumaCustomCharacters', JSON.stringify(charactersData.custom));
 
         if (importModal) importModal.classList.add('hidden');
         renderGallery(charactersData, 'custom', '', selectCharacter);

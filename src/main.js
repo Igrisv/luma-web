@@ -335,26 +335,52 @@ function init3D() {
 
     function cloneMaterialWithTextures(mat) {
         if (!mat) return mat;
-        const newMat = mat.clone();
-        newMat.side = THREE.DoubleSide;
-        if (mat.color) newMat.color.copy(mat.color);
+        let newMat;
+        try {
+            newMat = mat.clone ? mat.clone() : mat;
+        } catch (e) {
+            return mat;
+        }
+        if (!newMat) return mat;
 
-        if (mat.map) {
-            newMat.map = mat.map.clone();
-            newMat.map.colorSpace = THREE.SRGBColorSpace;
-            newMat.map.needsUpdate = true;
+        newMat.side = THREE.DoubleSide;
+        if (mat.color && newMat.color && newMat.color.copy) newMat.color.copy(mat.color);
+
+        if (mat.map && typeof mat.map.clone === 'function') {
+            try {
+                newMat.map = mat.map.clone();
+                newMat.map.colorSpace = THREE.SRGBColorSpace;
+                newMat.map.needsUpdate = true;
+            } catch (e) { newMat.map = mat.map; }
+        } else if (mat.map) {
+            newMat.map = mat.map;
         }
-        if (mat.normalMap) {
-            newMat.normalMap = mat.normalMap.clone();
-            newMat.normalMap.needsUpdate = true;
+
+        if (mat.normalMap && typeof mat.normalMap.clone === 'function') {
+            try {
+                newMat.normalMap = mat.normalMap.clone();
+                newMat.normalMap.needsUpdate = true;
+            } catch (e) { newMat.normalMap = mat.normalMap; }
+        } else if (mat.normalMap) {
+            newMat.normalMap = mat.normalMap;
         }
-        if (mat.roughnessMap) {
-            newMat.roughnessMap = mat.roughnessMap.clone();
-            newMat.roughnessMap.needsUpdate = true;
+
+        if (mat.roughnessMap && typeof mat.roughnessMap.clone === 'function') {
+            try {
+                newMat.roughnessMap = mat.roughnessMap.clone();
+                newMat.roughnessMap.needsUpdate = true;
+            } catch (e) { newMat.roughnessMap = mat.roughnessMap; }
+        } else if (mat.roughnessMap) {
+            newMat.roughnessMap = mat.roughnessMap;
         }
-        if (mat.metalnessMap) {
-            newMat.metalnessMap = mat.metalnessMap.clone();
-            newMat.metalnessMap.needsUpdate = true;
+
+        if (mat.metalnessMap && typeof mat.metalnessMap.clone === 'function') {
+            try {
+                newMat.metalnessMap = mat.metalnessMap.clone();
+                newMat.metalnessMap.needsUpdate = true;
+            } catch (e) { newMat.metalnessMap = mat.metalnessMap; }
+        } else if (mat.metalnessMap) {
+            newMat.metalnessMap = mat.metalnessMap;
         }
 
         if (newMat.isMeshStandardMaterial) {
@@ -371,15 +397,22 @@ function init3D() {
 
     function deepCloneModelForMain(srcModel) {
         if (!srcModel) return null;
-        const clonedGroup = srcModel.clone(true);
+        let clonedGroup;
+        try {
+            clonedGroup = srcModel.clone(true);
+        } catch (e) {
+            return srcModel;
+        }
 
         clonedGroup.traverse((child) => {
             if (child.isMesh && child.material) {
-                if (Array.isArray(child.material)) {
-                    child.material = child.material.map(m => cloneMaterialWithTextures(m));
-                } else {
-                    child.material = cloneMaterialWithTextures(child.material);
-                }
+                try {
+                    if (Array.isArray(child.material)) {
+                        child.material = child.material.map(m => cloneMaterialWithTextures(m));
+                    } else {
+                        child.material = cloneMaterialWithTextures(child.material);
+                    }
+                } catch (e) { console.warn('[3D] Material cloning error:', e); }
             }
         });
 
@@ -390,15 +423,16 @@ function init3D() {
         if (!obj) return;
         obj.traverse((child) => {
             if (child.isMesh) {
-                if (child.geometry) child.geometry.dispose();
+                if (child.geometry && typeof child.geometry.dispose === 'function') child.geometry.dispose();
                 if (child.material) {
                     const mats = Array.isArray(child.material) ? child.material : [child.material];
                     mats.forEach(mat => {
-                        if (mat.map) mat.map.dispose();
-                        if (mat.normalMap) mat.normalMap.dispose();
-                        if (mat.roughnessMap) mat.roughnessMap.dispose();
-                        if (mat.metalnessMap) mat.metalnessMap.dispose();
-                        mat.dispose();
+                        if (!mat) return;
+                        if (mat.map && typeof mat.map.dispose === 'function') mat.map.dispose();
+                        if (mat.normalMap && typeof mat.normalMap.dispose === 'function') mat.normalMap.dispose();
+                        if (mat.roughnessMap && typeof mat.roughnessMap.dispose === 'function') mat.roughnessMap.dispose();
+                        if (mat.metalnessMap && typeof mat.metalnessMap.dispose === 'function') mat.metalnessMap.dispose();
+                        if (typeof mat.dispose === 'function') mat.dispose();
                     });
                 }
             }
@@ -429,12 +463,14 @@ function init3D() {
                     currentModel = gltf.scene;
                     filterMainGLTF(currentModel);
                     currentModel.traverse(child => {
-                        if (child.isMesh) {
-                            if (Array.isArray(child.material)) {
-                                child.material = child.material.map(m => cloneMaterialWithTextures(m));
-                            } else {
-                                child.material = cloneMaterialWithTextures(child.material);
-                            }
+                        if (child.isMesh && child.material) {
+                            try {
+                                if (Array.isArray(child.material)) {
+                                    child.material = child.material.map(m => cloneMaterialWithTextures(m));
+                                } else {
+                                    child.material = cloneMaterialWithTextures(child.material);
+                                }
+                            } catch (err) { console.warn('[3D] Texture map cloning error:', err); }
                         }
                     });
                     scene.add(currentModel);

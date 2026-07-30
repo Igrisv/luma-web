@@ -92,6 +92,7 @@ export class RewardedAdManager {
      * Comprueba si un Bloqueador de Anuncios (AdBlocker / Brave Shields) está activo
      */
     async checkAdBlocker() {
+        if (window.isAdBlockerActive) return true;
         try {
             const testUrl = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js';
             const res = await fetch(testUrl, {
@@ -117,19 +118,17 @@ export class RewardedAdManager {
         // Comprobar presencia de bloqueador de anuncios
         const adBlockerActive = await this.checkAdBlocker();
         if (adBlockerActive) {
-            console.warn('[ADS] Bloqueador de anuncios detectado.');
             return {
                 isAdBlocker: true,
                 title: '🛡️ Bloqueador de Anuncios Detectado',
                 sponsor: 'Acción Requerida',
-                message: 'Para poder recargar tu saldo de mensajes gratis, por favor desactiva tu bloqueador de anuncios (AdBlock / Brave Shields) para este sitio.'
+                message: 'Para recargar tus mensajes gratis, por favor desactiva tu bloqueador de anuncios (AdBlock, uBlock o Brave Shields) para este sitio.'
             };
         }
 
         // Estrategia 1: Carga de etiqueta VAST si el modo incluye VAST o Hybrid
         if (this.mode === 'vast' || this.mode === 'hybrid') {
             if (ADS_CONFIG.vastTagUrl) {
-                console.log('[ADS] Intentando cargar etiqueta VAST...');
                 const vastAd = await this.fetchVastAd(ADS_CONFIG.vastTagUrl);
                 if (vastAd && vastAd.videoUrl) {
                     this.currentAd = vastAd;
@@ -138,8 +137,6 @@ export class RewardedAdManager {
             }
         }
 
-        // Estrategia 2: Fallback a anuncio de muestra
-        console.log('[ADS] Utilizando anuncio de respaldo...');
         const index = Math.floor(Math.random() * SAMPLE_FALLBACK_ADS.length);
         this.currentAd = SAMPLE_FALLBACK_ADS[index];
         return this.currentAd;

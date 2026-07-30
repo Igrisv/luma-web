@@ -3,6 +3,7 @@
 // ═══════════════════════════════════════════════════════════
 import { getEmotionalBadge } from '../services/cardParser.js';
 import { isCharacterLocked } from '../services/tierGate.js';
+import { secureStorage } from '../core/secureStorage.js';
 
 export function renderSidebarChatList(activeCharacters, activeCharId, onSelectCharacter, onDeleteCharacter) {
     const chatList = document.getElementById('chatList');
@@ -26,7 +27,8 @@ export function renderSidebarChatList(activeCharacters, activeCharId, onSelectCh
         const charKey = c.id || c.arquetipo_id;
         const isActive = charKey === activeCharId || c.id === activeCharId || c.arquetipo_id === activeCharId;
         const configKey = `chatConfig_${charKey}`;
-        const savedConfig = JSON.parse(localStorage.getItem(configKey) || '{}');
+        const savedConfigRaw = secureStorage.getItem(configKey);
+        const savedConfig = savedConfigRaw ? JSON.parse(savedConfigRaw) : {};
         const afinidad = savedConfig.afinidad !== undefined ? savedConfig.afinidad : (c.emociones_inicio ? c.emociones_inicio.afinidad : 50);
 
         const isLocked = isCharacterLocked(c);

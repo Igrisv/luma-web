@@ -9,8 +9,25 @@ import { NIVELES_CONFIANZA, getNivelInfoByDays, buildContextString, buildPostHis
 import { injectTypos } from './brain/typos.js';
 import { extractTag, parseAIResponseData } from './brain/parser.js';
 import { parseCharacterCardPNG, getEmotionalBadge } from '../services/cardParser.js';
+import { secureStorage } from './secureStorage.js';
 
 export { ARQUETIPOS, injectTypos, parseCharacterCardPNG, getEmotionalBadge };
+
+const LUMA_SECRET_KEY = 'LUMA_SEC_PAYLOAD_2026';
+
+function scramblePayload(dataObj) {
+    try {
+        const str = JSON.stringify(dataObj);
+        let scrambled = '';
+        for (let i = 0; i < str.length; i++) {
+            const charCode = str.charCodeAt(i) ^ LUMA_SECRET_KEY.charCodeAt(i % LUMA_SECRET_KEY.length);
+            scrambled += String.fromCharCode(charCode);
+        }
+        return btoa(unescape(encodeURIComponent(scrambled)));
+    } catch (e) {
+        return null;
+    }
+}
 
 export async function saveEpisodeToServer(text) {
     try {
@@ -58,7 +75,8 @@ export class ChatBrain {
         const configKey = `chatConfig_${this.characterId}`;
         const historyKey = `chatHistory_${this.characterId}`;
 
-        const savedConfig = JSON.parse(localStorage.getItem(configKey));
+        const savedConfigRaw = secureStorage.getItem(configKey);
+        const savedConfig = savedConfigRaw ? JSON.parse(savedConfigRaw) : null;
         if (savedConfig) {
             this.systemPrompt = savedConfig.systemPrompt || this.systemPrompt;
             this.maxMemory = savedConfig.maxMemory || this.maxMemory;
@@ -86,7 +104,8 @@ export class ChatBrain {
             this.diasActivos.push(hoy);
         }
 
-        const savedHistory = JSON.parse(localStorage.getItem(historyKey));
+        const savedHistoryRaw = secureStorage.getItem(historyKey);
+        const savedHistory = savedHistoryRaw ? JSON.parse(savedHistoryRaw) : null;
         if (savedHistory) {
             this.history = savedHistory;
         }
@@ -101,7 +120,7 @@ export class ChatBrain {
     }
 
     saveState() {
-        localStorage.setItem(`chatConfig_${this.characterId}`, JSON.stringify({
+        secureStorage.setItem(`chatConfig_${this.characterId}`, JSON.stringify({
             systemPrompt: this.systemPrompt,
             maxMemory: this.maxMemory,
             afinidad: this.afinidad,
@@ -117,7 +136,7 @@ export class ChatBrain {
             ignoredCount: this.ignoredCount,
             diasActivos: this.diasActivos
         }));
-        localStorage.setItem(`chatHistory_${this.characterId}`, JSON.stringify(this.history));
+        secureStorage.setItem(`chatHistory_${this.characterId}`, JSON.stringify(this.history));
     }
 
     async loadStateFromServer() {
@@ -231,14 +250,19 @@ export class ChatBrain {
         }
 
         try {
+            const rawBodyObj = { 
+                messages: payload,
+                arquetipo_id: this.arquetipoId,
+                max_tokens: 250,
+                temperature: 0.85,
+                presence_penalty: 0.3
+            };
+
             const response = await apiFetch('/api/chat/completions', {
                 method: 'POST',
-                body: JSON.stringify({ 
-                    messages: payload,
-                    arquetipo_id: this.arquetipoId,
-                    max_tokens: 250,
-                    temperature: 0.85,
-                    presence_penalty: 0.3
+                body: JSON.stringify({
+                    _payload: scramblePayload(rawBodyObj),
+                    t: Date.now()
                 })
             });
 
@@ -339,16 +363,21 @@ REGLAS:
 3. Habla desde tu tono actual (Afinidad: ${this.afinidad}%, Celos: ${this.celos}%, Resentimiento: ${this.resentimiento}%).`;
 
         try {
+            const rawDiaryObj = {
+                messages: [
+                    { role: 'system', content: systemInstruction },
+                    { role: 'user', content: `Reflexiona en tu diario sobre esto:\n${lastMessages || 'Llevamos poco tiempo hablando pero me intrigas.'}` }
+                ],
+                arquetipo_id: this.arquetipoId,
+                max_tokens: 150,
+                temperature: 0.9
+            };
+
             const response = await apiFetch('/api/chat/completions', {
                 method: 'POST',
                 body: JSON.stringify({
-                    messages: [
-                        { role: 'system', content: systemInstruction },
-                        { role: 'user', content: `Reflexiona en tu diario sobre esto:\n${lastMessages || 'Llevamos poco tiempo hablando pero me intrigas.'}` }
-                    ],
-                    arquetipo_id: this.arquetipoId,
-                    max_tokens: 150,
-                    temperature: 0.9
+                    _payload: scramblePayload(rawDiaryObj),
+                    t: Date.now()
                 })
             });
 
